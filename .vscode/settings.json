@@ -1,0 +1,17 @@
+{
+	"java.project.sourcePaths": [
+		"src"
+	],
+	"java.project.outputPath": "bin",
+	"java.project.referencedLibraries": [
+		"lib/**/*.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.base.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.controls.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.fxml.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.graphics.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.media.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.swing.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.web.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx-swt.ja"
+	]
+}
