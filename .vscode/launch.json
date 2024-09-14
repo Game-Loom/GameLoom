@@ -2,6 +2,14 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"type": "java",
+			"name": "GraphicalUserInterface",
+			"request": "launch",
+			"mainClass": "GraphicalUserInterface",
+			"projectName": "GameLoom_437b083e",
+			"vmArgs": "--module-path /usr/lib/jvm/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml"
+		},
+		{
 			"vmArgs": "--module-path /usr/lib/jvm/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml",
 			"type": "java",
 			"name": "Launch Current File",
