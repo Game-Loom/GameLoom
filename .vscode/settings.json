@@ -12,6 +12,13 @@
 		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.media.jar",
 		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.swing.jar",
 		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx.web.jar",
-		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx-swt.ja"
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/lib/javafx-swt.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/GameLoom/lib/commons-csv-1.11.0-sources.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/GameLoom/lib/commons-csv-1.11.0.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/GameLoom/lib/commons-io-2.16.1.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/GameLoom/lib/commons-io-2.16.1-javadoc.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/GameLoom/lib/commons-io-2.16.1-sources.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/GameLoom/lib/commons-io-2.16.1-tests.jar",
+		"/home/chris/Documents/Visual Studio Code/JavaProjects/GameLoom/lib/commons-io-2.16.1-test-sources.jar"
 	]
 }
