@@ -11,7 +11,7 @@ public class Game {
     public String getAttribute(String key) {
         return attributes.getOrDefault(key, "N/A");
     }
-
+    // Right now this only works for the steam csv but will need to be generalized to the PC storefront the user owns it on ( i was thinking about maybe doing that based on the csv itself, idk yet though)
     public String getPlatform() {
         StringBuilder platforms = new StringBuilder();
         if (getAttribute("win").equalsIgnoreCase("x")) platforms.append("Windows ");
