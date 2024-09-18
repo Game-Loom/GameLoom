@@ -1,6 +1,4 @@
-The values after add module in the .JSON files will need to be changed to wherever you have your jfx/lib folder 
-
-DELIMITER  ON STEAM LIBRARY EXPORTER MUST BE SET TO ; BECAUSE SOME GAMES HAVE COMMAS IN THEIR NAMES
+****DELIMITER  ON STEAM LIBRARY EXPORTER MUST BE SET TO ; BECAUSE SOME GAMES HAVE COMMAS IN THEIR NAMES****
 
 9/17:
 CSV importer mostly works with some issues
@@ -17,3 +15,5 @@ For now you can ignore the extra apache commons libraries in the lib folder, I w
 but then I realized the website will let me export with my choice of delimiter and maybe 1/ ~500,000 games has a semi-colon in it's name
 (I honestly can't think of even one but I'm sure its probably out there). So I ended up not needing to use it but if that changes the csv and io libraries from apachecommons are in the lib folder
 
+9/18:
+.vscode folder is removed and will be ignored but should not affect your existing .vscode folder on your local drive. Our .vscode configurations for our local machines will be left out of the github syncs automatically from now on so we don't have to change any config paths.

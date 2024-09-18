@@ -21,6 +21,7 @@ public class Game {
         return platforms.toString().trim();
     }
 
+    // Can be modified to to include whatever information we would like
     @Override
     public String toString() {
         String hoursPlayed = getAttribute("hours").isEmpty() ? "0.00" : getAttribute("hours");

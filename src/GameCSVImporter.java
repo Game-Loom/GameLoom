@@ -7,21 +7,21 @@ import java.util.*;
 public class GameCSVImporter {
 
     // Method to import games from a CSV file with dynamic attributes
-    public static List<Game> importGamesFromCSV(String csvFilePath) {
+    public static List<Game> importGamesFromCSV(String csvFilePath){
         List<Game> games = new ArrayList<>();
         Path pathToFile = Paths.get(csvFilePath);
 
-        try (BufferedReader br = Files.newBufferedReader(pathToFile)) {
+        try (BufferedReader br = Files.newBufferedReader(pathToFile)){
             String line;
             String[] headers = null;
             
             boolean isFirstLine = true;
 
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null){
                 if (isFirstLine) {
                     // Make sure headers are trimmed to remove any extra spaces
                     headers = line.split(";");
-                    for (int i = 0; i < headers.length; i++) {
+                    for (int i = 0; i < headers.length; i++){
                         headers[i] = headers[i].trim();
                     }
                     isFirstLine = false;
@@ -41,10 +41,10 @@ public class GameCSVImporter {
                 Game game = new Game(attributes);
                 games.add(game);
             }
-        } catch (Exception e) {
+        } catch (Exception e){
             e.printStackTrace();
         }
-
+        //TEST ITERATING ALL HEADERS TO SCREEN HERE TEST ITERATING ALL HEADERS TO SCREEN HERE TEST ITERATING ALL HEADERS TO SCREEN HERE
         return games;
     }
 }
