@@ -9,7 +9,12 @@ public class Game {
     }
 
     public String getAttribute(String key) {
-        return attributes.getOrDefault(key, "N/A");
+        return attributes.getOrDefault(key.trim().toLowerCase(), "N/A");
+    }
+
+    // Gets the attributes map -- FOR TESTING PURPOSES (may end up being utilized though)
+    public Map<String, String> getAttributes() {
+        return attributes;
     }
     // Right now this only works for the steam csv but will need to be generalized to the PC storefront the user owns it on ( i was thinking about maybe doing that based on the csv itself, idk yet though)
     public String getPlatform() {
@@ -20,7 +25,7 @@ public class Game {
         if (getAttribute("steam_deck").equalsIgnoreCase("x")) platforms.append("Steam Deck ");
         return platforms.toString().trim();
     }
-
+    
     // Can be modified to to include whatever information we would like
     @Override
     public String toString() {

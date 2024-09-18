@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GraphicalUserInterface extends Application {
     private VBox gameList;
@@ -105,7 +107,7 @@ public class GraphicalUserInterface extends Application {
 
         VBox gameDetails = new VBox(5);
         Label gameName = new Label(name);  // Make sure 'name' contains the correct game title
-        Label gameDescription = new Label(description);
+        Label gameDescription = new Label((description != null && !description.equals("N/A")) ? description : "No Description Available");
         gameDetails.getChildren().addAll(gameName, gameDescription);
 
         gameBox.getChildren().add(gameDetails);
@@ -119,8 +121,16 @@ public class GraphicalUserInterface extends Application {
         for (Game game : games) {
             gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
             System.out.println("Game created: " + game.getAttribute("game"));//TESTLINE TESTLINE TESTLINE TESTLINE TESTLINE TESTLINE TESTLINE TESTLINE TESTLINE TESTLINE TESTLINE TESTLINE
+        
+            // Print all key/value pairs for this game -- FOR TESTING PURPOSES
+            System.out.println("Attributes for game: " + game.getAttribute("game"));
+            for (Map.Entry<String, String> entry : game.getAttributes().entrySet()) {
+                System.out.println(entry.getKey() + " : " + entry.getValue());
+            }
+            System.out.println("");
         }
     }
+    
     
 
     public static void main(String[] args) {
