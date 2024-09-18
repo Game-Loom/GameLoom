@@ -16,4 +16,4 @@ but then I realized the website will let me export with my choice of delimiter a
 (I honestly can't think of even one but I'm sure its probably out there). So I ended up not needing to use it but if that changes the csv and io libraries from apachecommons are in the lib folder
 
 9/18:
-.vscode folder is removed and will be ignored but should not affect your existing .vscode folder on your local drive. Our .vscode configurations for our local machines will be left out of the github syncs automatically from now on so we don't have to change any config paths.
+.vscode folder and bin folder are removed from sync and will be ignored but should not affect your existing .vscode folder on your local drive. Our .vscode configurations for our local machines will be left out of the github syncs automatically from now on so we don't have to change any config paths.
