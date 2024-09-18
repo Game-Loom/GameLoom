@@ -1,0 +1,5 @@
+#Ignoring syncing the whole .vscode folder
+.vscode/
+
+#Safety net ignore all .JSON files
+*.json

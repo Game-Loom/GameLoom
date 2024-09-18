@@ -28,7 +28,7 @@ public class GameCSVImporter {
                     continue;
                 }
 
-                // Split the line by commas to get the values
+                // Split the line by semi-colons to get the values
                 String[] values = line.split(";");
 
                 // Map the values to their corresponding header
