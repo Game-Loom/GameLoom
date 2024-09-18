@@ -3,3 +3,9 @@
 
 #Safety net ignore all .JSON files
 *.json
+
+#No need to sync the bin folder, its all just Java's auto-generated .class files
+bin/
+
+#Safety net ignore all .class files
+*.class
