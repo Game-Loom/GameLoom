@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GraphicalUserInterface extends Application{
-    private VBox gameList;// VBox to store the list of game items (games are displayed in a vertical box layout, this is t).
+    private VBox gameList;// VBox to store the list of game items (games are displayed in a vertical box layout).
 
     @Override
     public void start(Stage primaryStage){
