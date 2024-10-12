@@ -136,14 +136,14 @@ public class GraphicalUserInterface extends Application{
         for (Game game : games) {// Loops through each imported game
             gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));// Adds the game to the game list as a new game item (created with the helper method)
             
-            System.out.println("Game created: " + game.getAttribute("game"));//FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES
+            //System.out.println("Game created: " + game.getAttribute("game"));//FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES
         
             // // Prints all attributes (key-value pairs) for the current game -- FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES
-            System.out.println("Attributes for game: " + game.getAttribute("game"));
-            for (Map.Entry<String, String> entry : game.getAttributes().entrySet()){// Just a separate map that holds all the game entries (didn't want to manipulate the original)
-                System.out.println(entry.getKey() + " : " + entry.getValue());// Just spacing the entries for printing to console
-            }
-            System.out.println("");// Just separates each full game attributes list with a blank line
+            //System.out.println("Attributes for game: " + game.getAttribute("game"));
+            //for (Map.Entry<String, String> entry : game.getAttributes().entrySet()){// Just a separate map that holds all the game entries (didn't want to manipulate the original)
+                //System.out.println(entry.getKey() + " : " + entry.getValue());// Just spacing the entries for printing to console
+           // }
+           // System.out.println("");// Just separates each full game attributes list with a blank line
         }
     }
     
