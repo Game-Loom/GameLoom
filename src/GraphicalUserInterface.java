@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -11,6 +12,9 @@ import java.io.File;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.Node;
+import java.util.ArrayList;
+
 
 public class GraphicalUserInterface extends Application{
     private VBox gameList;// VBox to store the list of game items (games are displayed in a vertical box layout).
@@ -67,6 +71,29 @@ public class GraphicalUserInterface extends Application{
         
         // Add the search field and button to the search box (left to right layout).
         searchBox.getChildren().addAll(searchField, searchButton);
+
+        /***************** SEARCH IMPLEMENTATION ****************/
+            searchButton.setOnAction(event -> {
+            String searchQuery = searchField.getText(); // Get the input from the search field
+            System.out.println("Search Query: " + searchQuery); // For debugging purposes, print the search query
+            ArrayList<Game> myGameList = new ArrayList<Game>();
+            ObservableList<Node> gameEntries = gameList.getChildren();
+            for (Node myNode : gameEntries) {
+                Game game = (Game) myNode.getUserData();
+                if(game != null) {
+                    myGameList.add(game);
+                }
+            }
+            Searcher search = new Searcher(myGameList);
+            search.setSearch(searchQuery);
+            ArrayList<Game> results = search.matchesSearch();
+            System.out.println("Size of list: " + results.size());
+            populateGameList(results);
+
+        });
+
+
+
 
         // Top right: User icon (just a placeholder for now, not actually implemented and placed on the window yet)
         Button userButton = new Button("User Icon");// Creates a button to represent the user icon if we choose to take the account route in whatever form
