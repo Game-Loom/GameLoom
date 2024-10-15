@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -11,9 +12,11 @@ import java.io.File;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 public class GraphicalUserInterface extends Application{
     private VBox gameList;// VBox to store the list of game items (games are displayed in a vertical box layout).
+    private ArrayList<Game> library = new ArrayList<>(); //Game library
 
     @Override
     public void start(Stage primaryStage){
@@ -84,13 +87,34 @@ public class GraphicalUserInterface extends Application{
             }
         });
 
+        //Creates new button to export game library to CSV
+        Button exportButton = new Button("Export Games to CSV");
+        exportButton.setOnAction(event->{
+            if(library.isEmpty()){ //Creates an error dialog if the library is empty
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Dialog");
+                alert.setHeaderText("CSV Export Error");
+                alert.setContentText("Cannot export an empty library! Please add more games and try again.");
+
+                alert.showAndWait();
+            }
+            else{
+                FileChooser fileChooser = new FileChooser(); //Creates a new file chooser
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); //Makes sure user saves a csv file
+                File newFile = fileChooser.showSaveDialog(primaryStage); //Opens new window to save the file where the user chooses
+                if(newFile != null){
+                    GameCSVExporter.exportGamesToCSV(library, newFile); //Exports library to given file
+                }
+            }            
+        });
+
         // Bottom section
         HBox bottomLayout = new HBox();// HBox for the bottom section (search bar and import button side by side).
         bottomLayout.setPadding(new Insets(10));// Adds padding around the bottom section
         // Allows the search box to grow horizontally if the window is resized
         HBox.setHgrow(searchBox, Priority.ALWAYS);
-        // Adds the search box (on the left) and the import button (on the right) to the HBox
-        bottomLayout.getChildren().addAll(searchBox, importButton);
+        // Adds the search box (on the left) and the import and export buttons (on the right) to the HBox
+        bottomLayout.getChildren().addAll(searchBox, importButton, exportButton);
 
         // Main layout
         BorderPane root = new BorderPane();// Holds BorderPane layout (top, bottom, center, right, and left regions)
@@ -134,6 +158,7 @@ public class GraphicalUserInterface extends Application{
     private void populateGameList(List<Game> games){
         gameList.getChildren().clear();// Clears the current game list to make room for the newly imported games
         for (Game game : games) {// Loops through each imported game
+            library.add(game);
             gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));// Adds the game to the game list as a new game item (created with the helper method)
             
             //System.out.println("Game created: " + game.getAttribute("game"));//FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES

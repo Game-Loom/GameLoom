@@ -1,21 +1,36 @@
 import java.util.*;
 import java.lang.StringBuilder;
+import java.io.PrintWriter;
+import java.io.File;
 
 public class GameCSVExporter{
     /**
      * Takes in a list of games, then exports that list to a CSV file with all its attributes
      * @param games - the list of games
+     * @param file - the CSV file to export the games to
      */
-    public static void exportGamesToCSV(List<Game> games){
-        ArrayList<String> attributes = getAttributes(games);
-        ArrayList<String> csvRows = getGameValues(games, attributes);
+    public static void exportGamesToCSV(List<Game> games, File file){
+        ArrayList<String> attributes = getAttributes(games); //Gets an array list of attributes in Strign format
+        ArrayList<String> csvRows = getGameValues(games, attributes); //Gets the games/CSV rows of the library
 
-        StringBuilder headers = new StringBuilder();
+        StringBuilder headers = new StringBuilder(); //Gets the headers of the CSV file based on the game attributes, seperating them with commas
         for(String attribute : attributes){
             headers.append(attribute);
             headers.append(", ");
         }
         headers = headers.delete(headers.length()-2, headers.length()); //Deletes preceding comma and space
+
+        try(PrintWriter writer = new PrintWriter(file)){ //Opens the given file to write to
+            writer.println(headers.toString());
+            for(String row:csvRows){
+                writer.println(row);
+            }
+            writer.flush();
+            writer.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -56,6 +71,9 @@ public class GameCSVExporter{
 
                 if(value.contains(",")){ //Since commas are the delimineter for CSVs, this just replaces any commas with a space
                     value = value.replace(',', ' ');
+                }
+                else if(value.equals("")){
+                    value = "N/A";
                 }
 
                 row.append(value);
