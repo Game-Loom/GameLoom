@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class GraphicalUserInterface extends Application{
     private VBox gameList;// VBox to store the list of game items (games are displayed in a vertical box layout).
-    private ArrayList<Game> library = new ArrayList<>(); //Game library
+    protected static ArrayList<Game> library = new ArrayList<>(); //Game library
 
     @Override
     public void start(Stage primaryStage){
@@ -103,7 +103,7 @@ public class GraphicalUserInterface extends Application{
                 fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); //Makes sure user saves a csv file
                 File newFile = fileChooser.showSaveDialog(primaryStage); //Opens new window to save the file where the user chooses
                 if(newFile != null){
-                    GameCSVExporter.exportGamesToCSV(library, newFile); //Exports library to given file
+                    GameCSVExporter.exportGamesToCSV(newFile); //Exports library to given file
                 }
             }            
         });
