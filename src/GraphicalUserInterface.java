@@ -76,26 +76,12 @@ public class GraphicalUserInterface extends Application{
 
         /***************** SEARCH IMPLEMENTATION ****************/
             searchButton.setOnAction(event -> {
-            String searchQuery = searchField.getText(); // Get the input from the search field
-            System.out.println("Search Query: " + searchQuery); // For debugging purposes, print the search query
-            ArrayList<Game> myGameList = new ArrayList<Game>();
-            ObservableList<Node> gameEntries = gameList.getChildren();
-            for (Node myNode : gameEntries) {
-                Game game = (Game) myNode.getUserData();
-                if(game != null) {
-                    myGameList.add(game);
-                }
-            }
-            Searcher search = new Searcher(myGameList);
-            search.setSearch(searchQuery);
+            String input = searchField.getText(); // Get the input from the search field
+            Searcher search = new Searcher(library);
+            search.setSearch(input);
             ArrayList<Game> results = search.matchesSearch();
-            System.out.println("Size of list: " + results.size());
             populateGameList(results);
-
         });
-
-
-
 
         // Top right: User icon (just a placeholder for now, not actually implemented and placed on the window yet)
         Button userButton = new Button("User Icon");// Creates a button to represent the user icon if we choose to take the account route in whatever form
@@ -187,10 +173,10 @@ public class GraphicalUserInterface extends Application{
             library.add(game);
             gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));// Adds the game to the game list as a new game item (created with the helper method)
             
-            //System.out.println("Game created: " + game.getAttribute("game"));//FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES
+            // System.out.println("Game created: " + game.getAttribute("game"));//FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES
         
             // // Prints all attributes (key-value pairs) for the current game -- FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES
-            //System.out.println("Attributes for game: " + game.getAttribute("game"));
+            // System.out.println("Attributes for game: " + game.getAttribute("game"));
             //for (Map.Entry<String, String> entry : game.getAttributes().entrySet()){// Just a separate map that holds all the game entries (didn't want to manipulate the original)
                 //System.out.println(entry.getKey() + " : " + entry.getValue());// Just spacing the entries for printing to console
            // }

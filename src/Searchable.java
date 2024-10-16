@@ -11,6 +11,6 @@ public interface Searchable {
      * @param game the game that is being search
      * @return boolean representing if a search match is found 
      */
-    public boolean matches(Game game, Searcher searcher);
+    public boolean matchesSearch(Game game, Searcher searcher);
 
 }
