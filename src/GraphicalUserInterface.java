@@ -35,7 +35,7 @@
  * game library.
  * 
  * @author CS321-004: Group 3
- * @version 1.3
+ * @version 1.4
  */
 
 import javafx.application.Application;
@@ -235,37 +235,77 @@ public class GraphicalUserInterface extends Application {
 
 
     /**
-    * Sets up the search bar, including the text field and search button.
-    * 
-    * The search button currently does not have any backend functionality, but 
-    * can be updated later to search the game library based on the text entered 
-    * in the search field.
-    * 
-    * @return HBox containing the search field and search button
-    */
+     * Sets up the search bar, including a text field for search input and a search button.
+     * When the user enters one or more search keywords, separated by spaces, and clicks the search button,
+     * the method will filter the game list based on whether the game names or descriptions contain the search terms.
+     * 
+     * This method supports case-insensitive, multi-keyword searching. The keywords are matched against the game name 
+     * and description.
+     * 
+     * @return HBox containing the search field and search button.
+     */
     private HBox setupSearchBar() {
-       // **Search Bar**: User can search for specific games
-       HBox searchBox = new HBox(10); // HBox with 10px spacing between elements
-       searchBox.setPadding(new Insets(10)); // Adds padding around the search box
+        HBox searchBox = new HBox(10); // HBox with 10px spacing between elements
+        searchBox.setPadding(new Insets(10)); // Adds padding around the search box
+        TextField searchField = new TextField(); // Creates a search input field
+        searchField.setPromptText("e.g. Name Platform Year"); // Default text to let user know it takes multiple keywords at once
+        Button searchButton = new Button("Search"); // Creates the search button
 
-       TextField searchField = new TextField(); // Creates a search input field
-       searchField.setPromptText("Search"); // Sets placeholder text inside the search field
+        // Define the action when the search button is clicked
+        searchButton.setOnAction(event -> {
+            String searchQuery = searchField.getText().toLowerCase().trim(); // Normalize input (lowercase + trim spaces)
+            filterGameList(searchQuery); // Call helper method to filter the game list based on the search query
+        });
 
-       Button searchButton = new Button("Search"); // Creates the search button
+        // Adds search components to the HBox
+        searchBox.getChildren().addAll(searchField, searchButton);
 
-       // Placeholder action for the search button
-       searchButton.setOnAction(event -> {
-           String searchText = searchField.getText();
-           // Placeholder logic for search functionality
-           System.out.println("Searching for: " + searchText); // This will get replaced with the actual search logic, I'm just using it for debugging right now
-       });                                                     // Likely from a different file but maybe not, might be able to c/p / integrate Na's existing logic here
+        return searchBox; // Returns the search bar HBox
+    }
 
-       // Adds search components to the HBox
-       searchBox.getChildren().addAll(searchField, searchButton); 
+    /**
+     * Filters the game list based on a search query entered by the user. 
+     * The search query is split into individual keywords, and the method checks whether each game's 
+     * name or description contains all the keywords. 
+     * 
+     * If no search query is provided, the method will display all the games. The filtering is 
+     * case-insensitive and supports multi-keyword searches.
+     * 
+     * @param searchText The search query entered by the user. Multiple keywords should be separated by spaces.
+     */
+    private void filterGameList(String searchText) {
+        gameList.getChildren().clear(); // Clear the current game list in the UI    
 
-       return searchBox; // Returns the search bar HBox
-    }   
+        // Split searchText by space to handle multiple keywords
+        String[] searchTerms = searchText.split("\\s");    
 
+        // If searchText is empty, display all games when search is clicked
+        if (searchText.isEmpty()) {
+            for (Game game : library) {
+                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+            }
+        } else {
+            // Filter the games based on the search keyword (searching both game name and description)
+            for (Game game : library) {
+                String gameName = game.getAttribute("game").toLowerCase(); // Normalize game name to lowercase
+                String description = game.toString().toLowerCase(); // Normalize game description to lowercase
+                boolean matchFound = true;// Initialize the match flag
+
+                // Check if all search terms are found in the game name or description
+                for (String term : searchTerms) {
+                    if (!gameName.contains(term) && !description.contains(term)) {
+                        matchFound = false; // Set matchFound to false if any term doesn't match
+                        break; // Exit the loop early since this game doesn't match
+                    }
+                }
+
+                // If all terms match, add the game to the displayed game list
+                if (matchFound) {
+                    gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                }
+            }
+        }
+    }
 
     /**
      * Sets up the Sort and Filter panel, which contains a label, a sort button,
