@@ -387,6 +387,14 @@ public class GraphicalUserInterface extends Application {
         return commonLayout; // Return the fully assembled layout for each tab
     }
 
+    /**
+     * Sets up a safety net for when the user closes the window by creating an alert popup and asking them if they wish to export the library
+     * before they exit. 
+     * If they click 'Yes' then they will be given the option to name their export file and pick its location before the window closes.
+     * If they click 'No' then the stage will simply close.
+     * If they click 'Cancel' then the alert will close and go back to the primary stage.
+     * @param primaryStage the primary stage hosting the GUI
+     */
     private void setupSafetyNet(Stage primaryStage){
 
         primaryStage.setOnCloseRequest(event -> {
