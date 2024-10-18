@@ -39,17 +39,22 @@
  */
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GraphicalUserInterface extends Application {
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
@@ -89,6 +94,10 @@ public class GraphicalUserInterface extends Application {
 
        // Add all tabs to the TabPane.
        tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab); // Adds all tabs to the TabPane
+
+        //Sets up a safety net when the user closes the window
+        setupSafetyNet(primaryStage);
+    
 
        // **Set Scene and Show Stage**.
        Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
@@ -225,7 +234,7 @@ public class GraphicalUserInterface extends Application {
                 fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
                 File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
                 if (newFile != null) {
-                    GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                    GameCSVExporter.exportGamesToCSV(newFile); // Exports the library to a CSV file
                 }
             }
         }); 
@@ -378,6 +387,49 @@ public class GraphicalUserInterface extends Application {
         return commonLayout; // Return the fully assembled layout for each tab
     }
 
+    private void setupSafetyNet(Stage primaryStage){
+
+        primaryStage.setOnCloseRequest(event -> {
+            //Sets up an alert to pop up when the user exits
+            Alert exitAlert = new Alert(AlertType.CONFIRMATION);
+            exitAlert.setTitle("Confirm Exit");
+            exitAlert.setHeaderText("Would you like to export your libraary?");
+            exitAlert.setContentText("To ensure a network-free experience, GameLoom does not save your library data.\nWould you like to export a file with your library data before exiting?");
+
+            //Creates custom buttons and puts them on the alert
+            ButtonType exportButton = new ButtonType("Yes");
+            ButtonType noExportButton = new ButtonType("No");
+            ButtonType cancelButton = ButtonType.CANCEL;
+
+            exitAlert.getButtonTypes().setAll(exportButton, noExportButton, cancelButton);
+
+            //Actions based on  which button was chosen
+            Optional<ButtonType> result = exitAlert.showAndWait();
+            if(result.get() == exportButton){
+                if (library.isEmpty()) { // Shows error if library is empty
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Dialog");
+                    alert.setHeaderText("CSV Export Error");
+                    alert.setContentText("Cannot export an empty library! Please add games first.");
+                    alert.showAndWait();
+                    event.consume();
+                } else { // Opens a save dialog for exporting the library
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
+                    File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
+                    if (newFile != null) {
+                        GameCSVExporter.exportGamesToCSV(newFile); // Exports the library to a CSV file
+                    }
+                }
+            }
+            else if(result.get() == noExportButton ){
+                primaryStage.close();
+            }
+            else{
+                event.consume();
+            }
+        });
+    }
 
     public static void main(String[] args) {
         launch(args); // Launch the JavaFX application.
