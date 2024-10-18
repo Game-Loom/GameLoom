@@ -74,7 +74,7 @@ public class GraphicalUserInterface extends Application {
        // Set content for the Library tab and other tabs using the same shared gameList
        libraryTab.setContent(createCommonTabLayout(primaryStage));
 
-       // **Additional Tabs**: Placeholder tabs for games sorted by platform (Steam, GOG, etc.) (Might not need these depending on how search/sort works)
+       // **Additional Tabs**: Placeholder tabs for games sorted by platform (Steam, GOG, etc.) (for Quick-Filter)
        Tab tab1 = new Tab("Steam", createCommonTabLayout(primaryStage));
        Tab tab2 = new Tab("GOG", createCommonTabLayout(primaryStage));
        Tab tab3 = new Tab("itch.io", createCommonTabLayout(primaryStage));
@@ -164,7 +164,7 @@ public class GraphicalUserInterface extends Application {
     private HBox setupImportSection(Stage primaryStage) {
         // **Platform Dropdown**: Added next to the import button for platform selection
         ComboBox<String> platformDropdown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
-        platformDropdown.getItems().addAll("Steam", "GOG", "Itch.io", "Playstation", "Xbox", "Nintendo"); // Adds options to the dropdown
+        platformDropdown.getItems().addAll("GameLoom Library", "Steam", "GOG", "Itch.io", "Playstation", "Xbox", "Nintendo"); // Adds options to the dropdown
         platformDropdown.setPromptText("Choose import type"); // Sets prompt text in the dropdown
         platformDropdown.setMaxWidth(150); // Sets the maximum width of the dropdown
 
@@ -187,9 +187,11 @@ public class GraphicalUserInterface extends Application {
                 String selectedPlatform = platformDropdown.getValue(); // Gets the selected platform from the dropdown
                 List<Game> importedGames = GameCSVImporter.importGamesFromCSV(selectedFile.getPath()); // Imports games from the selected CSV file
 
-                // Assign the selected platform to each imported game
-                for (Game game : importedGames) {
-                    game.getAttributes().put("platform", selectedPlatform); // Adds platform attribute to each game
+                // Only assign the platform if the selected option is not "GameLoom Library" (import an existing library from our program)
+                if (!"GameLoom Library".equals(selectedPlatform)) {
+                    for (Game game : importedGames) {
+                        game.getAttributes().put("platform", selectedPlatform); // Adds platform attribute to each game
+                    }
                 }
 
                 populateGameList(importedGames); // Adds games to the game list in the UI
