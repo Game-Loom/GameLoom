@@ -8,6 +8,9 @@
  * - **start(Stage primaryStage)**: Initializes the main GUI layout, including the tabs, game list, 
  *   and various user interface components. This method is the main entry point for the JavaFX application.
  * 
+ * - **setupSafetyNet(Stage primaryStage)**: Sets up an alert that prompts the user to export the library
+ *   before exiting the application, providing options to export, close without saving, or cancel the exit.
+ * 
  * - **createGameItem(String name, String description)**: Creates an HBox that visually represents a 
  *   game in the list, displaying the name, description, and a placeholder image.
  * 
@@ -39,17 +42,14 @@
  */
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,6 +62,9 @@ public class GraphicalUserInterface extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        //Sets up a safety net for when the user closes the window
+        setupSafetyNet(primaryStage);
+
         // Sets the title of the primary stage (main application window)
        primaryStage.setTitle("My Game Library");
 
@@ -79,7 +82,7 @@ public class GraphicalUserInterface extends Application {
        // Set content for the Library tab and other tabs using the same shared gameList
        libraryTab.setContent(createCommonTabLayout(primaryStage));
 
-       // **Additional Tabs**: Placeholder tabs for games sorted by platform (Steam, GOG, etc.) (Might not need these depending on how search/sort works)
+       // **Additional Tabs**: Placeholder tabs for games sorted by platform (Steam, GOG, etc.) (for Quick-Filter)
        Tab tab1 = new Tab("Steam", createCommonTabLayout(primaryStage));
        Tab tab2 = new Tab("GOG", createCommonTabLayout(primaryStage));
        Tab tab3 = new Tab("itch.io", createCommonTabLayout(primaryStage));
@@ -95,10 +98,6 @@ public class GraphicalUserInterface extends Application {
        // Add all tabs to the TabPane.
        tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab); // Adds all tabs to the TabPane
 
-        //Sets up a safety net when the user closes the window
-        setupSafetyNet(primaryStage);
-    
-
        // **Set Scene and Show Stage**.
        Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
        primaryStage.setScene(scene); // Sets the scene on the stage
@@ -106,6 +105,57 @@ public class GraphicalUserInterface extends Application {
     }
 
 
+    /**
+     * Sets up a safety net for when the user closes the window by creating an alert popup and asking them if they wish to export the library
+     * before they exit. 
+     * If they click 'Yes' then they will be given the option to name their export file and pick its location before the window closes.
+     * If they click 'No' then the stage will simply close.
+     * If they click 'Cancel' then the alert will close and go back to the primary stage.
+     * 
+     * @param primaryStage the primary stage hosting the GUI
+     */
+    private void setupSafetyNet(Stage primaryStage){
+        primaryStage.setOnCloseRequest(event -> {
+            //Sets up an alert to pop up when the user exits
+            Alert exitAlert = new Alert(AlertType.CONFIRMATION);
+            exitAlert.setTitle("Confirm Exit");
+            exitAlert.setHeaderText("Would you like to export your library?");
+            exitAlert.setContentText("To ensure user privacy and security:\n\n" +
+                                    "GameLoom is a network-free experience and will not save your library data internally.\n\n"+
+                                    "Would you like to export a csv file containing your library data before exiting?");
+            exitAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE); //Resizes dialog to fit text
+            //Creates custom buttons and puts them on the alert
+            ButtonType exportButton = new ButtonType("Yes");
+            ButtonType noExportButton = new ButtonType("No");
+            ButtonType cancelButton = ButtonType.CANCEL;
+            exitAlert.getButtonTypes().setAll(exportButton, noExportButton, cancelButton);
+            //Actions based on  which button was chosen
+            Optional<ButtonType> result = exitAlert.showAndWait();
+            if(result.get() == exportButton){
+                if (library.isEmpty()) { // Shows error if library is empty
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Dialog");
+                    alert.setHeaderText("CSV Export Error");
+                    alert.setContentText("Cannot export an empty library! Please add games first.");
+                    alert.showAndWait();
+                    event.consume();
+                } else { // Opens a save dialog for exporting the library
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
+                    File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
+                    if (newFile != null) {
+                        GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                    }
+                }
+            }
+            else if(result.get() == noExportButton ){
+                primaryStage.close();
+            }
+            else{
+                event.consume();
+            }
+        });
+    }
     /**
      * Creates an HBox containing the game details (name, description) and an image placeholder.
      * This method is used to display each game as an item in the game list
@@ -173,7 +223,7 @@ public class GraphicalUserInterface extends Application {
     private HBox setupImportSection(Stage primaryStage) {
         // **Platform Dropdown**: Added next to the import button for platform selection
         ComboBox<String> platformDropdown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
-        platformDropdown.getItems().addAll("Steam", "GOG", "Itch.io", "Playstation", "Xbox", "Nintendo"); // Adds options to the dropdown
+        platformDropdown.getItems().addAll("GameLoom Library", "Steam", "GOG", "Itch.io", "Playstation", "Xbox", "Nintendo"); // Adds options to the dropdown
         platformDropdown.setPromptText("Choose import type"); // Sets prompt text in the dropdown
         platformDropdown.setMaxWidth(150); // Sets the maximum width of the dropdown
 
@@ -196,9 +246,11 @@ public class GraphicalUserInterface extends Application {
                 String selectedPlatform = platformDropdown.getValue(); // Gets the selected platform from the dropdown
                 List<Game> importedGames = GameCSVImporter.importGamesFromCSV(selectedFile.getPath()); // Imports games from the selected CSV file
 
-                // Assign the selected platform to each imported game
-                for (Game game : importedGames) {
-                    game.getAttributes().put("platform", selectedPlatform); // Adds platform attribute to each game
+                // Only assign the platform if the selected option is not "GameLoom Library" (import an existing library from our program)
+                if (!"GameLoom Library".equals(selectedPlatform)) {
+                    for (Game game : importedGames) {
+                        game.getAttributes().put("platform", selectedPlatform); // Adds platform attribute to each game
+                    }
                 }
 
                 populateGameList(importedGames); // Adds games to the game list in the UI
@@ -234,7 +286,7 @@ public class GraphicalUserInterface extends Application {
                 fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
                 File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
                 if (newFile != null) {
-                    GameCSVExporter.exportGamesToCSV(newFile); // Exports the library to a CSV file
+                    GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
                 }
             }
         }); 
@@ -387,58 +439,6 @@ public class GraphicalUserInterface extends Application {
         return commonLayout; // Return the fully assembled layout for each tab
     }
 
-    /**
-     * Sets up a safety net for when the user closes the window by creating an alert popup and asking them if they wish to export the library
-     * before they exit. 
-     * If they click 'Yes' then they will be given the option to name their export file and pick its location before the window closes.
-     * If they click 'No' then the stage will simply close.
-     * If they click 'Cancel' then the alert will close and go back to the primary stage.
-     * @param primaryStage the primary stage hosting the so
-     */
-    private void setupSafetyNet(Stage primaryStage){
-
-        primaryStage.setOnCloseRequest(event -> {
-            //Sets up an alert to pop up when the user exits
-            Alert exitAlert = new Alert(AlertType.CONFIRMATION);
-            exitAlert.setTitle("Confirm Exit");
-            exitAlert.setHeaderText("Would you like to export your libraary?");
-            exitAlert.setContentText("To ensure a network-free experience, GameLoom does not save your library data.\nWould you like to export a file with your library data before exiting?");
-            exitAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE); //Resizes dialog to fit text
-
-            //Creates custom buttons and puts them on the alert
-            ButtonType exportButton = new ButtonType("Yes");
-            ButtonType noExportButton = new ButtonType("No");
-            ButtonType cancelButton = ButtonType.CANCEL;
-
-            exitAlert.getButtonTypes().setAll(exportButton, noExportButton, cancelButton);
-
-            //Actions based on  which button was chosen
-            Optional<ButtonType> result = exitAlert.showAndWait();
-            if(result.get() == exportButton){
-                if (library.isEmpty()) { // Shows error if library is empty
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error Dialog");
-                    alert.setHeaderText("CSV Export Error");
-                    alert.setContentText("Cannot export an empty library! Please add games first.");
-                    alert.showAndWait();
-                    event.consume();
-                } else { // Opens a save dialog for exporting the library
-                    FileChooser fileChooser = new FileChooser();
-                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
-                    File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
-                    if (newFile != null) {
-                        GameCSVExporter.exportGamesToCSV(newFile); // Exports the library to a CSV file
-                    }
-                }
-            }
-            else if(result.get() == noExportButton ){
-                primaryStage.close();
-            }
-            else{
-                event.consume();
-            }
-        });
-    }
 
     public static void main(String[] args) {
         launch(args); // Launch the JavaFX application.
