@@ -1,3 +1,31 @@
+/**
+ * The GameCSVImporter class is responsible for importing video games from CSV files into the GameLoom library. 
+ * Each game's data is represented as a set of attributes stored as key-value pairs, with flexible support for different 
+ * delimiter types, including commas, semicolons, and tabs.
+ * 
+ * This class automatically detects the delimiter used in the CSV file, handles cases where values may contain 
+ * delimiters that are not enclosed in quotes, and converts each row of the CSV into a Game object.
+ * 
+ * Key functionalities include:
+ * - Dynamically detecting the delimiter used in the CSV file (supports comma, semicolon, and tab).
+ * - Storing game attributes as a LinkedHashMap and returning a list of Game objects.
+ * - Handling rows where values may contain commas, semicolons, or tabs within the data without quotes.
+ * - Supporting flexible CSV imports from various sources while maintaining data integrity.
+ * 
+ * Example of how this class works:
+ *     List<Game> importedGames = GameCSVImporter.importGamesFromCSV("path/to/file.csv");
+ *     for (Game game : importedGames) {
+ *         System.out.println(game.getAttribute("platform"));  Prints platform for each game
+ *     }
+ * 
+ * Note: The method customSplitWithoutQuotes provides custom logic for handling rows with values containing delimiters, 
+ * ensuring robust import processing for non-quoted values.
+ * 
+ * @author CS321-004: Group 3
+ * @version 1.4
+ */
+
+
 import java.io.BufferedReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
