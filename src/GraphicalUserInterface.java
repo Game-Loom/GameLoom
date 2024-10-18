@@ -393,7 +393,7 @@ public class GraphicalUserInterface extends Application {
      * If they click 'Yes' then they will be given the option to name their export file and pick its location before the window closes.
      * If they click 'No' then the stage will simply close.
      * If they click 'Cancel' then the alert will close and go back to the primary stage.
-     * @param primaryStage the primary stage hosting the GUI
+     * @param primaryStage the primary stage hosting the so
      */
     private void setupSafetyNet(Stage primaryStage){
 
@@ -403,6 +403,7 @@ public class GraphicalUserInterface extends Application {
             exitAlert.setTitle("Confirm Exit");
             exitAlert.setHeaderText("Would you like to export your libraary?");
             exitAlert.setContentText("To ensure a network-free experience, GameLoom does not save your library data.\nWould you like to export a file with your library data before exiting?");
+            exitAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE); //Resizes dialog to fit text
 
             //Creates custom buttons and puts them on the alert
             ButtonType exportButton = new ButtonType("Yes");
