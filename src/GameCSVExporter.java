@@ -9,9 +9,7 @@ public class GameCSVExporter{
      * @param games - the list of games
      * @param file - the CSV file to export the games to
      */
-    public static void exportGamesToCSV(File file){
-        ArrayList<Game> games = GraphicalUserInterface.library;
-
+    public static void exportGamesToCSV(List<Game> games, File file){
         ArrayList<String> attributes = getAttributes(games); //Gets an array list of attributes in Strign format
         ArrayList<String> csvRows = getGameValues(games, attributes); //Gets the games/CSV rows of the library
 
