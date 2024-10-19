@@ -1,5 +1,6 @@
 **10/18**
 **Semi-colon delimiter no longer a requirement, program can handle commas, semi-colons, and tabs including when values are unquoted and contain the delimiter in the value(s)**
+
 **Note: 10/18**: Don't remove apache commons stuff just yet, if we end up doing the steam API stuff ourselves one of the required libraries to use it is one of the apache commons io libraries
 
 **9/18:**
