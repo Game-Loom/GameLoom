@@ -1,3 +1,46 @@
+/**
+ * The GraphicalUserInterface class is the main entry point for the JavaFX application that allows users 
+ * to manage their personal GameLoom library. The GUI presents the user with multiple tabs for sorting, viewing, 
+ * and managing games, as well as manually adding new game entries.
+ * 
+ * Key methods: (work in progress)
+ * 
+ * - **start(Stage primaryStage)**: Initializes the main GUI layout, including the tabs, game list, 
+ *   and various user interface components. This method is the main entry point for the JavaFX application.
+ * 
+ * - **setupSafetyNet(Stage primaryStage)**: Sets up an alert that prompts the user to export the library
+ *   before exiting the application, providing options to export, close without saving, or cancel the exit.
+ * 
+ * - **createGameItem(String name, String description)**: Creates an HBox that visually represents a 
+ *   game in the list, displaying the name, description, and a placeholder image.
+ * 
+ * - **populateGameList(List<Game> games)**: Adds games from an imported CSV file to the game list 
+ *   and the internal library, avoiding duplicate entries.
+ * 
+ * - **setupImportSection(Stage primaryStage)**: Creates a ComboBox and a button to import games from 
+ *   CSV files, allowing users to select a platform and import the corresponding games into the library.
+ * 
+ * - **setupExportButton(Stage primaryStage)**: Creates a button that allows the user to export the 
+ *   current game library to a CSV file.
+ * 
+ * - **setupSearchBar()**: Creates a search bar that allows users to search for specific games by name 
+ *   in the library.
+ * 
+ * - **setupSortFilterPanel()**: Creates a panel for sorting and filtering the game list based on 
+ *   different attributes, allowing users to manage how the game list is displayed.
+ * 
+ * - **createCommonTabLayout(Stage primaryStage)**: Sets up the layout for each tab in the TabPane, 
+ *   ensuring the same scrollable game list and UI elements (search, import/export buttons) are shared 
+ *   across different tabs.
+ * 
+ * The application utilizes a shared VBox (gameList) to ensure that all game tabs (except for the manual 
+ * entry tab) display the same synchronized list of games, with the ability to update and manage the 
+ * game library.
+ * 
+ * @author CS321-004: Group 3
+ * @version 1.4
+ */
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -9,172 +52,395 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-public class GraphicalUserInterface extends Application{
-    private VBox gameList;// VBox to store the list of game items (games are displayed in a vertical box layout).
-    private ArrayList<Game> library = new ArrayList<>(); //Game library
+public class GraphicalUserInterface extends Application {
+    protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
+    protected static ArrayList<Game> library = new ArrayList<>(); // Game library
 
     @Override
-    public void start(Stage primaryStage){
-        // Sets the title of the primary stage (the main application window).
-        primaryStage.setTitle("Sample Game Library UI");
+    public void start(Stage primaryStage) {
+        //Sets up a safety net for when the user closes the window
+        setupSafetyNet(primaryStage);
 
-        // Top Tabs
-        TabPane tabPane = new TabPane();// Holds all the tabs
-        Tab tab1 = new Tab("Playstation");
-        Tab tab2 = new Tab("Steam");
-        Tab tab3 = new Tab("itch.io");
-        Tab tab4 = new Tab("Physical Games");
-        Tab tab5 = new Tab("Add a Game Library +");
-        tabPane.getTabs().addAll(tab1, tab2, tab3, tab4, tab5);// Adds all the tabs to the actual TabPane
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);// Disables the ability to close the tabs (tabs can't be closed by the user) - maybe we do the single tab with just filtering, either way we might want this
+        // Sets the title of the primary stage (main application window)
+       primaryStage.setTitle("My Game Library");
 
-        // Left side: List of games with image placeholders
-        gameList = new VBox(10);// Creates a VBox (vertical layout) to display the list of games
-        gameList.setPadding(new Insets(10));// Sets spacing between elements
+       // **Top Tabs**: TabPane to hold all the sections of the application
+       TabPane tabPane = new TabPane(); // Holds all the tabs
+       tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE); // Prevents tabs from being closed by the user
 
-        // Placeholder content: Before importing from CSV, needed to display some placeholder lines - this might still apply if we do that guaranteed export and just re-import each time
-        for (int i = 0; i < 5; i++) {// Only making 5 placeholder game lines to start
-            gameList.getChildren().add(createGameItem("Game Name", "Short Description/Features"));// Just dummy lines
-        }
+       // **Library Tab**: Main tab to display the library
+       Tab libraryTab = new Tab("Full Library");
 
-        // Create a ScrollPane so that the list of games can be scrolled if it's too long
-        ScrollPane scrollPane = new ScrollPane(gameList);
-        scrollPane.setFitToWidth(true);// Ensures the content of the scroll pane adjusts to the width of the window
+       // Initialize the shared global game list (VBox)
+       gameList = new VBox(10); // VBox with 10px spacing between game items
+       gameList.setPadding(new Insets(10)); // Adds padding INSIDE the VBox
 
-        // Right side: Sort and Filter options
-        VBox sortFilterBox = new VBox(10);// Spacing of 10 between children
-        sortFilterBox.setPadding(new Insets(10));// Padding around the VBox
-        Label sortFilterLabel = new Label("Sort and Filter");// Label for the sort/filter section
-        Button sortButton = new Button("Sort and Filter");// Button for applying sorting and filtering
-        
-        // Creates a VBox to hold filter options (as checkboxes)
-        VBox filterOptions = new VBox(5);// Spacing of 5 between filter options
-        for (int i = 0; i < 5; i++){// Making 5 placeholder filter options
-            CheckBox option = new CheckBox("Option " + (i + 1));// Each checkbox labeled "Option x" for now
-            filterOptions.getChildren().add(option);// Add the checkbox to the filterOptions VBox
-        }
-        // Adds the sort/filter label, button, and filter options to the sortFilterBox VBox
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);
+       // Set content for the Library tab and other tabs using the same shared gameList
+       libraryTab.setContent(createCommonTabLayout(primaryStage));
 
-        // Creates an HBox for the search bar (horizontal layout)
-        HBox searchBox = new HBox(10);// Spacing of 10 between search field and button
-        searchBox.setPadding(new Insets(10));// Adds padding around the search box
-        TextField searchField = new TextField();// Creates a text field for entering search queries
-        searchField.setPromptText("Search");// Sets the greyed out placeholder text inside the search field
-        Button searchButton = new Button("Search");// Button to trigger the search action
-        
-        // Add the search field and button to the search box (left to right layout).
-        searchBox.getChildren().addAll(searchField, searchButton);
+       // **Additional Tabs**: Placeholder tabs for games sorted by platform (Steam, GOG, etc.) (for Quick-Filter)
+       Tab tab1 = new Tab("Steam", createCommonTabLayout(primaryStage));
+       Tab tab2 = new Tab("GOG", createCommonTabLayout(primaryStage));
+       Tab tab3 = new Tab("itch.io", createCommonTabLayout(primaryStage));
+       Tab tab4 = new Tab("Playstation", createCommonTabLayout(primaryStage));
+       Tab tab5 = new Tab("Xbox", createCommonTabLayout(primaryStage));
+       Tab tab6 = new Tab("Nintendo", createCommonTabLayout(primaryStage));
+       Tab tab7 = new Tab("Physical Games", createCommonTabLayout(primaryStage));
 
-        // Top right: User icon (just a placeholder for now, not actually implemented and placed on the window yet)
-        Button userButton = new Button("User Icon");// Creates a button to represent the user icon if we choose to take the account route in whatever form
+       // **Manual Entry Tab**: Allows manual game entries -- separate creation logic in different file (it's kind of big)
+       ManualGameEntryTab manualEntryTab = new ManualGameEntryTab(library, gameList);
+       Tab manualTab = manualEntryTab.getTab(); // Adds a tab for manual game entries
 
-        // Bottom right: Import button for CSV
-        Button importButton = new Button("Import Games from CSV");// Button to import games from CSV file
-        // Makes an action occur when the import button is clicked
-        importButton.setOnAction(event -> {
-            FileChooser fileChooser = new FileChooser();// Opens a file chooser dialog to select the CSV file (this ends up being the OS window that lets us pick from our files)
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));// Filters the file chooser to show only CSV files
-            File selectedFile = fileChooser.showOpenDialog(primaryStage);// Shows the open dialog and gets the selected file (actually displaying that OS file explorer window)
-            if (selectedFile != null) {// If a file is selected, import the games from the CSV file.
-                List<Game> importedGames = GameCSVImporter.importGamesFromCSV(selectedFile.getPath());
-                populateGameList(importedGames);// Populates the game list with the imported games.
+       // Add all tabs to the TabPane.
+       tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab); // Adds all tabs to the TabPane
+
+       // **Set Scene and Show Stage**.
+       Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
+       primaryStage.setScene(scene); // Sets the scene on the stage
+       primaryStage.show(); // Displays the primary stage
+    }
+
+
+    /**
+     * Sets up a safety net for when the user closes the window by creating an alert popup and asking them if they wish to export the library
+     * before they exit. 
+     * If they click 'Yes' then they will be given the option to name their export file and pick its location before the window closes.
+     * If they click 'No' then the stage will simply close.
+     * If they click 'Cancel' then the alert will close and go back to the primary stage.
+     * 
+     * @param primaryStage the primary stage hosting the GUI
+     */
+    private void setupSafetyNet(Stage primaryStage){
+        primaryStage.setOnCloseRequest(event -> {
+            //Sets up an alert to pop up when the user exits
+            Alert exitAlert = new Alert(AlertType.CONFIRMATION);
+            exitAlert.setTitle("Confirm Exit");
+            exitAlert.setHeaderText("Would you like to export your library?");
+            exitAlert.setContentText("To ensure user privacy and security:\n\n" +
+                                    "GameLoom is a network-free experience and will not save your library data internally.\n\n"+
+                                    "Would you like to export a csv file containing your library data before exiting?");
+            exitAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE); //Resizes dialog to fit text
+            //Creates custom buttons and puts them on the alert
+            ButtonType exportButton = new ButtonType("Yes");
+            ButtonType noExportButton = new ButtonType("No");
+            ButtonType cancelButton = ButtonType.CANCEL;
+            exitAlert.getButtonTypes().setAll(exportButton, noExportButton, cancelButton);
+            //Actions based on  which button was chosen
+            Optional<ButtonType> result = exitAlert.showAndWait();
+            if(result.get() == exportButton){
+                if (library.isEmpty()) { // Shows error if library is empty
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Dialog");
+                    alert.setHeaderText("CSV Export Error");
+                    alert.setContentText("Cannot export an empty library! Please add games first.");
+                    alert.showAndWait();
+                    event.consume();
+                } else { // Opens a save dialog for exporting the library
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
+                    File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
+                    if (newFile != null) {
+                        GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                    }
+                }
             }
-        });
-
-        //Creates new button to export game library to CSV
-        Button exportButton = new Button("Export Games to CSV");
-        exportButton.setOnAction(event->{
-            if(library.isEmpty()){ //Creates an error dialog if the library is empty
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Dialog");
-                alert.setHeaderText("CSV Export Error");
-                alert.setContentText("Cannot export an empty library! Please add more games and try again.");
-
-                alert.showAndWait();
+            else if(result.get() == noExportButton ){
+                primaryStage.close();
             }
             else{
-                FileChooser fileChooser = new FileChooser(); //Creates a new file chooser
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); //Makes sure user saves a csv file
-                File newFile = fileChooser.showSaveDialog(primaryStage); //Opens new window to save the file where the user chooses
-                if(newFile != null){
-                    GameCSVExporter.exportGamesToCSV(library, newFile); //Exports library to given file
-                }
-            }            
+                event.consume();
+            }
         });
-
-        // Bottom section
-        HBox bottomLayout = new HBox();// HBox for the bottom section (search bar and import button side by side).
-        bottomLayout.setPadding(new Insets(10));// Adds padding around the bottom section
-        // Allows the search box to grow horizontally if the window is resized
-        HBox.setHgrow(searchBox, Priority.ALWAYS);
-        // Adds the search box (on the left) and the import and export buttons (on the right) to the HBox
-        bottomLayout.getChildren().addAll(searchBox, importButton, exportButton);
-
-        // Main layout
-        BorderPane root = new BorderPane();// Holds BorderPane layout (top, bottom, center, right, and left regions)
-        root.setTop(tabPane);// Set the tabPane at the top of the BorderPane
-        root.setCenter(scrollPane); // Set the scrollable game list in the center
-        root.setRight(sortFilterBox);// Set the sort and filter box on the right
-        root.setBottom(bottomLayout);// Set the search and import button section at the bottom
-        // If we wanted to add in that account button that has a placeholder above, this is the general block we would add it to ^^
-
-        // Creates a Scene to hold the root layout and set its width and height
-        Scene scene = new Scene(root, 800, 600);
-        primaryStage.setScene(scene);// Sets the scene on the primary stage (the window)
-        primaryStage.show();// Displays the primary stage (show the window)
     }
+    /**
+     * Creates an HBox containing the game details (name, description) and an image placeholder.
+     * This method is used to display each game as an item in the game list
+     *
+     * @param name        The name of the game to be displayed
+     * @param description A short description of the game
+     * @return HBox containing the game's image placeholder, name, and description
+     */
+    protected static HBox createGameItem(String name, String description) {
+        HBox gameBox = new HBox(10); // HBox with 10px spacing between elements
 
-    // Helper method to create an HBox for each game item to be displayed in the game list
-    private HBox createGameItem(String name, String description){
-        // Creates an HBox to hold the game image and details
-        HBox gameBox = new HBox(10);// Spacing of 10 between children
-        // Creates an ImageView to display the game image (currently just a placeholder)
-        ImageView gameImage = new ImageView();
-        gameImage.setFitHeight(50);// Sets the image's height
-        gameImage.setFitWidth(75);// Set the image's width
-        Label imagePlaceholder = new Label("Image Placeholder");// Creates a label to serve as a placeholder for the game image
-        gameBox.getChildren().add(gameImage);// Adds the image to the HBox
+        // Creates an ImageView placeholder to represent the game's image
+        ImageView gameImage = new ImageView(); // Placeholder image
+        gameImage.setFitHeight(50); // Sets image height
+        gameImage.setFitWidth(75); // Sets image width
+        Label imagePlaceholder = new Label("Image Placeholder"); // Placeholder text for the image until real images are implemented
+        gameBox.getChildren().add(gameImage); // Adds the image to the HBox
+        // TODO:IMPLEMENT IMAGES FOR GAME ENTRIES
 
-        // Creates a VBox to hold the game name and description (vertical layout)
-        VBox gameDetails = new VBox(5);// Spacing of 5 between name and description
-        // Creates a label for the game name and adds it to the VBox
-        Label gameName = new Label(name);// Uses the provided 'name' as the game title
-        // Creates a label for the game description and add it to the VBox
-        Label gameDescription = new Label((description != null && !description.equals("N/A")) ? description : "No Description Available");// If no description is provided, show "No Description Available"
-        gameDetails.getChildren().addAll(gameName, gameDescription);// Adds the name and description to the VBox
-        // Add the name and description to the VBox
+        // Creates a VBox for game name and description
+        VBox gameDetails = new VBox(5); // VBox with 5px spacing between elements
+        Label gameName = new Label(name); // Adds the name of the game
+        Label gameDescription = new Label(description); // Adds the game's description
+        // Adds the name and description to the VBox
+        gameDetails.getChildren().addAll(gameName, gameDescription);
+        // Adds the VBox (game details) to the HBox
         gameBox.getChildren().add(gameDetails);
-        return gameBox;// Returns the HBox representing the game item
+
+        return gameBox; // Fully assembled HBox for use in game list
     }
 
 
-    // Populates the game list with a list of imported games
-    private void populateGameList(List<Game> games){
-        gameList.getChildren().clear();// Clears the current game list to make room for the newly imported games
-        for (Game game : games) {// Loops through each imported game
-            library.add(game);
-            gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));// Adds the game to the game list as a new game item (created with the helper method)
-            
-            //System.out.println("Game created: " + game.getAttribute("game"));//FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES
-        
-            // // Prints all attributes (key-value pairs) for the current game -- FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES FOR TESTING PURPOSES
-            //System.out.println("Attributes for game: " + game.getAttribute("game"));
-            //for (Map.Entry<String, String> entry : game.getAttributes().entrySet()){// Just a separate map that holds all the game entries (didn't want to manipulate the original)
-                //System.out.println(entry.getKey() + " : " + entry.getValue());// Just spacing the entries for printing to console
-           // }
-           // System.out.println("");// Just separates each full game attributes list with a blank line
+    /**
+     * Populates the game list with games imported from a CSV file.
+     * It adds the imported games to the game list while avoiding duplicates in
+     * the library.
+     *
+     * @param games A list of Game objects imported from a CSV file
+     */
+    private void populateGameList(List<Game> games) {
+        // Add imported games to the VBox and library, avoiding duplicates
+        for (Game game : games) {
+            String gameName = game.getAttribute("game"); // Retrieves game name
+            String description = game.toString(); // Retrieves game details
+            if (!library.contains(game)) { // Avoid adding the same game twice
+                library.add(game); // Add game to the library
+                gameList.getChildren().add(createGameItem(gameName, description)); // Display game in the UI
+            }
         }
     }
-    
-    
 
-    public static void main(String[] args){
-        launch(args);// Launchs the actual JavaFX application
+
+    /**
+    * Sets up the platform selection dropdown and the import button for importing games from a CSV file.
+    * 
+    * This method creates a ComboBox to allow the user to select a platform (e.g., Steam, GOG, Playstation)
+    * and an import button that is initially disabled until a platform is selected. When the import button 
+    * is clicked, it opens a FileChooser to allow the user to select a CSV file for importing games. The 
+    * selected platform is added as an attribute to each imported game, and the game list is populated with 
+    * the imported games.
+    * 
+    * @param primaryStage The main stage of the JavaFX application, used for opening dialogs.
+    * @return HBox containing both the platform dropdown and the import button, which can be added to the UI.
+    */
+    private HBox setupImportSection(Stage primaryStage) {
+        // **Platform Dropdown**: Added next to the import button for platform selection
+        ComboBox<String> platformDropdown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
+        platformDropdown.getItems().addAll("GameLoom Library", "Steam", "GOG", "Itch.io", "Playstation", "Xbox", "Nintendo"); // Adds options to the dropdown
+        platformDropdown.setPromptText("Choose import type"); // Sets prompt text in the dropdown
+        platformDropdown.setMaxWidth(150); // Sets the maximum width of the dropdown
+
+        // **Import Button**: Initially disabled until a platform is selected
+        Button importButton = new Button("Import Games from CSV");
+        importButton.setDisable(true); // Disables the button until a platform is selected
+
+        // Enable the import button only when a platform is selected
+        platformDropdown.setOnAction(event -> {
+            importButton.setDisable(platformDropdown.getValue() == null); // Button enabled if platform is selected
+        });
+
+        // Action on clicking the import button
+        importButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser(); // Opens a file chooser to select a CSV file
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits file type to CSV
+            File selectedFile = fileChooser.showOpenDialog(primaryStage); // Shows the open file dialog
+
+            if (selectedFile != null) { // If a file is selected
+                String selectedPlatform = platformDropdown.getValue(); // Gets the selected platform from the dropdown
+                List<Game> importedGames = GameCSVImporter.importGamesFromCSV(selectedFile.getPath()); // Imports games from the selected CSV file
+
+                // Only assign the platform if the selected option is not "GameLoom Library" (import an existing library from our program)
+                if (!"GameLoom Library".equals(selectedPlatform)) {
+                    for (Game game : importedGames) {
+                        game.getAttributes().put("platform", selectedPlatform); // Adds platform attribute to each game
+                    }
+                }
+
+                populateGameList(importedGames); // Adds games to the game list in the UI
+            }
+        });
+
+        // Return an HBox containing both the platform dropdown and the import button
+        HBox importSection = new HBox(10); // HBox with 10px spacing between elements
+        importSection.getChildren().addAll(platformDropdown, importButton); // Add dropdown and button to HBox
+
+        return importSection; // Return the HBox to be used in the main layout
+    }
+
+
+    /**
+     * Creates and sets up the export button, which allows the user to export the game library to a CSV file.
+     *
+     * @param primaryStage The main stage of the JavaFX application, needed for file dialogs
+     * @return A Button configured for exporting the game library to CSV
+     */
+    private Button setupExportButton(Stage primaryStage) {
+        // **Export Button**: Allows exporting the library to CSV
+        Button exportButton = new Button("Export Games to CSV");
+        exportButton.setOnAction(event -> {
+            if (library.isEmpty()) { // Shows error if library is empty
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Dialog");
+                alert.setHeaderText("CSV Export Error");
+                alert.setContentText("Cannot export an empty library! Please add games first.");
+                alert.showAndWait();
+            } else { // Opens a save dialog for exporting the library
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
+                File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
+                if (newFile != null) {
+                    GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                }
+            }
+        }); 
+
+        return exportButton; // Return the configured button to be added to the layout
+    }
+
+
+    /**
+     * Sets up the search bar, including a text field for search input and a search button.
+     * When the user enters one or more search keywords, separated by spaces, and clicks the search button,
+     * the method will filter the game list based on whether the game names or descriptions contain the search terms.
+     * 
+     * This method supports case-insensitive, multi-keyword searching. The keywords are matched against the game name 
+     * and description.
+     * 
+     * @return HBox containing the search field and search button.
+     */
+    private HBox setupSearchBar() {
+        HBox searchBox = new HBox(10); // HBox with 10px spacing between elements
+        searchBox.setPadding(new Insets(10)); // Adds padding around the search box
+        TextField searchField = new TextField(); // Creates a search input field
+        searchField.setPromptText("e.g. Name Platform Year"); // Default text to let user know it takes multiple keywords at once
+        Button searchButton = new Button("Search"); // Creates the search button
+
+        // Define the action when the search button is clicked
+        searchButton.setOnAction(event -> {
+            String searchQuery = searchField.getText().toLowerCase().trim(); // Normalize input (lowercase + trim spaces)
+            filterGameList(searchQuery); // Call helper method to filter the game list based on the search query
+        });
+
+        // Adds search components to the HBox
+        searchBox.getChildren().addAll(searchField, searchButton);
+
+        return searchBox; // Returns the search bar HBox
+    }
+
+    /**
+     * Filters the game list based on a search query entered by the user. 
+     * The search query is split into individual keywords, and the method checks whether each game's 
+     * name or description contains all the keywords. 
+     * 
+     * If no search query is provided, the method will display all the games. The filtering is 
+     * case-insensitive and supports multi-keyword searches.
+     * 
+     * @param searchText The search query entered by the user. Multiple keywords should be separated by spaces.
+     */
+    private void filterGameList(String searchText) {
+        gameList.getChildren().clear(); // Clear the current game list in the UI    
+
+        // Split searchText by space to handle multiple keywords
+        String[] searchTerms = searchText.split("\\s");    
+
+        // If searchText is empty, display all games when search is clicked
+        if (searchText.isEmpty()) {
+            for (Game game : library) {
+                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+            }
+        } else {
+            // Filter the games based on the search keyword (searching both game name and description)
+            for (Game game : library) {
+                String gameName = game.getAttribute("game").toLowerCase(); // Normalize game name to lowercase
+                String description = game.toString().toLowerCase(); // Normalize game description to lowercase
+                boolean matchFound = true;// Initialize the match flag
+
+                // Check if all search terms are found in the game name or description
+                for (String term : searchTerms) {
+                    if (!gameName.contains(term) && !description.contains(term)) {
+                        matchFound = false; // Set matchFound to false if any term doesn't match
+                        break; // Exit the loop early since this game doesn't match
+                    }
+                }
+
+                // If all terms match, add the game to the displayed game list
+                if (matchFound) {
+                    gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets up the Sort and Filter panel, which contains a label, a sort button,
+     * and several dummy filter options. The panel will allow users to sort and 
+     * filter the displayed game list.
+     * 
+     * @return VBox containing the sort/filter panel with label, button, and filter options.
+     */
+    private VBox setupSortFilterPanel() {
+        // **Sort and Filter Panel**: Right side panel with options
+        VBox sortFilterBox = new VBox(10); // VBox with 10px spacing
+        sortFilterBox.setPadding(new Insets(10)); // Padding around the box 
+
+        // Label for the sort/filter panel
+        Label sortFilterLabel = new Label("Sort and Filter");   
+
+        // Button for triggering sort/filter functionality
+        Button sortButton = new Button("Sort and Filter"); // A button for future sort/filter functionality 
+
+        // Create dummy filter options (We can replace these with whatever key option we want the default filter options to be)
+        VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
+        for (int i = 0; i < 5; i++) {
+            CheckBox option = new CheckBox("Option " + (i + 1)); // Creates placeholder filter options
+            filterOptions.getChildren().add(option); // Adds each option to the VBox
+        }   
+
+        // Add the components to the VBox
+        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);     
+
+        return sortFilterBox; // Return the fully assembled VBox
+    }
+
+
+    /**
+     * Creates a layout that includes the shared game list, search bar, sort/filter options,
+     * and import/export buttons. This layout will be used for all relevant tabs.
+     *
+     * @param primaryStage The main stage of the JavaFX application, needed for file dialogs.
+     * @return A BorderPane layout containing the common elements for the game library tabs.
+     */
+    private BorderPane createCommonTabLayout(Stage primaryStage) {
+        // **Library Layout**: Organizes the main content in the tab
+        BorderPane commonLayout = new BorderPane(); // Uses BorderPane to arrange components    
+
+        // Makes the shared game list scrollable
+        ScrollPane scrollPane = new ScrollPane(gameList); // Uses the shared gameList for all tabs
+        scrollPane.setFitToWidth(true); // Ensures content fits the width   
+
+        // **Sort and Filter Panel**: Extracted to a helper method
+        VBox sortFilterBox = setupSortFilterPanel();    
+
+        // **Search Bar**: Uses helper method for modular search bar setup
+        HBox searchBox = setupSearchBar();  
+
+        /// **Import Section**: Platform dropdown and import button
+        HBox importSection = setupImportSection(primaryStage); // Using helper method for modular import section setup   
+
+        // **Bottom Layout**: Contains search box, dropdown, and buttons
+        HBox bottomLayout = new HBox(10); // HBox with 10px spacing between components
+        bottomLayout.setPadding(new Insets(10)); // Adds padding around the layout
+        HBox.setHgrow(searchBox, Priority.ALWAYS); // Allows the search box to expand on window resize
+        Button exportButton = setupExportButton(primaryStage); // Using helper method to modularize logic for export section
+        bottomLayout.getChildren().addAll(searchBox, importSection, exportButton); // Adds components to the bottom layout  
+
+        // Set components into the layout
+        commonLayout.setCenter(scrollPane); // Places the scrollable game list in the center
+        commonLayout.setRight(sortFilterBox); // Places the sort/filter options on the right side
+        commonLayout.setBottom(bottomLayout); // Places the search and buttons at the bottom    
+
+        return commonLayout; // Return the fully assembled layout for each tab
+    }
+
+
+    public static void main(String[] args) {
+        launch(args); // Launch the JavaFX application.
     }
 }
