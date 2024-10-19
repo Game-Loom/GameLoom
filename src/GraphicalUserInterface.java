@@ -8,6 +8,10 @@
  * - **start(Stage primaryStage)**: Initializes the main GUI layout, including the tabs, game list, 
  *   and various user interface components. This method is the main entry point for the JavaFX application.
  * 
+ * - **setupTabs(Stage primaryStage, TabPane tabPane)**: Configures the various tabs in the interface, 
+ *   including the main library tab and platform-specific tabs (Steam, GOG, etc.), and sets their behavior 
+ *   to filter the displayed games based on the selected tab.
+ * 
  * - **setupSafetyNet(Stage primaryStage)**: Sets up an alert that prompts the user to export the library
  *   before exiting the application, providing options to export, close without saving, or cancel the exit.
  * 
@@ -87,6 +91,7 @@ public class GraphicalUserInterface extends Application {
     
     /**
      * Sets up the various tabs in the stage, besides the main library tab.
+     * 
      * @param primaryStage - the main stage
      * @param tabPane - the tabpane to add all the tabs onto
      */
@@ -123,6 +128,7 @@ public class GraphicalUserInterface extends Application {
 
     /**
      * Sets up the selection event for the given tab, which is displaying the game list filtered via the given word.
+     * 
      * @param tab - the tab to set up the event for
      * @param filter - the word to filter the game library on
      * @param primaryStage - the stage everything is set on
