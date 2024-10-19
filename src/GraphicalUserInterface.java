@@ -72,24 +72,46 @@ public class GraphicalUserInterface extends Application {
        TabPane tabPane = new TabPane(); // Holds all the tabs
        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE); // Prevents tabs from being closed by the user
 
-       // **Library Tab**: Main tab to display the library
-       Tab libraryTab = new Tab("Full Library");
-
        // Initialize the shared global game list (VBox)
        gameList = new VBox(10); // VBox with 10px spacing between game items
        gameList.setPadding(new Insets(10)); // Adds padding INSIDE the VBox
 
-       // Set content for the Library tab and other tabs using the same shared gameList
-       libraryTab.setContent(createCommonTabLayout(primaryStage));
+       //Sets up the various tabs and their content/actions
+        setupTabs(primaryStage, tabPane);
 
-       // **Additional Tabs**: Placeholder tabs for games sorted by platform (Steam, GOG, etc.) (for Quick-Filter)
-       Tab tab1 = new Tab("Steam", createCommonTabLayout(primaryStage));
-       Tab tab2 = new Tab("GOG", createCommonTabLayout(primaryStage));
-       Tab tab3 = new Tab("itch.io", createCommonTabLayout(primaryStage));
-       Tab tab4 = new Tab("Playstation", createCommonTabLayout(primaryStage));
-       Tab tab5 = new Tab("Xbox", createCommonTabLayout(primaryStage));
-       Tab tab6 = new Tab("Nintendo", createCommonTabLayout(primaryStage));
-       Tab tab7 = new Tab("Physical Games", createCommonTabLayout(primaryStage));
+       // **Set Scene and Show Stage**.
+       Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
+       primaryStage.setScene(scene); // Sets the scene on the stage
+       primaryStage.show(); // Displays the primary stage
+    }
+    
+    /**
+     * Sets up the various tabs in the stage, besides the main library tab.
+     * @param primaryStage - the main stage
+     * @param tabPane - the tabpane to add all the tabs onto
+     */
+    private void setupTabs(Stage primaryStage, TabPane tabPane){
+        // **Library Tab**: Main tab to display the library
+       Tab libraryTab = new Tab("Full Library");
+
+        // **Additional Tabs**: Placeholder tabs for games sorted by platform (Steam, GOG, etc.) (for Quick-Filter)
+       Tab tab1 = new Tab("Steam");
+       Tab tab2 = new Tab("GOG");
+       Tab tab3 = new Tab("itch.io");
+       Tab tab4 = new Tab("Playstation");
+       Tab tab5 = new Tab("Xbox");
+       Tab tab6 = new Tab("Nintendo");
+       Tab tab7 = new Tab("Physical Games");
+
+       //Sets the tabs up so that they display their filtered libraries when selected
+        setupTabActions(libraryTab, "", primaryStage);
+        setupTabActions(tab1, "steam", primaryStage);
+        setupTabActions(tab2, "gog", primaryStage);
+        setupTabActions(tab3, "itch.io", primaryStage);
+        setupTabActions(tab4, "playstation", primaryStage);
+        setupTabActions(tab5, "xbox", primaryStage);
+        setupTabActions(tab6, "nintendo", primaryStage);
+        setupTabActions(tab7, "physical", primaryStage);
 
        // **Manual Entry Tab**: Allows manual game entries -- separate creation logic in different file (it's kind of big)
        ManualGameEntryTab manualEntryTab = new ManualGameEntryTab(library, gameList);
@@ -97,13 +119,22 @@ public class GraphicalUserInterface extends Application {
 
        // Add all tabs to the TabPane.
        tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab); // Adds all tabs to the TabPane
-
-       // **Set Scene and Show Stage**.
-       Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
-       primaryStage.setScene(scene); // Sets the scene on the stage
-       primaryStage.show(); // Displays the primary stage
     }
 
+    /**
+     * Sets up the selection event for the given tab, which is displaying the game list filtered via the given word.
+     * @param tab - the tab to set up the event for
+     * @param filter - the word to filter the game library on
+     * @param primaryStage - the stage everything is set on
+     */
+    private void setupTabActions(Tab tab, String filter, Stage primaryStage){
+        tab.setOnSelectionChanged(event->{
+            if(tab.isSelected()){
+                filterGameList(filter); //Filters the library by the given platform
+                tab.setContent(createCommonTabLayout(primaryStage)); //Sets the tab layout
+            }
+        });
+    }
 
     /**
      * Sets up a safety net for when the user closes the window by creating an alert popup and asking them if they wish to export the library
