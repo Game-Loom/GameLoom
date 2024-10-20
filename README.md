@@ -1,3 +1,27 @@
+**10/20**
+PSDLE export and itch.io export files now available in project documents tab of discord.
+I only own the one thing on itch so there's not a lot of troubleshooting we can do with that one for the normalization without having a larger export file for it but we have all the fields it'll have for the one we recommend. 
+
+Itch.io exporter to csv is done via a userscript that runs using the verified extension Tampermonkey:
+https://www.tampermonkey.net/  (has links to each major browser's offical extensions/add-ons page)
+
+The itch.io exporter script can be found here:
+https://gist.github.com/abraxas86/ad72ba46b6cdd86dc63058bba0c629c2#file-itchiocollectiontocsv-user-js
+For additional information:
+https://itch.io/blog/572343/big-improvements-to-library-to-csv-scraper
+
+The link we can provide for PSDLE is: (page has links for all methods of using it, I just did the Firefox extension)
+https://repod.github.io/psdle/
+
+And since the ps3, psp, vita thing doesn't function as of 10/20 I'll record a new video just showing how to use it for the PS4/PS5 functionality that currently works.
+I can also record a quick video of how to use the itch.io scraper and put a link in our readme or in a help tab or something, however we end up working that out.
+
+
+For Steam we recommend: https://www.lorenzostanco.com/lab/steam/
+
+For Nintendo (Switch) we recommend: https://www.gamebrew.org/wiki/Switch_Library_Manager
+
+
 **10/18**
 **Semi-colon delimiter no longer a requirement, program can handle commas, semi-colons, and tabs including when values are unquoted and contain the delimiter in the value(s)**
 
