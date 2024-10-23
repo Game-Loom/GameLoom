@@ -63,6 +63,7 @@ import java.util.Optional;
 public class GraphicalUserInterface extends Application {
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
+    protected static ArrayList<String> attributes = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) {

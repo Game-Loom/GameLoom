@@ -63,7 +63,7 @@ public class GameCSVImporter {
 
                     // Clean headers by trimming spaces and removing BOM (Byte Order Mark) if present
                     for (int i = 0; i < headers.length; i++) {
-                        headers[i] = headers[i].trim();
+                        headers[i] = headers[i].trim().toLowerCase();
                     }
 
                     // Remove BOM (Byte Order Mark) if present in the first header
@@ -90,6 +90,8 @@ public class GameCSVImporter {
                         attributes.put(headers[i], values[i].trim()); // Trim values and associate them with headers
                     }
                 }
+
+                attributes = Normalizer.normalize(attributes);
 
                 // Create a new Game object and add it to the list
                 Game game = new Game(attributes);
