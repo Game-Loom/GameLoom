@@ -1,12 +1,12 @@
 import java.util.Collections;
 import java.util.Map;
+import java.util.ArrayList;
 
 //Like with the search function, will write separate file first, then
 //Will refactor code into database
 
 /**
- * This class is overrides comparison methods for sort.
- * In the GUI class, we will call: Collections.sort(Game, Title);
+ * This class is overrides comparison methods for sort and is the actual sorting implementation.
  * @author Na Huynh 
  * @version JDK-21
  */
@@ -25,6 +25,8 @@ public class GameSort extends Game {
      */
     @Override
     public int compareTo(Game obj) {
+        //Title,  
+
 
         return 1; // dummy code
     }
@@ -40,7 +42,7 @@ public class GameSort extends Game {
     }
 
     /**
-     * This method returns an integer
+     * This method is returns an integer
      * comparing Games via their Title, then the playtime
      * in ascending order
      * @param game1 the initial game
@@ -48,6 +50,7 @@ public class GameSort extends Game {
      * @return an integer stating its order
      */
     private int compareGamesByTitle() {
+        
         return 1;
     }   
 
@@ -59,7 +62,7 @@ public class GameSort extends Game {
      * @return an integer stating its order
      */
     private int compareGamesByPlaytime() {
-        return 1;
+        return 1; //dummy code
     }
 
     /**
@@ -71,5 +74,4 @@ public class GameSort extends Game {
     private int compareGamesByPlatform() {
         return 1;
     }
-
 }
