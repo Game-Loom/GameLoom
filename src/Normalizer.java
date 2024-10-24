@@ -26,7 +26,7 @@ public class Normalizer {
         Map<String, String> normAttributes = new LinkedHashMap<>();
 
         for(String key: attributes.keySet()){
-            String value = attributes.get(key).toLowerCase();
+            String value = attributes.get(key);
 
             //Normalizes attributes that are for the game's name. The condition for the attribute not containing id is to prevent the program from considering "game id"
             //The last condition is to make sure that once we've found the game's title, no other attributes with the word "game" in it will be considered
@@ -108,24 +108,26 @@ public class Normalizer {
      * @return
      */
     private static Map<String, String> populateNorm(Map<String, String> normA, String normKey, String key, String value){
+        String lowerValue = value.toLowerCase();
+
         if (normA.containsKey(normKey)){ //Normalized attribute is already in the list
             //The key is the actual value we want to add to the attribute and the value is just a checkmark to mean its true
-            if(equals(value, trueValues)){ //Ex. Spanish: "x" marks the game as being in spanish so instead of adding "x" to languages, we add "spanish"
+            if(equals(lowerValue, trueValues)){ //Ex. Spanish: "x" marks the game as being in spanish so instead of adding "x" to languages, we add "spanish"
                 String newValue = normA.get(normKey).concat(", ");
                 newValue = newValue.concat(key);
                 normA.replace(normKey, newValue);          
             }
-            else if(!equals(value, empty)){ //The value isn't a checkmark and isn't null/empty, we can just add it to the attribute
+            else if(!equals(lowerValue, empty)){ //The value isn't a checkmark and isn't null/empty, we can just add it to the attribute
                 String newValue = normA.get(normKey).concat(", ");
                 newValue = newValue.concat(value);
                 normA.replace(normKey, newValue); 
             }
         }
         else{ //Attribute isn't in the list yet
-            if(equals(value, trueValues)){
+            if(equals(lowerValue, trueValues)){
                 normA.put(normKey, key);
             }
-            else if(!equals(value, empty)){
+            else if(!equals(lowerValue, empty)){
                 normA.put(normKey, value);
             }
 

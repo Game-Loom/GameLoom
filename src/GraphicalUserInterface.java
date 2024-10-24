@@ -51,6 +51,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -354,6 +355,14 @@ public class GraphicalUserInterface extends Application {
         searchButton.setOnAction(event -> {
             String searchQuery = searchField.getText().toLowerCase().trim(); // Normalize input (lowercase + trim spaces)
             filterGameList(searchQuery); // Call helper method to filter the game list based on the search query
+        });
+
+        //Search bar also searches when enter is pressed in the search box
+        searchBox.setOnKeyPressed(event -> {
+            if( event.getCode() == KeyCode.ENTER ){
+                String searchQuery = searchField.getText().toLowerCase().trim();
+                filterGameList(searchQuery);
+            }
         });
 
         // Adds search components to the HBox
