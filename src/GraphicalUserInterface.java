@@ -155,30 +155,23 @@ public class GraphicalUserInterface extends Application {
      */
     private void setupSafetyNet(Stage primaryStage){
         primaryStage.setOnCloseRequest(event -> {
-            //Sets up an alert to pop up when the user exits
-            Alert exitAlert = new Alert(AlertType.CONFIRMATION);
-            exitAlert.setTitle("Confirm Exit");
-            exitAlert.setHeaderText("Would you like to export your library?");
-            exitAlert.setContentText("To ensure user privacy and security:\n\n" +
-                                    "GameLoom is a network-free experience and will not save your library data internally.\n\n"+
-                                    "Would you like to export a csv file containing your library data before exiting?");
-            exitAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE); //Resizes dialog to fit text
-            //Creates custom buttons and puts them on the alert
-            ButtonType exportButton = new ButtonType("Yes");
-            ButtonType noExportButton = new ButtonType("No");
-            ButtonType cancelButton = ButtonType.CANCEL;
-            exitAlert.getButtonTypes().setAll(exportButton, noExportButton, cancelButton);
-            //Actions based on  which button was chosen
-            Optional<ButtonType> result = exitAlert.showAndWait();
-            if(result.get() == exportButton){
-                if (library.isEmpty()) { // Shows error if library is empty
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error Dialog");
-                    alert.setHeaderText("CSV Export Error");
-                    alert.setContentText("Cannot export an empty library! Please add games first.");
-                    alert.showAndWait();
-                    event.consume();
-                } else { // Opens a save dialog for exporting the library
+            if(!library.isEmpty()){
+                //Sets up an alert to pop up when the user exits
+                Alert exitAlert = new Alert(AlertType.CONFIRMATION);
+                exitAlert.setTitle("Confirm Exit");
+                exitAlert.setHeaderText("Would you like to export your library?");
+                exitAlert.setContentText("To ensure user privacy and security:\n\n" +
+                                        "GameLoom is a network-free experience and will not save your library data internally.\n\n"+
+                                        "Would you like to export a csv file containing your library data before exiting?");
+                exitAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE); //Resizes dialog to fit text
+                //Creates custom buttons and puts them on the alert
+                ButtonType exportButton = new ButtonType("Yes");
+                ButtonType noExportButton = new ButtonType("No");
+                ButtonType cancelButton = ButtonType.CANCEL;
+                exitAlert.getButtonTypes().setAll(exportButton, noExportButton, cancelButton);
+                //Actions based on  which button was chosen
+                Optional<ButtonType> result = exitAlert.showAndWait();
+                if(result.get() == exportButton){
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
                     File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
@@ -186,12 +179,12 @@ public class GraphicalUserInterface extends Application {
                         GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
                     }
                 }
-            }
-            else if(result.get() == noExportButton ){
-                primaryStage.close();
-            }
-            else{
-                event.consume();
+                else if(result.get() == noExportButton ){
+                    primaryStage.close();
+                }
+                else{
+                    event.consume();
+                }
             }
         });
     }
