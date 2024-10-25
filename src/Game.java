@@ -29,7 +29,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class Game {
+public class Game implements Comparable<Game>{
     // Attributes map that stores game data as key-value pairs
     // Example: {"platform": "Steam", "metascore": "90"}
     private Map<String, String> attributes = new HashMap<>();
@@ -120,5 +120,21 @@ public class Game {
                 "| Platform: " + getPlatform() +
                 "| Hours Played: " + hoursPlayed +
                 "| Release Date: " + getAttribute("release_date");
+    }
+
+    /******** SORTING IMPLEMENTATION **************/
+    /**
+     * This method returns a boolean representing
+     * if the game is a game and has an equal game title as the instance 
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Game) {
+            Game other = (Game)(obj)
+            if(getAttribute("Game").equals(other.getAttribute("Game"))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
