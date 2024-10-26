@@ -1,7 +1,6 @@
-import java.util.*;
-import java.lang.StringBuilder;
-import java.io.PrintWriter;
 import java.io.File;
+import java.io.PrintWriter;
+import java.util.*;
 
 public class GameCSVExporter{
     /**
@@ -10,7 +9,7 @@ public class GameCSVExporter{
      * @param file - the CSV file to export the games to
      */
     public static void exportGamesToCSV(List<Game> games, File file){
-        ArrayList<String> attributes = getAttributes(games); //Gets an array list of attributes in Strign format
+        ArrayList<String> attributes = GraphicalUserInterface.attributes; //Gets an array list of attributes in Strign format
         ArrayList<String> csvRows = getGameValues(games, attributes); //Gets the games/CSV rows of the library
 
         StringBuilder headers = new StringBuilder(); //Gets the headers of the CSV file based on the game attributes, seperating them with commas
@@ -32,26 +31,6 @@ public class GameCSVExporter{
             e.printStackTrace();
         }
 
-    }
-
-    /**
-     * Gets all the attributes from the game list
-     * Used to make headers for the CSV file and as keys for the values in games
-     * @param games list of all the games
-     * @return an ArrayList of all the attributes as Strings
-     */
-    private static ArrayList<String> getAttributes(List<Game> games){
-        ArrayList<String> attributes = new ArrayList<>();
-
-        //NOTE: This assumes that every game has the same attributes and thus only gets the attributes from the first game in the list. This may or may not be true, we might need to normalize the
-        //attribute list, figure out a way to ensure every game has the same attribute list, or maybe order I can order the list based on the number of attributes for this function?
-        Set<String> attributeSet = games.get(0).getAttributes().keySet(); //Gets the list of attributes from the game. 
-
-        for (String attribute : attributeSet) {
-            attributes.add(attribute);
-        }
-
-        return attributes;
     }
 
     /**
