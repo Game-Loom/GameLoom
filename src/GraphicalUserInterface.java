@@ -69,6 +69,7 @@ import java.util.List;
 import java.util.Optional;
 // Relates to auto-save
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Timer; 
 import java.util.TimerTask;
 import java.security.MessageDigest; // For the MD5 hash
@@ -92,7 +93,7 @@ public class GraphicalUserInterface extends Application {
     private int lastLibraryHash; // Used to detect any changes to the library and trigger auto-saving when necessary
     
     // Quick-Edit "Control" Variables
-    private static final long AUTO_SAVE_INTERVAL = 180000; // 180000 = 3 minutes in milliseconds -- was modifiying to 10000 = 10 seconds for testing
+    private static final long AUTO_SAVE_INTERVAL = 10000; // 180000 = 3 minutes in milliseconds -- was modifiying to 10000 = 10 seconds for testing
     private static final int MAX_AUTO_SAVE_FILES = 20; // Limit the number of auto-save files (20 * 3 min = version control for your last hour of work if you mess something up)
 
 
@@ -154,28 +155,37 @@ public class GraphicalUserInterface extends Application {
 
 
     /**
-     * Calculates a hash value based on the current library contents using MD5 hashing.
-     * This hash allows the program to detect changes in the library and trigger 
-     * auto-save only when modifications are detected.
-     *
-     * @return An integer hash of the current library's state
-     */
-    private int calculateLibraryHash() {
-        try {
-            // Initialize an MD5 MessageDigest instance to compute the hash
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            // Update the digest with each game's data converted to a byte array
-            for (Game game : library) {
-                digest.update(game.toString().getBytes(StandardCharsets.UTF_8)); // Update hash with each game's data
+ * Calculates a hash value based on the current library contents using MD5 hashing.
+ * This hash allows the program to detect changes in the library and trigger 
+ * auto-save only when modifications are detected.
+ *
+ * @return An integer hash of the current library's state
+ */
+private int calculateLibraryHash() {
+    try {
+        // Initialize an MD5 MessageDigest instance to compute the hash
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+        
+        // Iterate through each game in the library and add all attributes to the hash.
+        for (Game game : library) { // Hashing the library object will return a hash of the memory address.
+            // Retrieve the full attribute map for the game
+            Map<String, String> attributes = game.getAttributes();
+            
+            // Convert each attribute key-value pair to bytes and update the digest
+            for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                digest.update(entry.getKey().getBytes(StandardCharsets.UTF_8)); // Update with attribute key
+                digest.update(entry.getValue().getBytes(StandardCharsets.UTF_8)); // Update with attribute value
             }
-            // Complete the hash computation and retrieve the result as a byte array
-            byte[] hashBytes = digest.digest();
-            return Arrays.hashCode(hashBytes);// Return an integer representation of the hash for easy comparison
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
         }
+        
+        // Complete the hash computation and retrieve the result as a byte array
+        byte[] hashBytes = digest.digest();
+        return Arrays.hashCode(hashBytes); // Return an integer representation of the hash for easy comparison
+    } catch (Exception e) {
+        e.printStackTrace();
+        return 0;
     }
+}
 
 
     /**
