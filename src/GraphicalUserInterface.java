@@ -8,6 +8,12 @@
  * - **start(Stage primaryStage)**: Initializes the main GUI layout, including the tabs, game list, 
  *   and various user interface components. This method is the main entry point for the JavaFX application.
  * 
+ * - **setupAutoSave()**: Sets up the auto-save mechanism, including creating the auto-save directory and 
+ *   scheduling a periodic timer to check for library changes and trigger auto-save when necessary.
+ * 
+ * - **calculateLibraryHash()**: Calculates a hash value based on the current library contents, allowing 
+ *   the program to detect changes in the library and initiate auto-save only when modifications are detected.
+ * 
  * - **setupTabs(Stage primaryStage, TabPane tabPane)**: Configures the various tabs in the interface, 
  *   including the main library tab and platform-specific tabs (Steam, GOG, etc.), and sets their behavior 
  *   to filter the displayed games based on the selected tab.
@@ -53,23 +59,50 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+//import javafx.scene.shape.Path; // Conflicts with auto-save java.nio.file.Path but doesn't seem to break anything when I remove it, likely a relic from something old I was doing at some point 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+// Relates to files & data
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// Relates to auto-save
+import java.util.Arrays;
+import java.util.Timer; 
+import java.util.TimerTask;
+import java.security.MessageDigest; // For the MD5 hash
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter; // End timer imports
+
 
 public class GraphicalUserInterface extends Application {
+    // Data Structure Variables
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
-    protected static ArrayList<String> attributes = new ArrayList<>();
+    protected static ArrayList<String> attributes = new ArrayList<>(); // Stores the list of game attribute names used for display and export
+    private Timer autoSaveTimer; // Schedules periodic auto-save tasks for the game library
+    private int lastLibraryHash; // Used to detect any changes to the library and trigger auto-saving when necessary
+    
+    // Quick-Edit "Control" Variables
+    private static final long AUTO_SAVE_INTERVAL = 180000; // 180000 = 3 minutes in milliseconds -- was modifiying to 10000 = 10 seconds for testing
+    private static final int MAX_AUTO_SAVE_FILES = 20; // Limit the number of auto-save files (20 * 3 min = version control for your last hour of work if you mess something up)
+
 
     @Override
     public void start(Stage primaryStage) {
         //Sets up a safety net for when the user closes the window
         setupSafetyNet(primaryStage);
+
+        // Sets up auto-save functionality based on a hash of full library
+        setupAutoSave();
 
         // Sets the title of the primary stage (main application window)
        primaryStage.setTitle("My Game Library");
@@ -90,7 +123,110 @@ public class GraphicalUserInterface extends Application {
        primaryStage.setScene(scene); // Sets the scene on the stage
        primaryStage.show(); // Displays the primary stage
     }
-    
+
+
+    /**
+     * Sets up the auto-save mechanism.
+     * 
+     * Creates a designated folder for auto-save files and starts a background Timer that checks the library for changes at: 
+     * AUTO_SAVE_INTERVAL frequency (Quick-Edit Global). If any changes are detected, it triggers an auto-save operation.
+     */
+    private void setupAutoSave() {
+        try {
+            Path autoSaveDir = Paths.get(System.getProperty("user.home"), "GameLoom Exports"); // users.home is system agnostic - GameLoom Exports is the folder name it finds/makes
+            if (!Files.exists(autoSaveDir)) { // Ensure directory exists for saving files
+                Files.createDirectory(autoSaveDir); // Create folder in users home directory if it doesn't already exist
+            }
+            // Set the initial library hash
+            lastLibraryHash = calculateLibraryHash();
+            // Schedule the auto-save timer
+            autoSaveTimer = new Timer(true); // From docs.oracle: Marks this thread as either a daemon thread or a user thread.
+            autoSaveTimer.schedule(new TimerTask() { // ^>The Java Virtual Machine exits when the only threads running are all daemon threads. 
+                @Override
+                public void run() {
+                    checkAndAutoSave(autoSaveDir); // Perform auto-save check at each interval
+                }
+            }, AUTO_SAVE_INTERVAL, AUTO_SAVE_INTERVAL); // Interval every AUTO_SAVE_INTERVAL milliseconds
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Calculates a hash value based on the current library contents using MD5 hashing.
+     * This hash allows the program to detect changes in the library and trigger 
+     * auto-save only when modifications are detected.
+     *
+     * @return An integer hash of the current library's state
+     */
+    private int calculateLibraryHash() {
+        try {
+            // Initialize an MD5 MessageDigest instance to compute the hash
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            // Update the digest with each game's data converted to a byte array
+            for (Game game : library) {
+                digest.update(game.toString().getBytes(StandardCharsets.UTF_8)); // Update hash with each game's data
+            }
+            // Complete the hash computation and retrieve the result as a byte array
+            byte[] hashBytes = digest.digest();
+            return Arrays.hashCode(hashBytes);// Return an integer representation of the hash for easy comparison
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
+    /**
+     * Checks if the library's hash has changed. If changes are detected, a new auto-save file 
+     * is created with a timestamped filename, and older auto-save files are cleaned up to stay 
+     * within the maximum limit. Current limit set to: 20
+     *
+     * @param autoSaveDir The directory for saving auto-save files
+     */
+    private void checkAndAutoSave(Path autoSaveDir) {
+        int currentLibraryHash = calculateLibraryHash();
+        // Proceed only if changes are detected (hash has changed)
+        if (currentLibraryHash != lastLibraryHash) {
+            // Generate a timestamp for the filename
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
+            File autoSaveFile = autoSaveDir.resolve("GameLoomLibrary-" + timestamp + ".csv").toFile(); // Default filename: GameLoomLibrary-<timestamp>.csv
+            // Export the library to the auto-save file
+            GameCSVExporter.exportGamesToCSV(library, autoSaveFile);
+            lastLibraryHash = currentLibraryHash; // Update last hash to the current hash
+            // Clean up older files if file count exceeds MAX_AUTO_SAVE_FILES
+            cleanUpOldAutoSaves(autoSaveDir);
+        }
+    }
+
+
+    /**
+     * Cleans up old auto-save files in the designated auto-save directory by keeping 
+     * only the most recent files, as defined by MAX_AUTO_SAVE_FILES. Files are sorted 
+     * by creation date, and the oldest are deleted first.
+     *
+     * @param autoSaveDir The directory containing auto-save files.
+     */
+    private void cleanUpOldAutoSaves(Path autoSaveDir) {
+        try (Stream<Path> files = Files.list(autoSaveDir)) {// Open a stream to list files in the auto-save directory
+            List<Path> autoSaveFiles = files
+                    .filter(path -> path.getFileName().toString().startsWith("GameLoomLibrary-")) // Filter the files in the directory to keep only those that start with "GameLoomLibrary-" (auto-save files)
+                    .sorted(Comparator.comparingLong(path -> path.toFile().lastModified())) // Sort the files by last modified time to arrange them from oldest to newest
+                    .collect(Collectors.toList()); // Collect the sorted files into a list
+
+            // Delete oldest files if file count exceeds MAX_AUTO_SAVE_FILES
+            if (autoSaveFiles.size() > MAX_AUTO_SAVE_FILES) {
+                for (Path file : autoSaveFiles.subList(0, autoSaveFiles.size() - MAX_AUTO_SAVE_FILES)) {
+                    Files.deleteIfExists(file);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     /**
      * Sets up the various tabs in the stage, besides the main library tab.
      * 
@@ -127,6 +263,7 @@ public class GraphicalUserInterface extends Application {
        // Add all tabs to the TabPane.
        tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab); // Adds all tabs to the TabPane
     }
+
 
     /**
      * Sets up the selection event for the given tab, which is displaying the game list filtered via the given word.
