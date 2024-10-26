@@ -139,34 +139,101 @@ public class Game {
         return getAttribute("game");
     }
     
-    
-    public String getCustomTagString() {
-        return getAttribute("");
-    }
-    
     public int getCustomTagInt() { 
+        
         return 0; //dummy code
     }
     
     public static final Comparator<Game> byDate = new Comparator<Game>() {
         // YYYY-MM-DATE  ex: attributes.put("release_date", "2021-05-20"); 
-        String key = "release_date";
-        String date = attributes.getOrDefault(key.trim().toLowerCase(), "N/A");
-        int year = Integer.valueOf(date.substring(0, 4));
-        int month = Integer.valueOf(date.substring(5, 7));
-        int day =  Integer.valueOf(date.substring(8));
-  
         @Override
         public int compare(Game game1, Game game2) {
+            String key = "release_date";
+            String date1 = game1.getAttribute("release_date");
+            int year1 = Integer.parseInt(date1.substring(0, 4));
+            int month1 = Integer.parseInt(date1.substring(5, 7));
+            int day1 =  Integer.parseInt(date1.substring(8));
 
-            return 0;
+            String date2 = game2.getAttribute("release_date");
+            int year2 = Integer.parseInt(date2.substring(0, 4));
+            int month2 = Integer.parseInt(date2.substring(5, 7));
+            int day2 =  Integer.parseInt(date2.substring(8));
+
+            if(year1 != year2) {
+                return Integer.compare(year1, year2);
+            } else if (month1 != month2) {
+                return Integer.compare(month1, month2);
+            } 
+            return Integer.compare(day1, day2);
         }
     };
 
+    public static class fieldStringComparator implements Comparator<Game> {
+        private final String fieldName;
+
+        public fieldStringComparator(String fieldName) {
+            this.fieldName = fieldName;
+        }
+        @Override
+        public int compare(Game game1, Game game2) {
+            String field1 = game1.getAttribute(fieldName);
+            String field2 = game2.getAttribute(fieldName);
+            
+            if(field1.equals("N/A") || field2.equals("N/A")) {
+                if(field1.equals("N/A") && field2.equals("N/A")) {
+                    return 0;
+                }
+                else if(field1.equals("N/A")) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            } else {
+                return field1.compareTo(field2);
+            }
+        }
+    }
+
+    public static double parseDouble(String number) {
+        try {
+            return Double.parseDouble(number);
+        } catch (NumberFormatException e) {
+            return Double.NEGATIVE_INFINITY;
+        }
+    }
+        
+    public static class fieldDoubleComparator implements Comparator<Game> {
+        private final String fieldName;
+
+        public fieldDoubleComparator(String fieldName) {
+            this.fieldName = fieldName;
+        }
+        
+        @Override
+        public int compare(Game game1, Game game2) {
+            double field1 = parseDouble(game1.getAttribute(fieldName));
+            double field2 = parseDouble(game2.getAttribute(fieldName));
+            double negInf = Double.NEGATIVE_INFINITY; 
+
+            //if double could not be parsed (returns negative infinity)
+            //field will be moved to the end
+            if(field1 == negInf || field2 == negInf) {
+                if(field1 == negInf && field2 == negInf) {
+                    return 0;
+                }
+                else if(field1 == negInf) {
+                    return 1;
+                }
+                else {
+                    return -1;
+                }
+            }
+            return Double.compare(field1, field2);
+        }
+    }
+
     public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitle);
     public static final Comparator<Game> byPlatform = Comparator.comparing(Game::getPlatform);
-    public static final Comparator<Game> byFieldString = Comparator.comparing(Game::getCustomTagString);
     public static final Comparator<Game> byFieldInt = Comparator.comparingInt(Game::getCustomTagInt);
-
 
 }

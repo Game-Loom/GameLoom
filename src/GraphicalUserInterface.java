@@ -56,6 +56,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 public class GraphicalUserInterface extends Application {
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
@@ -397,6 +400,43 @@ public class GraphicalUserInterface extends Application {
         sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);     
 
         return sortFilterBox; // Return the fully assembled VBox
+    }
+
+
+    /***** SORTING IMPLEMENTATION */
+    /**
+     * This method sorts the games library. The sorting logic can be found in the game class.
+     * @param gameList list of games we are sorting
+     * @param field the field we are sorting by (i.e. Title, Platform, etc)
+     * @param isAscending whether the order is ascending or not
+     * @param isAlphabetical whether the order is alphabetical (unicode), or by numerical value 
+     * @return the game library entries sorted 
+     */
+    private ArrayList<Game> sort(ArrayList<Game> gameList, String field, boolean isAscending, boolean isAlphabetical) {
+        field = field.trim().toLowerCase();
+        Comparator<Game> comparator = null;
+
+        if(field.equals("title")) {
+            comparator = Game.byTitle;
+        } else if (field.equals("platform")){
+            comparator = Game.byPlatform;
+        } else if (field.equals("date")){
+            comparator = Game.byDate;
+        } else {
+            if(isAlphabetical) {
+                comparator = new Game.fieldStringComparator(field);
+            }
+            else {
+                comparator = new Game.fieldDoubleComparator(field);
+            }
+        }
+
+        if(!isAscending) {
+            comparator = comparator.reversed();
+        }
+
+        Collections.sort(gameList, comparator);
+        return gameList;
     }
 
 
