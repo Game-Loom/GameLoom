@@ -48,7 +48,7 @@
  * game library.
  * 
  * @author CS321-004: Group 3
- * @version 1.4
+ * @version 1.5
  */
 
 import javafx.application.Application;
