@@ -28,8 +28,11 @@
  */
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.List;
 
-public class Game implements Comparable<Game>{
+public class Game {
     // Attributes map that stores game data as key-value pairs
     // Example: {"platform": "Steam", "metascore": "90"}
     private Map<String, String> attributes = new HashMap<>();
@@ -123,18 +126,47 @@ public class Game implements Comparable<Game>{
     }
 
     /******** SORTING IMPLEMENTATION **************/
-    /**
-     * This method returns a boolean representing
-     * if the game is a game and has an equal game title as the instance 
+    /*
+      * Example of how a game's attributes may look:
+ *     Map<String, String> attributes = new HashMap<>();
+ *     attributes.put("platform", "Steam");
+ *     attributes.put("hours", "12.5");
+ *     attributes.put("metascore", "85");
+ *     attributes.put("release_date", "2021-05-20"); 
+ *     Game game = new Game(attributes);
      */
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof Game) {
-            Game other = (Game)(obj)
-            if(getAttribute("Game").equals(other.getAttribute("Game"))) {
-                return true;
-            }
-        }
-        return false;
+    public String getTitle() {
+        return getAttribute("game");
     }
+    
+    
+    public String getCustomTagString() {
+        return getAttribute("");
+    }
+    
+    public int getCustomTagInt() { 
+        return 0; //dummy code
+    }
+    
+    public static final Comparator<Game> byDate = new Comparator<Game>() {
+        // YYYY-MM-DATE  ex: attributes.put("release_date", "2021-05-20"); 
+        String key = "release_date";
+        String date = attributes.getOrDefault(key.trim().toLowerCase(), "N/A");
+        int year = Integer.valueOf(date.substring(0, 4));
+        int month = Integer.valueOf(date.substring(5, 7));
+        int day =  Integer.valueOf(date.substring(8));
+  
+        @Override
+        public int compare(Game game1, Game game2) {
+
+            return 0;
+        }
+    };
+
+    public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitle);
+    public static final Comparator<Game> byPlatform = Comparator.comparing(Game::getPlatform);
+    public static final Comparator<Game> byFieldString = Comparator.comparing(Game::getCustomTagString);
+    public static final Comparator<Game> byFieldInt = Comparator.comparingInt(Game::getCustomTagInt);
+
+
 }
