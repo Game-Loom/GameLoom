@@ -336,6 +336,8 @@ public class GraphicalUserInterface extends Application {
             }
         });
     }
+
+    
     /**
      * Creates an HBox containing the game details (name, description) and an image placeholder.
      * This method is used to display each game as an item in the game list
