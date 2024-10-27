@@ -155,37 +155,37 @@ public class GraphicalUserInterface extends Application {
 
 
     /**
- * Calculates a hash value based on the current library contents using MD5 hashing.
- * This hash allows the program to detect changes in the library and trigger 
- * auto-save only when modifications are detected.
- *
- * @return An integer hash of the current library's state
- */
-private int calculateLibraryHash() {
-    try {
-        // Initialize an MD5 MessageDigest instance to compute the hash
-        MessageDigest digest = MessageDigest.getInstance("MD5");
-        
-        // Iterate through each game in the library and add all attributes to the hash.
-        for (Game game : library) { // Hashing the library object will return a hash of the memory address.
-            // Retrieve the full attribute map for the game
-            Map<String, String> attributes = game.getAttributes();
-            
-            // Convert each attribute key-value pair to bytes and update the digest
-            for (Map.Entry<String, String> entry : attributes.entrySet()) {
-                digest.update(entry.getKey().getBytes(StandardCharsets.UTF_8)); // Update with attribute key
-                digest.update(entry.getValue().getBytes(StandardCharsets.UTF_8)); // Update with attribute value
-            }
-        }
-        
-        // Complete the hash computation and retrieve the result as a byte array
-        byte[] hashBytes = digest.digest();
-        return Arrays.hashCode(hashBytes); // Return an integer representation of the hash for easy comparison
-    } catch (Exception e) {
-        e.printStackTrace();
-        return 0;
-    }
-}
+    * Calculates a hash value based on the current library contents using MD5 hashing.
+    * This hash allows the program to detect changes in the library and trigger 
+    * auto-save only when modifications are detected.
+    *
+    * @return An integer hash of the current library's state
+    */
+    private int calculateLibraryHash() {
+       try {
+           // Initialize an MD5 MessageDigest instance to compute the hash
+           MessageDigest digest = MessageDigest.getInstance("MD5");
+
+           // Iterate through each game in the library and add all attributes to the hash.
+           for (Game game : library) { // Hashing the library object will return a hash of the memory address.
+               // Retrieve the full attribute map for the game
+               Map<String, String> attributes = game.getAttributes();
+
+               // Convert each attribute key-value pair to bytes and update the digest
+               for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                   digest.update(entry.getKey().getBytes(StandardCharsets.UTF_8)); // Update with attribute key
+                   digest.update(entry.getValue().getBytes(StandardCharsets.UTF_8)); // Update with attribute value
+               }
+           }
+
+           // Complete the hash computation and retrieve the result as a byte array
+           byte[] hashBytes = digest.digest();
+           return Arrays.hashCode(hashBytes); // Return an integer representation of the hash for easy comparison
+       } catch (Exception e) {
+           e.printStackTrace();
+           return 0;
+       }    
+    }   
 
 
     /**
