@@ -291,6 +291,7 @@ public class GraphicalUserInterface extends Application {
         });
     }
 
+
     /**
      * Sets up a safety net for when the user closes the window by creating an alert popup and asking them if they wish to export the library
      * before they exit. 
