@@ -600,8 +600,10 @@ private int calculateLibraryHash() {
 
         // Makes the shared game list scrollable
         ScrollPane scrollPane = new ScrollPane(gameList); // Uses the shared gameList for all tabs
-        scrollPane.setFitToWidth(true); // Ensures content fits the width   
-
+        //scrollPane.setFitToWidth(true); // Ensures content fits the width   // REMOVED ON 10/26 TO ALLOW FOR HORIZONTAL SCROLLING
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Enable horizontal scrolling as needed
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Enable vertical scrolling as needed
+    
         // **Sort and Filter Panel**: Extracted to a helper method
         VBox sortFilterBox = setupSortFilterPanel();    
 
