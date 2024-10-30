@@ -139,11 +139,6 @@ public class Game {
         return getAttribute("game");
     }
     
-    public int getCustomTagInt() { 
-        
-        return 0; //dummy code
-    }
-    
     public static final Comparator<Game> byDate = new Comparator<Game>() {
         // YYYY-MM-DATE  ex: attributes.put("release_date", "2021-05-20"); 
         @Override
@@ -234,6 +229,5 @@ public class Game {
 
     public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitle);
     public static final Comparator<Game> byPlatform = Comparator.comparing(Game::getPlatform);
-    public static final Comparator<Game> byFieldInt = Comparator.comparingInt(Game::getCustomTagInt);
 
 }

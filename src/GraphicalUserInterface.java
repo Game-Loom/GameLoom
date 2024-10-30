@@ -395,9 +395,68 @@ public class GraphicalUserInterface extends Application {
             CheckBox option = new CheckBox("Option " + (i + 1)); // Creates placeholder filter options
             filterOptions.getChildren().add(option); // Adds each option to the VBox
         }   
+        
+
+        /************ SORTING FEATURE */
+        VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
+        boolean isAscending = true; 
+        boolean isAlphabetical = true;
+        
+        //Sort Options Dropdown
+        ComboBox<String> sortDropDown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
+        sortDropDown.getItems().addAll("Title", "Platform", "Date", "Custom"); // Adds options to the dropdown
+        sortDropDown.setPromptText("Sort by"); // Sets prompt text in the dropdown
+
+        sortDropDown.setOnAction(event -> {
+            String field = sortDropDown.getValue();
+            // List<Game> sortedResults = sort(library, field, )
+        });
+        
+        VBox ascendOption = new VBox(5); // VBox with 5px spacing between options
+        String [] ascendOptionNames = {"Ascending", "Descending"};
+        CheckBox [] ascendBoxes = new CheckBox[ascendOptionNames.length];
+
+        for (int i = 0; i < ascendOptionNames.length; i++) {
+            ascendBoxes[i] = new CheckBox(ascendOptionNames[i]);
+            sortOptions.getChildren().add(ascendBoxes[i]); // Adds each option to the VBox
+        }   
+        ascendBoxes[0].setOnAction(event -> {
+            ascendBoxes[1].setDisable(ascendBoxes[0].isSelected());
+        });
+
+        ascendBoxes[1].setOnAction(event -> {
+            ascendBoxes[0].setDisable(ascendBoxes[1].isSelected());
+        });
+
+        /*Alphabetical Options */
+        VBox alphaOption = new VBox(5); // VBox with 5px spacing between options
+        CheckBox [] alphaBoxes = new CheckBox[ascendOptionNames.length];
+        String [] alphaOptionNames = {"Alphabetical", "Numerical"};
+        for (int i = 0; i < alphaOptionNames.length; i++) {
+            alphaBoxes[i] = new CheckBox(alphaOptionNames[i]);
+            sortOptions.getChildren().add(alphaBoxes[i]); // Adds each option to the VBox
+        }   
+        alphaBoxes[0].setOnAction(event -> {
+            alphaBoxes[1].setDisable(alphaBoxes[0].isSelected());
+            if(alphaBoxes[0].isSelected()) {
+            }
+        });
+
+        alphaBoxes[1].setOnAction(event -> {
+            alphaBoxes[0].setDisable(alphaBoxes[1].isSelected());
+        });
+
+
+        sortButton.setOnAction(event -> {
+            String field = sortDropDown.getValue();
+            ArrayList<Game> sortedLibrary = sort(library, field, ascendBoxes[0].isSelected(), alphaBoxes[0].isSelected());
+            populateGameList(sortedLibrary);
+        });
+
 
         // Add the components to the VBox
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);     
+        // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
+        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortDropDown, sortOptions);  
 
         return sortFilterBox; // Return the fully assembled VBox
     }
@@ -406,13 +465,13 @@ public class GraphicalUserInterface extends Application {
     /***** SORTING IMPLEMENTATION */
     /**
      * This method sorts the games library. The sorting logic can be found in the game class.
-     * @param gameList list of games we are sorting
+     * @param library list of games we are sorting
      * @param field the field we are sorting by (i.e. Title, Platform, etc)
      * @param isAscending whether the order is ascending or not
      * @param isAlphabetical whether the order is alphabetical (unicode), or by numerical value 
      * @return the game library entries sorted 
      */
-    private ArrayList<Game> sort(ArrayList<Game> gameList, String field, boolean isAscending, boolean isAlphabetical) {
+    private ArrayList<Game> sort(ArrayList<Game> library, String field, boolean isAscending, boolean isAlphabetical) {
         field = field.trim().toLowerCase();
         Comparator<Game> comparator = null;
 
@@ -435,8 +494,8 @@ public class GraphicalUserInterface extends Application {
             comparator = comparator.reversed();
         }
 
-        Collections.sort(gameList, comparator);
-        return gameList;
+        Collections.sort(library, comparator);
+        return library;
     }
 
 
