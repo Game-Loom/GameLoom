@@ -411,6 +411,14 @@ public class GraphicalUserInterface extends Application {
         HBox hb = new HBox();
         hb.getChildren().addAll(textField);
 
+        /** Declared Label for error messages */
+        final Label errorMsg = new Label();
+        GridPane.setConstraints(errorMsg, 0, 1);
+        GridPane.setColumnSpan(errorMsg, 1);
+
+        /** Line Break to separate Alphabetical & Ascening */
+        Label lineBreak = new Label("-------------------------------");   
+        
         /** Types of Option Formatting **/
         ToggleGroup ascendGroup = new ToggleGroup();
         RadioButton ascendButton = new RadioButton("Ascending");
@@ -450,15 +458,6 @@ public class GraphicalUserInterface extends Application {
             }
 
         });
-
-        /** Declared Label for error messages */
-        final Label errorMsg = new Label();
-        GridPane.setConstraints(errorMsg, 0, 1);
-        GridPane.setColumnSpan(errorMsg, 1);
-
-        /** Line Break to separate Alphabetical & Ascening */
-        Label lineBreak = new Label("-----------------------------");   
-
 
         //Other Options
         sortButton.setOnAction(event -> {
