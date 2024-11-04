@@ -432,12 +432,14 @@ public class GraphicalUserInterface extends Application {
         //Default Settings For Specific Options
         sortDropDown.setOnAction(event -> {
             String field = sortDropDown.getValue();
-            if(field.equals("Date")) { //byDate -- automatically selects numerical
+            //byDate -- automatically selects numerical
+            if(field.equals("Date")) { 
                 numButton.setSelected(true);
                 numButton.setDisable(false);
                 alphaButton.setDisable(true);
 
             }
+            //byTitle or byPlatform - selects alphabetical
             else if(field.equals("Title") || field.equals("Platform")) {
                 alphaButton.setSelected(true);
                 alphaButton.setDisable(false);
@@ -450,9 +452,9 @@ public class GraphicalUserInterface extends Application {
         });
 
         /** Declared Label for error messages */
-        final Label label = new Label();
-        GridPane.setConstraints(label, 0, 1);
-        GridPane.setColumnSpan(label, 1);
+        final Label errorMsg = new Label();
+        GridPane.setConstraints(errorMsg, 0, 1);
+        GridPane.setColumnSpan(errorMsg, 1);
 
         //Other Options
         sortButton.setOnAction(event -> {
@@ -470,37 +472,41 @@ public class GraphicalUserInterface extends Application {
                 RadioButton ans = (RadioButton)alphaGroup.getSelectedToggle();
                 isAlphabetical = ans.getText().equals("Alphabetical"); 
             }
-
-            if(field.equals("Custom")) {
-                String customFieldText = textField.getText().trim().toLowerCase();
-                if(customFieldText == null || customFieldText.equals("")) {
-                    label.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
-                    label.setText("Please enter a Custom Field");
-                } else {
-                    if(customFieldText.equals("hours played")) {
-                        customFieldText = "hours";
-                    } else if (customFieldText.equals("metacritic score")){
-                        customFieldText = "Metacritic Score";
+            
+            if(library == null || library.isEmpty()) {
+                errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                errorMsg.setText("Please import a library");
+            } 
+            else {
+                if(field.equals("Custom")) {
+                    String customFieldText = textField.getText().trim().toLowerCase();
+                    if(customFieldText == null || customFieldText.equals("") || customFieldText.length() == 0) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Please enter a Custom Field");
+                    } else {
+                        if(customFieldText.equals("hours played")) {
+                            customFieldText = "hours";
+                        } else if (customFieldText.equals("metacritic score")){
+                            customFieldText = "Metacritic Score";
+                        } 
+                        sortedLibrary = sort(library, field, customFieldText, isAscending, isAlphabetical);            
                     }
-                    sortedLibrary = sort(library, field, customFieldText, isAscending, isAlphabetical);            
+                } else {
+                    sortedLibrary = sort(library, field, "", isAscending, isAlphabetical);            
                 }
-            } else {
-                sortedLibrary = sort(library, field, "", isAscending, isAlphabetical);            
-            }
-
-            if(sortedLibrary != null) {
-                gameList.getChildren().clear(); //clear game list
-                for(Game game : sortedLibrary) {
-                    gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                if(sortedLibrary != null) {
+                    gameList.getChildren().clear(); //clear game list
+                    for(Game game : sortedLibrary) {
+                        gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                    }
                 }
             }
         });
         
         // Add the components to the VBox
         // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel,
-        sortDropDown, customFieldLabel, hb, sortOptions, label, ascendButton, descendButton, alphaButton, numButton);  
-
+        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel, 
+        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, descendButton, alphaButton, numButton);  
         return sortFilterBox; // Return the fully assembled VBox
     }
 
