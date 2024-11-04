@@ -139,29 +139,48 @@ public class Game {
         return getAttribute("game");
     }
     
-    public static final Comparator<Game> byDate = new Comparator<Game>() {
+    public static final Comparator<Game> byDate (boolean isAscending) {
+        return new Comparator<Game>() {
         // YYYY-MM-DATE  ex: attributes.put("release_date", "2021-05-20"); 
-        @Override
-        public int compare(Game game1, Game game2) {
-            String key = "release_date";
-            String date1 = game1.getAttribute("release_date");
-            int year1 = Integer.parseInt(date1.substring(0, 4));
-            int month1 = Integer.parseInt(date1.substring(5, 7));
-            int day1 =  Integer.parseInt(date1.substring(8));
+            @Override
+            public int compare(Game game1, Game game2) {
 
-            String date2 = game2.getAttribute("release_date");
-            int year2 = Integer.parseInt(date2.substring(0, 4));
-            int month2 = Integer.parseInt(date2.substring(5, 7));
-            int day2 =  Integer.parseInt(date2.substring(8));
+                String date1 = game1.getAttribute("release_date");
+                String date2 = game2.getAttribute("release_date");
+                System.out.println(date1);
 
-            if(year1 != year2) {
-                return Integer.compare(year1, year2);
-            } else if (month1 != month2) {
-                return Integer.compare(month1, month2);
-            } 
-            return Integer.compare(day1, day2);
-        }
-    };
+                boolean date1NotValid = (date1.equals("N/A") || date1.length() != 10);
+                boolean date2NotValid = (date2.equals("N/A") || date2.length() != 10);
+
+                if(date1NotValid || date2NotValid) {
+                    if(date1NotValid && date2NotValid) {
+                        return 0; //both invalid, so equal
+                    } else if (date1NotValid) {
+                        return isAscending ? 1 : -1; 
+                        //if ascending, all invalid date goes to end
+                        //if descending, all invalid dates go to start due to nature of Collections.reversed() 
+                    } else {
+                        return isAscending ? -1 : 1;
+                    }
+                }
+
+                int year1 = Integer.parseInt(date1.substring(0, 4));
+                int month1 = Integer.parseInt(date1.substring(5, 7));
+                int day1 =  Integer.parseInt(date1.substring(8));
+
+                int year2 = Integer.parseInt(date2.substring(0, 4));
+                int month2 = Integer.parseInt(date2.substring(5, 7));
+                int day2 =  Integer.parseInt(date2.substring(8));
+
+                if(year1 != year2) {
+                    return Integer.compare(year1, year2);
+                } else if (month1 != month2) {
+                    return Integer.compare(month1, month2);
+                } 
+                return Integer.compare(day1, day2);
+            }
+        };
+    }
 
     public static class fieldStringComparator implements Comparator<Game> {
         private final String fieldName;

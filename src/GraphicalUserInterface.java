@@ -401,6 +401,11 @@ public class GraphicalUserInterface extends Application {
         VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
         boolean isAscending = true; 
         boolean isAlphabetical = true;
+        int ASCENDING = 0; //constants for arrays
+        int DESCENDING = 1;
+        int ALPHABETICAL = 0;
+        int NUMERICAL = 1;
+
         
         //Sort Options Dropdown
         ComboBox<String> sortDropDown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
@@ -409,7 +414,6 @@ public class GraphicalUserInterface extends Application {
 
         sortDropDown.setOnAction(event -> {
             String field = sortDropDown.getValue();
-            // List<Game> sortedResults = sort(library, field, )
         });
         
         VBox ascendOption = new VBox(5); // VBox with 5px spacing between options
@@ -420,12 +424,13 @@ public class GraphicalUserInterface extends Application {
             ascendBoxes[i] = new CheckBox(ascendOptionNames[i]);
             sortOptions.getChildren().add(ascendBoxes[i]); // Adds each option to the VBox
         }   
-        ascendBoxes[0].setOnAction(event -> {
-            ascendBoxes[1].setDisable(ascendBoxes[0].isSelected());
+
+        ascendBoxes[ASCENDING].setOnAction(event -> { 
+            ascendBoxes[DESCENDING].setSelected(false);
         });
 
-        ascendBoxes[1].setOnAction(event -> {
-            ascendBoxes[0].setDisable(ascendBoxes[1].isSelected());
+        ascendBoxes[DESCENDING].setOnAction(event -> {
+            ascendBoxes[ASCENDING].setSelected(false);
         });
 
         /*Alphabetical Options */
@@ -436,23 +441,29 @@ public class GraphicalUserInterface extends Application {
             alphaBoxes[i] = new CheckBox(alphaOptionNames[i]);
             sortOptions.getChildren().add(alphaBoxes[i]); // Adds each option to the VBox
         }   
-        alphaBoxes[0].setOnAction(event -> {
-            alphaBoxes[1].setDisable(alphaBoxes[0].isSelected());
-            if(alphaBoxes[0].isSelected()) {
-            }
+        alphaBoxes[ALPHABETICAL].setOnAction(event -> {
+            alphaBoxes[NUMERICAL].setSelected(false);
         });
 
-        alphaBoxes[1].setOnAction(event -> {
-            alphaBoxes[0].setDisable(alphaBoxes[1].isSelected());
+        alphaBoxes[NUMERICAL].setOnAction(event -> {
+            alphaBoxes[ALPHABETICAL].setSelected(false);
         });
 
+        //Default Options
+        sortDropDown.getSelectionModel().selectFirst();
+        alphaBoxes[ALPHABETICAL].setSelected(true);
+        ascendBoxes[ASCENDING].setSelected(true);
 
         sortButton.setOnAction(event -> {
-            String field = sortDropDown.getValue();
-            ArrayList<Game> sortedLibrary = sort(library, field, ascendBoxes[0].isSelected(), alphaBoxes[0].isSelected());
-            populateGameList(sortedLibrary);
+            String field = sortDropDown.getValue();            
+            ArrayList<Game> sortedLibrary = sort(library, field, ascendBoxes[ASCENDING].isSelected(), alphaBoxes[ALPHABETICAL].isSelected());            
+            gameList.getChildren().clear(); //clear game list
+            System.out.println("????");
+            for(Game game : sortedLibrary) {
+                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+            }
         });
-
+        
 
         // Add the components to the VBox
         // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
@@ -480,7 +491,7 @@ public class GraphicalUserInterface extends Application {
         } else if (field.equals("platform")){
             comparator = Game.byPlatform;
         } else if (field.equals("date")){
-            comparator = Game.byDate;
+            comparator = Game.byDate(isAscending);
         } else {
             if(isAlphabetical) {
                 comparator = new Game.fieldStringComparator(field);
