@@ -456,6 +456,10 @@ public class GraphicalUserInterface extends Application {
         GridPane.setConstraints(errorMsg, 0, 1);
         GridPane.setColumnSpan(errorMsg, 1);
 
+        /** Line Break to separate Alphabetical & Ascening */
+        Label lineBreak = new Label("-----------------------------");   
+
+
         //Other Options
         sortButton.setOnAction(event -> {
             String field = sortDropDown.getValue();     
@@ -506,7 +510,7 @@ public class GraphicalUserInterface extends Application {
         // Add the components to the VBox
         // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
         sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel, 
-        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, descendButton, alphaButton, numButton);  
+        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, descendButton, lineBreak, alphaButton, numButton);  
         return sortFilterBox; // Return the fully assembled VBox
     }
 
