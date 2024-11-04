@@ -396,78 +396,110 @@ public class GraphicalUserInterface extends Application {
             filterOptions.getChildren().add(option); // Adds each option to the VBox
         }   
         
-
         /************ SORTING FEATURE */
+        Label sortLabel = new Label("Sort By:");   
         VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
-        boolean isAscending = true; 
-        boolean isAlphabetical = true;
-        int ASCENDING = 0; //constants for arrays
-        int DESCENDING = 1;
-        int ALPHABETICAL = 0;
-        int NUMERICAL = 1;
 
-        
         //Sort Options Dropdown
         ComboBox<String> sortDropDown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
         sortDropDown.getItems().addAll("Title", "Platform", "Date", "Custom"); // Adds options to the dropdown
         sortDropDown.setPromptText("Sort by"); // Sets prompt text in the dropdown
+        
+        //Adding a label for sort by custom field
+        Label customFieldLabel = new Label("Custom Field: ");
+        TextField textField = new TextField();
+        HBox hb = new HBox();
+        hb.getChildren().addAll(textField);
 
+        /** Types of Option Formatting **/
+        ToggleGroup ascendGroup = new ToggleGroup();
+        RadioButton ascendButton = new RadioButton("Ascending");
+        RadioButton descendButton = new RadioButton("Descending");
+        ascendButton.setToggleGroup(ascendGroup);
+        descendButton.setToggleGroup(ascendGroup);
+
+        ToggleGroup alphaGroup = new ToggleGroup();
+        RadioButton alphaButton = new RadioButton("Alphabetical");
+        RadioButton numButton = new RadioButton("Numerical");
+        alphaButton.setToggleGroup(alphaGroup);
+        numButton.setToggleGroup(alphaGroup);
+        
+        //Default Options Selected
+        sortDropDown.getSelectionModel().selectFirst();
+        alphaButton.setSelected(true);
+        ascendButton.setSelected(true);
+
+        //Default Settings For Specific Options
         sortDropDown.setOnAction(event -> {
             String field = sortDropDown.getValue();
-        });
-        
-        VBox ascendOption = new VBox(5); // VBox with 5px spacing between options
-        String [] ascendOptionNames = {"Ascending", "Descending"};
-        CheckBox [] ascendBoxes = new CheckBox[ascendOptionNames.length];
+            if(field.equals("Date")) { //byDate -- automatically selects numerical
+                numButton.setSelected(true);
+                numButton.setDisable(false);
+                alphaButton.setDisable(true);
 
-        for (int i = 0; i < ascendOptionNames.length; i++) {
-            ascendBoxes[i] = new CheckBox(ascendOptionNames[i]);
-            sortOptions.getChildren().add(ascendBoxes[i]); // Adds each option to the VBox
-        }   
+            }
+            else if(field.equals("Title") || field.equals("Platform")) {
+                alphaButton.setSelected(true);
+                alphaButton.setDisable(false);
+                numButton.setDisable(true);
+            } else {
+                alphaButton.setDisable(false);
+                numButton.setDisable(false);
+            }
 
-        ascendBoxes[ASCENDING].setOnAction(event -> { 
-            ascendBoxes[DESCENDING].setSelected(false);
-        });
-
-        ascendBoxes[DESCENDING].setOnAction(event -> {
-            ascendBoxes[ASCENDING].setSelected(false);
         });
 
-        /*Alphabetical Options */
-        VBox alphaOption = new VBox(5); // VBox with 5px spacing between options
-        CheckBox [] alphaBoxes = new CheckBox[ascendOptionNames.length];
-        String [] alphaOptionNames = {"Alphabetical", "Numerical"};
-        for (int i = 0; i < alphaOptionNames.length; i++) {
-            alphaBoxes[i] = new CheckBox(alphaOptionNames[i]);
-            sortOptions.getChildren().add(alphaBoxes[i]); // Adds each option to the VBox
-        }   
-        alphaBoxes[ALPHABETICAL].setOnAction(event -> {
-            alphaBoxes[NUMERICAL].setSelected(false);
-        });
+        /** Declared Label for error messages */
+        final Label label = new Label();
+        GridPane.setConstraints(label, 0, 1);
+        GridPane.setColumnSpan(label, 1);
 
-        alphaBoxes[NUMERICAL].setOnAction(event -> {
-            alphaBoxes[ALPHABETICAL].setSelected(false);
-        });
-
-        //Default Options
-        sortDropDown.getSelectionModel().selectFirst();
-        alphaBoxes[ALPHABETICAL].setSelected(true);
-        ascendBoxes[ASCENDING].setSelected(true);
-
+        //Other Options
         sortButton.setOnAction(event -> {
-            String field = sortDropDown.getValue();            
-            ArrayList<Game> sortedLibrary = sort(library, field, ascendBoxes[ASCENDING].isSelected(), alphaBoxes[ALPHABETICAL].isSelected());            
-            gameList.getChildren().clear(); //clear game list
-            System.out.println("????");
-            for(Game game : sortedLibrary) {
-                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+            String field = sortDropDown.getValue();     
+            ArrayList<Game> sortedLibrary  = null;
+            boolean isAscending = false;
+            boolean isAlphabetical = false;
+
+            if(ascendGroup.getSelectedToggle() != null) 
+            {
+                RadioButton ans = (RadioButton)ascendGroup.getSelectedToggle();
+                isAscending = ans.getText().equals("Ascending"); 
+            }
+            if(alphaGroup.getSelectedToggle() != null) {
+                RadioButton ans = (RadioButton)alphaGroup.getSelectedToggle();
+                isAlphabetical = ans.getText().equals("Alphabetical"); 
+            }
+
+            if(field.equals("Custom")) {
+                String customFieldText = textField.getText().trim().toLowerCase();
+                if(customFieldText == null || customFieldText.equals("")) {
+                    label.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                    label.setText("Please enter a Custom Field");
+                } else {
+                    if(customFieldText.equals("hours played")) {
+                        customFieldText = "hours";
+                    } else if (customFieldText.equals("metacritic score")){
+                        customFieldText = "Metacritic Score";
+                    }
+                    sortedLibrary = sort(library, field, customFieldText, isAscending, isAlphabetical);            
+                }
+            } else {
+                sortedLibrary = sort(library, field, "", isAscending, isAlphabetical);            
+            }
+
+            if(sortedLibrary != null) {
+                gameList.getChildren().clear(); //clear game list
+                for(Game game : sortedLibrary) {
+                    gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                }
             }
         });
         
-
         // Add the components to the VBox
         // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortDropDown, sortOptions);  
+        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel,
+        sortDropDown, customFieldLabel, hb, sortOptions, label, ascendButton, descendButton, alphaButton, numButton);  
 
         return sortFilterBox; // Return the fully assembled VBox
     }
@@ -478,14 +510,14 @@ public class GraphicalUserInterface extends Application {
      * This method sorts the games library. The sorting logic can be found in the game class.
      * @param library list of games we are sorting
      * @param field the field we are sorting by (i.e. Title, Platform, etc)
+     * @param customField the custom field if the custom option is selected
      * @param isAscending whether the order is ascending or not
      * @param isAlphabetical whether the order is alphabetical (unicode), or by numerical value 
      * @return the game library entries sorted 
      */
-    private ArrayList<Game> sort(ArrayList<Game> library, String field, boolean isAscending, boolean isAlphabetical) {
+    private ArrayList<Game> sort(ArrayList<Game> library, String field, String customField, boolean isAscending, boolean isAlphabetical) {
         field = field.trim().toLowerCase();
         Comparator<Game> comparator = null;
-
         if(field.equals("title")) {
             comparator = Game.byTitle;
         } else if (field.equals("platform")){
@@ -494,17 +526,15 @@ public class GraphicalUserInterface extends Application {
             comparator = Game.byDate(isAscending);
         } else {
             if(isAlphabetical) {
-                comparator = new Game.fieldStringComparator(field);
+                comparator = Game.byFieldString(isAscending, customField);
             }
             else {
-                comparator = new Game.fieldDoubleComparator(field);
+                comparator = Game.byFieldDouble(isAscending, customField);
             }
         }
-
         if(!isAscending) {
             comparator = comparator.reversed();
         }
-
         Collections.sort(library, comparator);
         return library;
     }

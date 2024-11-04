@@ -158,7 +158,8 @@ public class Game {
                     } else if (date1NotValid) {
                         return isAscending ? 1 : -1; 
                         //if ascending, all invalid date goes to end
-                        //if descending, all invalid dates go to start due to nature of Collections.reversed() 
+                        //if descending, all invalid dates go to start 
+                        // due to nature of Collections.reversed() 
                     } else {
                         return isAscending ? -1 : 1;
                     }
@@ -182,30 +183,32 @@ public class Game {
         };
     }
 
-    public static class fieldStringComparator implements Comparator<Game> {
-        private final String fieldName;
+    public static final Comparator<Game> byFieldString (boolean isAscending, String fieldName) {
+        return new Comparator<Game>() {
+            @Override
+            public int compare(Game game1, Game game2) {
+                String field1 = game1.getAttribute(fieldName);
+                String field2 = game2.getAttribute(fieldName);
+                
+                boolean field1NotValid = (field1.equals("N/A") || field1.equals("") || field1.length() == 0);
+                boolean field2NotValid = (field2.equals("N/A") || field2.equals("") || field2.length() == 0);
 
-        public fieldStringComparator(String fieldName) {
-            this.fieldName = fieldName;
-        }
-        @Override
-        public int compare(Game game1, Game game2) {
-            String field1 = game1.getAttribute(fieldName);
-            String field2 = game2.getAttribute(fieldName);
-            
-            if(field1.equals("N/A") || field2.equals("N/A")) {
-                if(field1.equals("N/A") && field2.equals("N/A")) {
-                    return 0;
-                }
-                else if(field1.equals("N/A")) {
-                    return 1;
+                if(field1NotValid || field2NotValid) {
+                    if(field1NotValid && field2NotValid) {
+                        return 0;
+                    }
+                    else if(field1NotValid) {
+                        return isAscending ? 1 : -1; 
+                        //if ascending, all invalid date goes to end
+                        //if descending, all invalid dates go to start 
+                        // due to nature of Collections.reversed()          
+                    }
                 } else {
-                    return -1;
-                }
-            } else {
+                    return isAscending ? 1 : -1; 
+                } 
                 return field1.compareTo(field2);
             }
-        }
+        };
     }
 
     public static double parseDouble(String number) {
@@ -216,34 +219,35 @@ public class Game {
         }
     }
         
-    public static class fieldDoubleComparator implements Comparator<Game> {
-        private final String fieldName;
+    public static final Comparator<Game> byFieldDouble (boolean isAscending, String fieldName) {
+        return new Comparator<Game>() {
+            @Override
+            public int compare(Game game1, Game game2) {
+                System.out.println("comparing: " + game1.getAttribute(fieldName) + "vs" + game2.getAttribute(fieldName));
+                
+                double field1 = parseDouble(game1.getAttribute(fieldName));
+                double field2 = parseDouble(game2.getAttribute(fieldName));
+                double negInf = Double.NEGATIVE_INFINITY; 
 
-        public fieldDoubleComparator(String fieldName) {
-            this.fieldName = fieldName;
-        }
-        
-        @Override
-        public int compare(Game game1, Game game2) {
-            double field1 = parseDouble(game1.getAttribute(fieldName));
-            double field2 = parseDouble(game2.getAttribute(fieldName));
-            double negInf = Double.NEGATIVE_INFINITY; 
-
-            //if double could not be parsed (returns negative infinity)
-            //field will be moved to the end
-            if(field1 == negInf || field2 == negInf) {
-                if(field1 == negInf && field2 == negInf) {
-                    return 0;
+                //if double could not be parsed (returns negative infinity)
+                //field will be moved to the end
+                if(field1 == negInf || field2 == negInf) {
+                    if(field1 == negInf && field2 == negInf) {
+                        return 0;
+                    }
+                    else if(field1 == negInf) {
+                        return isAscending ? 1 : -1; 
+                        //if ascending, all invalid date goes to end
+                        //if descending, all invalid dates go to start 
+                        // due to nature of Collections.reversed() 
+                    }
+                    else {
+                        return isAscending ? -1 : 1;
+                    }
                 }
-                else if(field1 == negInf) {
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
+                return Double.compare(field1, field2);
             }
-            return Double.compare(field1, field2);
-        }
+        };
     }
 
     public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitle);
