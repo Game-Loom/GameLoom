@@ -222,9 +222,7 @@ public class Game {
     public static final Comparator<Game> byFieldDouble (boolean isAscending, String fieldName) {
         return new Comparator<Game>() {
             @Override
-            public int compare(Game game1, Game game2) {
-                System.out.println("comparing: " + game1.getAttribute(fieldName) + "vs" + game2.getAttribute(fieldName));
-                
+            public int compare(Game game1, Game game2) {                
                 double field1 = parseDouble(game1.getAttribute(fieldName));
                 double field2 = parseDouble(game2.getAttribute(fieldName));
                 double negInf = Double.NEGATIVE_INFINITY; 

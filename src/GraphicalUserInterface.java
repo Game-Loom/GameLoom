@@ -416,7 +416,7 @@ public class GraphicalUserInterface extends Application {
         GridPane.setConstraints(errorMsg, 0, 1);
         GridPane.setColumnSpan(errorMsg, 1);
 
-        /** Line Break to separate Alphabetical & Ascening */
+        /** Line Break to separate Alphabetical & Ascending */
         Label lineBreak = new Label("-------------------------------");   
         
         /** Types of Option Formatting **/
