@@ -241,7 +241,7 @@ public class GraphicalUserInterface extends Application {
             if (!library.contains(game)) { // Avoid adding the same game twice
                 library.add(game); // Add game to the library
                 gameList.getChildren().add(createGameItem(gameName, description)); // Display game in the UI
-                gameList.getStyleClass().remove("fancyBackground");
+                //gameList.getStyleClass().remove("fancyBackground");
             }
         }
     }
@@ -391,7 +391,7 @@ public class GraphicalUserInterface extends Application {
         if (searchText.isEmpty()) {
             for (Game game : library) {
                 gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
-                gameList.getStyleClass().remove("fancyBackground");
+                //gameList.getStyleClass().remove("fancyBackground");
             }
         } else {
             // Filter the games based on the search keyword (searching both game name and description)
@@ -411,7 +411,7 @@ public class GraphicalUserInterface extends Application {
                 // If all terms match, add the game to the displayed game list
                 if (matchFound) {
                     gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
-                    gameList.getStyleClass().remove("fancyBackground");
+                    //gameList.getStyleClass().remove("fancyBackground");
                 }
             }
         }
@@ -487,6 +487,8 @@ public class GraphicalUserInterface extends Application {
         
         commonLayout.getStyleClass().add("fancyBackground");
         sortFilterBox.getStyleClass().add("fancyBackground");
+
+        
 
         return commonLayout; // Return the fully assembled layout for each tab
     }
