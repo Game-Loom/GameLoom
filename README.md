@@ -1,3 +1,6 @@
+**10/26**
+Auto-save feature currently set to 3 minute interval - 20 maximum files (if someone is consistently adding/editing for 1+ hours they'll have a 1 hour backup)
+
 **10/20**
 PSDLE export and itch.io export files now available in project documents tab of discord.
 I only own the one thing on itch so there's not a lot of troubleshooting we can do with that one for the normalization without having a larger export file for it but we have all the fields it'll have for the one we recommend. 

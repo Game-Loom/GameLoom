@@ -22,7 +22,7 @@
  * ensuring robust import processing for non-quoted values.
  * 
  * @author CS321-004: Group 3
- * @version 1.4
+ * @version 1.5
  */
 
 
@@ -90,10 +90,15 @@ public class GameCSVImporter {
                         attributes.put(headers[i], values[i].trim()); // Trim values and associate them with headers
                     }
                 }
-
+                // Normalize attributes before checking for popular app
                 attributes = Normalizer.normalize(attributes);
+                // Check if the game name is in the popular apps list; skip if it is
+                String gameName = attributes.get("game");
+                if (gameName != null && Arrays.asList(Normalizer.popularApps).contains(gameName)) {
+                    continue; // Skip this entry if it matches a popular app
+                }
 
-                // Create a new Game object and add it to the list
+                // Add the game to the library
                 Game game = new Game(attributes);
                 games.add(game);
             }
