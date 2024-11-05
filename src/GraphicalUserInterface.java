@@ -61,6 +61,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 public class GraphicalUserInterface extends Application {
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
@@ -432,11 +435,157 @@ public class GraphicalUserInterface extends Application {
             CheckBox option = new CheckBox("Option " + (i + 1)); // Creates placeholder filter options
             filterOptions.getChildren().add(option); // Adds each option to the VBox
         }   
+        
+        /************ SORTING FEATURE */
+        Label sortLabel = new Label("Sort By:");   
+        VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
 
+        //Sort Options Dropdown
+        ComboBox<String> sortDropDown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
+        sortDropDown.getItems().addAll("Title", "Platform", "Date", "Custom"); // Adds options to the dropdown
+        sortDropDown.setPromptText("Sort by"); // Sets prompt text in the dropdown
+        
+        //Adding a label for sort by custom field
+        Label customFieldLabel = new Label("Custom Field: ");
+        TextField textField = new TextField();
+        HBox hb = new HBox();
+        hb.getChildren().addAll(textField);
+
+        /** Declared Label for error messages */
+        final Label errorMsg = new Label();
+        GridPane.setConstraints(errorMsg, 0, 1);
+        GridPane.setColumnSpan(errorMsg, 1);
+
+        /** Line Break to separate Alphabetical & Ascending */
+        Label lineBreak = new Label("-------------------------------");   
+        
+        /** Types of Option Formatting **/
+        ToggleGroup ascendGroup = new ToggleGroup();
+        RadioButton ascendButton = new RadioButton("Ascending");
+        RadioButton descendButton = new RadioButton("Descending");
+        ascendButton.setToggleGroup(ascendGroup);
+        descendButton.setToggleGroup(ascendGroup);
+
+        ToggleGroup alphaGroup = new ToggleGroup();
+        RadioButton alphaButton = new RadioButton("Alphabetical");
+        RadioButton numButton = new RadioButton("Numerical");
+        alphaButton.setToggleGroup(alphaGroup);
+        numButton.setToggleGroup(alphaGroup);
+        
+        //Default Options Selected
+        sortDropDown.getSelectionModel().selectFirst();
+        alphaButton.setSelected(true);
+        ascendButton.setSelected(true);
+
+        //Default Settings For Specific Options
+        sortDropDown.setOnAction(event -> {
+            String field = sortDropDown.getValue();
+            //byDate -- automatically selects numerical
+            if(field.equals("Date")) { 
+                numButton.setSelected(true);
+                numButton.setDisable(false);
+                alphaButton.setDisable(true);
+
+            }
+            //byTitle or byPlatform - selects alphabetical
+            else if(field.equals("Title") || field.equals("Platform")) {
+                alphaButton.setSelected(true);
+                alphaButton.setDisable(false);
+                numButton.setDisable(true);
+            } else {
+                alphaButton.setDisable(false);
+                numButton.setDisable(false);
+            }
+
+        });
+
+        //Other Options
+        sortButton.setOnAction(event -> {
+            String field = sortDropDown.getValue();     
+            ArrayList<Game> sortedLibrary  = null;
+            boolean isAscending = false;
+            boolean isAlphabetical = false;
+
+            if(ascendGroup.getSelectedToggle() != null) 
+            {
+                RadioButton ans = (RadioButton)ascendGroup.getSelectedToggle();
+                isAscending = ans.getText().equals("Ascending"); 
+            }
+            if(alphaGroup.getSelectedToggle() != null) {
+                RadioButton ans = (RadioButton)alphaGroup.getSelectedToggle();
+                isAlphabetical = ans.getText().equals("Alphabetical"); 
+            }
+            
+            if(library == null || library.isEmpty()) {
+                errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                errorMsg.setText("Please import a library");
+            } 
+            else {
+                if(field.equals("Custom")) {
+                    String customFieldText = textField.getText().trim().toLowerCase();
+                    if(customFieldText == null || customFieldText.equals("") || customFieldText.length() == 0) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Please enter a Custom Field");
+                    } else {
+                        if(customFieldText.equals("hours played")) {
+                            customFieldText = "hours";
+                        } else if (customFieldText.equals("metacritic score")){
+                            customFieldText = "Metacritic Score";
+                        } 
+                        sortedLibrary = sort(library, field, customFieldText, isAscending, isAlphabetical);            
+                    }
+                } else {
+                    sortedLibrary = sort(library, field, "", isAscending, isAlphabetical);            
+                }
+                if(sortedLibrary != null) {
+                    gameList.getChildren().clear(); //clear game list
+                    for(Game game : sortedLibrary) {
+                        gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                    }
+                }
+            }
+        });
+        
         // Add the components to the VBox
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);     
-
+        // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
+        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel, 
+        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, descendButton, lineBreak, alphaButton, numButton);  
         return sortFilterBox; // Return the fully assembled VBox
+    }
+
+
+    /***** SORTING IMPLEMENTATION */
+    /**
+     * This method sorts the games library. The sorting logic can be found in the game class.
+     * @param library list of games we are sorting
+     * @param field the field we are sorting by (i.e. Title, Platform, etc)
+     * @param customField the custom field if the custom option is selected
+     * @param isAscending whether the order is ascending or not
+     * @param isAlphabetical whether the order is alphabetical (unicode), or by numerical value 
+     * @return the game library entries sorted 
+     */
+    private ArrayList<Game> sort(ArrayList<Game> library, String field, String customField, boolean isAscending, boolean isAlphabetical) {
+        field = field.trim().toLowerCase();
+        Comparator<Game> comparator = null;
+        if(field.equals("title")) {
+            comparator = Game.byTitle;
+        } else if (field.equals("platform")){
+            comparator = Game.byPlatform;
+        } else if (field.equals("date")){
+            comparator = Game.byDate(isAscending);
+        } else {
+            if(isAlphabetical) {
+                comparator = Game.byFieldString(isAscending, customField);
+            }
+            else {
+                comparator = Game.byFieldDouble(isAscending, customField);
+            }
+        }
+        if(!isAscending) {
+            comparator = comparator.reversed();
+        }
+        Collections.sort(library, comparator);
+        return library;
     }
 
 

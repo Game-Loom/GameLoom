@@ -28,6 +28,9 @@
  */
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.List;
 
 public class Game {
     // Attributes map that stores game data as key-value pairs
@@ -121,4 +124,131 @@ public class Game {
                 "| Hours Played: " + hoursPlayed +
                 "| Release Date: " + getAttribute("release_date");
     }
+
+    /******** SORTING IMPLEMENTATION **************/
+    /*
+      * Example of how a game's attributes may look:
+ *     Map<String, String> attributes = new HashMap<>();
+ *     attributes.put("platform", "Steam");
+ *     attributes.put("hours", "12.5");
+ *     attributes.put("metascore", "85");
+ *     attributes.put("release_date", "2021-05-20"); 
+ *     Game game = new Game(attributes);
+     */
+    public String getTitle() {
+        return getAttribute("game");
+    }
+    
+    public static final Comparator<Game> byDate (boolean isAscending) {
+        return new Comparator<Game>() {
+        // YYYY-MM-DATE  ex: attributes.put("release_date", "2021-05-20"); 
+            @Override
+            public int compare(Game game1, Game game2) {
+
+                String date1 = game1.getAttribute("release_date");
+                String date2 = game2.getAttribute("release_date");
+                System.out.println(date1);
+
+                boolean date1NotValid = (date1.equals("N/A") || date1.length() != 10);
+                boolean date2NotValid = (date2.equals("N/A") || date2.length() != 10);
+
+                if(date1NotValid || date2NotValid) {
+                    if(date1NotValid && date2NotValid) {
+                        return 0; //both invalid, so equal
+                    } else if (date1NotValid) {
+                        return isAscending ? 1 : -1; 
+                        //if ascending, all invalid date goes to end
+                        //if descending, all invalid dates go to start 
+                        // due to nature of Collections.reversed() 
+                    } else {
+                        return isAscending ? -1 : 1;
+                    }
+                }
+
+                int year1 = Integer.parseInt(date1.substring(0, 4));
+                int month1 = Integer.parseInt(date1.substring(5, 7));
+                int day1 =  Integer.parseInt(date1.substring(8));
+
+                int year2 = Integer.parseInt(date2.substring(0, 4));
+                int month2 = Integer.parseInt(date2.substring(5, 7));
+                int day2 =  Integer.parseInt(date2.substring(8));
+
+                if(year1 != year2) {
+                    return Integer.compare(year1, year2);
+                } else if (month1 != month2) {
+                    return Integer.compare(month1, month2);
+                } 
+                return Integer.compare(day1, day2);
+            }
+        };
+    }
+
+    public static final Comparator<Game> byFieldString (boolean isAscending, String fieldName) {
+        return new Comparator<Game>() {
+            @Override
+            public int compare(Game game1, Game game2) {
+                String field1 = game1.getAttribute(fieldName);
+                String field2 = game2.getAttribute(fieldName);
+                
+                boolean field1NotValid = (field1.equals("N/A") || field1.equals("") || field1.length() == 0);
+                boolean field2NotValid = (field2.equals("N/A") || field2.equals("") || field2.length() == 0);
+
+                if(field1NotValid || field2NotValid) {
+                    if(field1NotValid && field2NotValid) {
+                        return 0;
+                    }
+                    else if(field1NotValid) {
+                        return isAscending ? 1 : -1; 
+                        //if ascending, all invalid date goes to end
+                        //if descending, all invalid dates go to start 
+                        // due to nature of Collections.reversed()          
+                    }
+                } else {
+                    return isAscending ? 1 : -1; 
+                } 
+                return field1.compareTo(field2);
+            }
+        };
+    }
+
+    public static double parseDouble(String number) {
+        try {
+            return Double.parseDouble(number);
+        } catch (NumberFormatException e) {
+            return Double.NEGATIVE_INFINITY;
+        }
+    }
+        
+    public static final Comparator<Game> byFieldDouble (boolean isAscending, String fieldName) {
+        return new Comparator<Game>() {
+            @Override
+            public int compare(Game game1, Game game2) {                
+                double field1 = parseDouble(game1.getAttribute(fieldName));
+                double field2 = parseDouble(game2.getAttribute(fieldName));
+                double negInf = Double.NEGATIVE_INFINITY; 
+
+                //if double could not be parsed (returns negative infinity)
+                //field will be moved to the end
+                if(field1 == negInf || field2 == negInf) {
+                    if(field1 == negInf && field2 == negInf) {
+                        return 0;
+                    }
+                    else if(field1 == negInf) {
+                        return isAscending ? 1 : -1; 
+                        //if ascending, all invalid date goes to end
+                        //if descending, all invalid dates go to start 
+                        // due to nature of Collections.reversed() 
+                    }
+                    else {
+                        return isAscending ? -1 : 1;
+                    }
+                }
+                return Double.compare(field1, field2);
+            }
+        };
+    }
+
+    public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitle);
+    public static final Comparator<Game> byPlatform = Comparator.comparing(Game::getPlatform);
+
 }
