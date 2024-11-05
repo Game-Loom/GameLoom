@@ -45,6 +45,8 @@
  * @version 1.4
  */
 
+import java.awt.Panel;
+import java.awt.Rectangle;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -53,6 +55,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -77,16 +80,19 @@ public class GraphicalUserInterface extends Application {
        // **Top Tabs**: TabPane to hold all the sections of the application
        TabPane tabPane = new TabPane(); // Holds all the tabs
        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE); // Prevents tabs from being closed by the user
+       tabPane.getStyleClass().add("fancyBackground");
 
        // Initialize the shared global game list (VBox)
        gameList = new VBox(10); // VBox with 10px spacing between game items
        gameList.setPadding(new Insets(10)); // Adds padding INSIDE the VBox
+       gameList.getStyleClass().add("fancyBackground");
 
        //Sets up the various tabs and their content/actions
         setupTabs(primaryStage, tabPane);
 
        // **Set Scene and Show Stage**.
        Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
+       scene.getStylesheets().add(getClass().getResource("GUI.css").toExternalForm());
        primaryStage.setScene(scene); // Sets the scene on the stage
        primaryStage.show(); // Displays the primary stage
     }
@@ -235,6 +241,7 @@ public class GraphicalUserInterface extends Application {
             if (!library.contains(game)) { // Avoid adding the same game twice
                 library.add(game); // Add game to the library
                 gameList.getChildren().add(createGameItem(gameName, description)); // Display game in the UI
+                gameList.getStyleClass().remove("fancyBackground");
             }
         }
     }
@@ -384,6 +391,7 @@ public class GraphicalUserInterface extends Application {
         if (searchText.isEmpty()) {
             for (Game game : library) {
                 gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                gameList.getStyleClass().remove("fancyBackground");
             }
         } else {
             // Filter the games based on the search keyword (searching both game name and description)
@@ -403,6 +411,7 @@ public class GraphicalUserInterface extends Application {
                 // If all terms match, add the game to the displayed game list
                 if (matchFound) {
                     gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                    gameList.getStyleClass().remove("fancyBackground");
                 }
             }
         }
@@ -474,7 +483,10 @@ public class GraphicalUserInterface extends Application {
         // Set components into the layout
         commonLayout.setCenter(scrollPane); // Places the scrollable game list in the center
         commonLayout.setRight(sortFilterBox); // Places the sort/filter options on the right side
-        commonLayout.setBottom(bottomLayout); // Places the search and buttons at the bottom    
+        commonLayout.setBottom(bottomLayout); // Places the search and buttons at the bottom  
+        
+        commonLayout.getStyleClass().add("fancyBackground");
+        sortFilterBox.getStyleClass().add("fancyBackground");
 
         return commonLayout; // Return the fully assembled layout for each tab
     }

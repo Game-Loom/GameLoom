@@ -1,0 +1,44 @@
+.root{
+    -fx-background-color: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+    -fx-text-fill: white;
+}
+
+.tab{
+    -fx-background-color: #004d7a;
+    -fx-text-fill: white;
+}
+
+Label{
+    -fx-text-fill: white;
+}
+
+Button{
+    -fx-background-color: #00bf72;
+}
+
+ComboBox{
+    -fx-background-color: #00bf72;
+}
+
+VBox{
+    -fx-background-color: #00577e;
+    -fx-text-fill: white;
+}
+
+HBox{
+    -fx-background-color: #00577e;
+    -fx-text-fill: white;
+}
+
+BorderPane{
+    -fx-background-color: #00577e;
+    -fx-text-fill: white;
+}
+
+CheckBox{
+    -fx-text-fill: white;
+}
+
+.fancyBackground{
+    -fx-background-color: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+}
