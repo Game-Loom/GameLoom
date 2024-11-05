@@ -8,6 +8,11 @@
     -fx-text-fill: white;
 }
 
+.tab:selected{
+    -fx-background-color: #00a2b1;
+    -fx-text-fill: white;
+}
+
 Label{
     -fx-text-fill: white;
 }
