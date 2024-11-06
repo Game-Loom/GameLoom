@@ -108,8 +108,8 @@ public class Normalizer {
             else{
                 normAttributes.put(key, attributes.get(key)); //Attribute has no normalized equivalent, add it by itself
                 //If the compiled attribute list doesn't already contain this key, add it
-                if(!GraphicalUserInterface.attributes.contains(key)){
-                    GraphicalUserInterface.attributes.add(key);
+                if(!GUI.attributes.contains(key)){
+                    GUI.attributes.add(key);
                 }
             }
         }
@@ -185,8 +185,8 @@ public class Normalizer {
                 normA.put(normKey, value);
             }
 
-            if(!GraphicalUserInterface.attributes.contains(normKey)){
-                GraphicalUserInterface.attributes.add(normKey);
+            if(!GUI.attributes.contains(normKey)){
+                GUI.attributes.add(normKey);
             }
         }
 

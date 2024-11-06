@@ -2,14 +2,14 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.*;
 
-public class GameCSVExporter{
+public class GLExporter{
     /**
      * Takes in a list of games, then exports that list to a CSV file with all its attributes
      * @param games - the list of games
      * @param file - the CSV file to export the games to
      */
     public static void exportGamesToCSV(List<Game> games, File file){
-        ArrayList<String> attributes = GraphicalUserInterface.attributes; //Gets an array list of attributes in Strign format
+        ArrayList<String> attributes = GUI.attributes; //Gets an array list of attributes in Strign format
         ArrayList<String> csvRows = getGameValues(games, attributes); //Gets the games/CSV rows of the library
 
         StringBuilder headers = new StringBuilder(); //Gets the headers of the CSV file based on the game attributes, seperating them with commas

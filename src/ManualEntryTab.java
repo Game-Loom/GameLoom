@@ -43,7 +43,7 @@ import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import java.util.*;
 
-public class ManualGameEntryTab {
+public class ManualEntryTab {
     private Tab tab; // The actual Tab component for manual game entry
     private List<GameEntry> gameEntries; // List to hold the entries for each game
     private VBox entriesBox; // VBox to hold the entries
@@ -59,7 +59,7 @@ public class ManualGameEntryTab {
      * @param library  A reference to the game's library (used to add new games).
      * @param gameList A reference to the VBox displaying games (used to refresh the display with new games).
      */
-    public ManualGameEntryTab(ArrayList<Game> library, VBox gameList) {
+    public ManualEntryTab(ArrayList<Game> library, VBox gameList) {
         this.library = library;
         this.gameList = gameList;
         this.gameEntries = new ArrayList<>();
@@ -136,7 +136,7 @@ public class ManualGameEntryTab {
         Map<String, String> attributes = gameEntry.collectData();
         Game game = new Game(attributes);
         library.add(game);
-        gameList.getChildren().add(GraphicalUserInterface.createGameItem(game.getAttribute("game"), game.toString()));
+        gameList.getChildren().add(GUI.createGameItem(game.getAttribute("game"), game.toString()));
     }
 
     // Clear the entries after submission

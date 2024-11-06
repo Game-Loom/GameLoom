@@ -87,7 +87,7 @@ import java.time.format.DateTimeFormatter; // End timer imports
 import java.util.Collections;
 import java.util.Comparator;
 
-public class GraphicalUserInterface extends Application {
+public class GUI extends Application {
     // Data Structure Variables
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
@@ -206,7 +206,7 @@ public class GraphicalUserInterface extends Application {
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
             File autoSaveFile = autoSaveDir.resolve("GameLoomLibrary-" + timestamp + ".csv").toFile(); // Default filename: GameLoomLibrary-<timestamp>.csv
             // Export the library to the auto-save file
-            GameCSVExporter.exportGamesToCSV(library, autoSaveFile);
+            GLExporter.exportGamesToCSV(library, autoSaveFile);
             lastLibraryHash = currentLibraryHash; // Update last hash to the current hash
             // Clean up older files if file count exceeds MAX_AUTO_SAVE_FILES
             cleanUpOldAutoSaves(autoSaveDir);
@@ -270,7 +270,7 @@ public class GraphicalUserInterface extends Application {
         setupTabActions(tab7, "physical", primaryStage);
 
        // **Manual Entry Tab**: Allows manual game entries -- separate creation logic in different file (it's kind of big)
-       ManualGameEntryTab manualEntryTab = new ManualGameEntryTab(library, gameList);
+       ManualEntryTab manualEntryTab = new ManualEntryTab(library, gameList);
        Tab manualTab = manualEntryTab.getTab(); // Adds a tab for manual game entries
 
        // Add all tabs to the TabPane.
@@ -327,7 +327,7 @@ public class GraphicalUserInterface extends Application {
                     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
                     File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
                     if (newFile != null) {
-                        GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                        GLExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
                     }
                 }
                 else if(result.get() == noExportButton ){
@@ -429,7 +429,7 @@ public class GraphicalUserInterface extends Application {
 
             if (selectedFile != null) { // If a file is selected
                 String selectedPlatform = platformDropdown.getValue(); // Gets the selected platform from the dropdown
-                List<Game> importedGames = GameCSVImporter.importGamesFromCSV(selectedFile.getPath()); // Imports games from the selected CSV file
+                List<Game> importedGames = GLImporter.importGamesFromCSV(selectedFile.getPath()); // Imports games from the selected CSV file
 
                 // Only assign the platform if the selected option is not "GameLoom Library" (import an existing library from our program)
                 if (!"GameLoom Library".equals(selectedPlatform)) {
@@ -471,7 +471,7 @@ public class GraphicalUserInterface extends Application {
                 fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
                 File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
                 if (newFile != null) {
-                    GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                    GLExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
                 }
             }
         }); 

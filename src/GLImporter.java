@@ -33,7 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class GameCSVImporter {
+public class GLImporter {
 
     /**
      * Imports games from a CSV file and returns a list of Game objects. The method automatically 
