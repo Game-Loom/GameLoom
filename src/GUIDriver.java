@@ -48,7 +48,7 @@
  * game library.
  * 
  * @author CS321-004: Group 3
- * @version 1.5
+ * @version 1.6
  */
 
 import javafx.application.Application;
@@ -87,7 +87,7 @@ import java.time.format.DateTimeFormatter; // End timer imports
 import java.util.Collections;
 import java.util.Comparator;
 
-public class GUI extends Application {
+public class GUIDriver extends Application {
     // Data Structure Variables
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
@@ -127,7 +127,6 @@ public class GUI extends Application {
        primaryStage.setScene(scene); // Sets the scene on the stage
        primaryStage.show(); // Displays the primary stage
     }
-
 
     /**
      * Sets up the auto-save mechanism.
@@ -273,8 +272,13 @@ public class GUI extends Application {
        ManualEntryTab manualEntryTab = new ManualEntryTab(library, gameList);
        Tab manualTab = manualEntryTab.getTab(); // Adds a tab for manual game entries
 
+       // **Edit Tab**: Allows editing of game entries -- separate creation logic in different file (it's kind of big)
+       EditTab editEntryTab = new EditTab(library, gameList);
+       Tab editTab = editEntryTab.getTab();
+
        // Add all tabs to the TabPane.
-       tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab); // Adds all tabs to the TabPane
+       tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab, editTab); // Adds all tabs to the TabPane
+
     }
 
 
@@ -707,6 +711,7 @@ public class GUI extends Application {
     /***** SORTING IMPLEMENTATION */
     /**
      * This method sorts the games library. The sorting logic can be found in the game class.
+     * 
      * @param library list of games we are sorting
      * @param field the field we are sorting by (i.e. Title, Platform, etc)
      * @param customField the custom field if the custom option is selected

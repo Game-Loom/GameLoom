@@ -136,7 +136,7 @@ public class ManualEntryTab {
         Map<String, String> attributes = gameEntry.collectData();
         Game game = new Game(attributes);
         library.add(game);
-        gameList.getChildren().add(GUI.createGameItem(game.getAttribute("game"), game.toString()));
+        gameList.getChildren().add(GUIDriver.createGameItem(game.getAttribute("game"), game.toString()));
     }
 
     // Clear the entries after submission

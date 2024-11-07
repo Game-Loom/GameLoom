@@ -9,7 +9,7 @@ public class GLExporter{
      * @param file - the CSV file to export the games to
      */
     public static void exportGamesToCSV(List<Game> games, File file){
-        ArrayList<String> attributes = GUI.attributes; //Gets an array list of attributes in Strign format
+        ArrayList<String> attributes = GUIDriver.attributes; //Gets an array list of attributes in Strign format
         ArrayList<String> csvRows = getGameValues(games, attributes); //Gets the games/CSV rows of the library
 
         StringBuilder headers = new StringBuilder(); //Gets the headers of the CSV file based on the game attributes, seperating them with commas

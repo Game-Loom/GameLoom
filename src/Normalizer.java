@@ -26,12 +26,12 @@
  * - **captions**: Language support for captions and subtitles.
  * - **multiplayer** and **singleplayer**: Representations of game modes.
  * - **languages**: Supported languages mapped to various spellings or abbreviations.
- * - **popularApps**: A list of 50 non-game apps to exclude from the GameLoom library.
+ * - **popularApps**: A list of Top 50 most popular non-game apps on game consoles to exclude from the GameLoom library.
  * 
  * @see GraphicalUserInterface
  * @see GameCSVImporter
  * @author CS321-004: Group 3
- * @version 1.5
+ * @version 1.6
  */
 
 
@@ -108,8 +108,8 @@ public class Normalizer {
             else{
                 normAttributes.put(key, attributes.get(key)); //Attribute has no normalized equivalent, add it by itself
                 //If the compiled attribute list doesn't already contain this key, add it
-                if(!GUI.attributes.contains(key)){
-                    GUI.attributes.add(key);
+                if(!GUIDriver.attributes.contains(key)){
+                    GUIDriver.attributes.add(key);
                 }
             }
         }
@@ -185,13 +185,28 @@ public class Normalizer {
                 normA.put(normKey, value);
             }
 
-            if(!GUI.attributes.contains(normKey)){
-                GUI.attributes.add(normKey);
+            if(!GUIDriver.attributes.contains(normKey)){
+                GUIDriver.attributes.add(normKey);
             }
         }
 
         return normA;
     }
 
+    /**
+     * Normalizes the given key to match internal labeling conventions.
+     * Converts the key to all lowercase and replaces spaces with underscores.
+     * 
+     * Used in Game.java
+     *
+     * @param key The input key to normalize
+     * @return The normalized key
+     */
+    public static String normalizeKey(String key) {
+        if (key == null || key.isEmpty()) {
+            return key; // Return as-is if the key is null or empty
+        }
+        return key.trim().toLowerCase().replaceAll("\\s+", "_");
+    }
 }
 
