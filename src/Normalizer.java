@@ -1,3 +1,40 @@
+/**
+ * This class is integral to ensuring the consistency and clarity of data displayed in GameLoom.
+ * 
+ * The Normalizer class provides utility methods for standardizing and organizing game attributes 
+ * imported into the GameLoom application. This class applies consistent naming conventions to attributes
+ * from different sources and filters out non-game entries, like popular streaming apps. Through 
+ * normalization, it ensures that data remains organized and consistent across different sources.
+ * 
+ * The class offers flexible handling of various game attribute fields, including platform-specific naming 
+ * conventions for games and their metadata. Additionally, `Normalizer` maintains a list of popular 
+ * non-game applications that can be excluded from the GameLoom library.
+ * 
+ * Key Features:
+ * - **Attribute Normalization**: Converts various naming conventions for common attributes, such as 
+ *   game names, hours played, release dates, and multiplayer/single-player labels, into a unified format.
+ * - **App Filtering**: Excludes a predefined list of popular streaming and utility apps found on 
+ *   PlayStation 4 and 5, ensuring that the GameLoom library focuses solely on games.
+ * - **Consistent Field Structure**: Fields like `multiplayer`, `singleplayer`, and `languages` are 
+ *   mapped to standardized labels, enhancing uniformity across the library.
+ * 
+ * Constant Lists:
+ * - **game**: Variations for game names.
+ * - **hours_played**: Different representations of hours played.
+ * - **last_played**: Variations on "last played" date.
+ * - **release_date**: Labels indicating release dates.
+ * - **captions**: Language support for captions and subtitles.
+ * - **multiplayer** and **singleplayer**: Representations of game modes.
+ * - **languages**: Supported languages mapped to various spellings or abbreviations.
+ * - **popularApps**: A list of 50 non-game apps to exclude from the GameLoom library.
+ * 
+ * @see GraphicalUserInterface
+ * @see GameCSVImporter
+ * @author CS321-004: Group 3
+ * @version 1.5
+ */
+
+
 import java.util.*;
 
 public class Normalizer {
@@ -17,8 +54,22 @@ public class Normalizer {
     private static final String empty[] = {"", "null", "n/a"};
     private static final String trueValues[] = {"x", "true"};
 
+    // List of 50 most popular streaming and utility apps on PlayStation 4 and 5 to exclude from the GameLoom library
+    protected static final String popularApps[] = {
+        "Netflix", "YouTube", "Spotify", "Hulu", "Disney+", "Amazon Prime Video", "Twitch", "Crunchyroll",
+        "HBO Max", "Apple TV", "Peacock", "Paramount+", "Plex", "Funimation", "TikTok", "NFL Sunday Ticket",
+        "YouTube Kids", "Redbox", "ESPN", "Showtime Anytime", "iHeartRadio", "Vudu", "VRV", "Tubi", "Vevo",
+        "CBS All Access", "MLB.TV", "NBA App", "Spotify Kids", "Showmax", "Rakuten TV", "BBC iPlayer", 
+        "Al Jazeera", "DAZN", "Sky Go", "Red Bull TV", "MTV Play", "Deezer", "EPIX Now", "Starz", 
+        "FOX NOW", "Sling TV", "FunimationNow", "Acorn TV", "MUBI", "CuriosityStream", "BritBox", 
+        "FuboTV", "Shudder", "Hoopla",
+    };
+
+    // Could handle DLC very similarly for things that Sony lists as "Digital Artbook", and "Original Soundtrack", I'm sure there are others but those are the ones I have
+
     /**
      * Normalizes the given attribute list.
+     * 
      * @param attributes - An un-normalized attribute list. Obtained directly from CSV import.
      * @return A mapping of normalized attributes and their values
      */
@@ -68,6 +119,7 @@ public class Normalizer {
 
     /**
      * Checks if the given attribute contains some version in the given normalized list.
+     * 
      * @param attribute - An un-normalized attribute
      * @param normalized - One of the constant lists of words we can normalize
      * @return Whether or not the attribute contains one of the words in the given array
@@ -85,6 +137,7 @@ public class Normalizer {
 
     /**
      * Checks if the given value is equivalent to any of the versions in the given list.
+     * 
      * @param attribute - An un-normalized value
      * @param normalized - One of the constant lists of words
      * @return Whether or not the value is equivalent to one of the words in the given array
@@ -101,6 +154,7 @@ public class Normalizer {
 
     /**
      * Adds the normalized version of an attribute to the normalized list, or edits the attribute if its already in the list
+     * 
      * @param normA - The normalized attribute list for the game
      * @param normKey - The normalized attribute
      * @param key - The un-normalized attribute

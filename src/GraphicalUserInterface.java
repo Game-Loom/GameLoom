@@ -8,6 +8,12 @@
  * - **start(Stage primaryStage)**: Initializes the main GUI layout, including the tabs, game list, 
  *   and various user interface components. This method is the main entry point for the JavaFX application.
  * 
+ * - **setupAutoSave()**: Sets up the auto-save mechanism, including creating the auto-save directory and 
+ *   scheduling a periodic timer to check for library changes and trigger auto-save when necessary.
+ * 
+ * - **calculateLibraryHash()**: Calculates a hash value based on the current library contents, allowing 
+ *   the program to detect changes in the library and initiate auto-save only when modifications are detected.
+ * 
  * - **setupTabs(Stage primaryStage, TabPane tabPane)**: Configures the various tabs in the interface, 
  *   including the main library tab and platform-specific tabs (Steam, GOG, etc.), and sets their behavior 
  *   to filter the displayed games based on the selected tab.
@@ -42,7 +48,7 @@
  * game library.
  * 
  * @author CS321-004: Group 3
- * @version 1.4
+ * @version 1.5
  */
 
 import java.awt.Panel;
@@ -55,24 +61,53 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+// Relates to files & data
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// Relates to auto-save
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Timer; 
+import java.util.TimerTask;
+import java.security.MessageDigest; // For the MD5 hash
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter; // End timer imports
+
+
+import java.util.Collections;
+import java.util.Comparator;
 
 public class GraphicalUserInterface extends Application {
+    // Data Structure Variables
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
-    protected static ArrayList<String> attributes = new ArrayList<>();
+    protected static ArrayList<String> attributes = new ArrayList<>(); // Stores the list of game attribute names used for display and export
+    private Timer autoSaveTimer; // Schedules periodic auto-save tasks for the game library
+    private int lastLibraryHash; // Used to detect any changes to the library and trigger auto-saving when necessary
+    
+    // Quick-Edit "Control" Variables
+    private static final long AUTO_SAVE_INTERVAL = 180000; // 180000 = 3 minutes in milliseconds -- was modifiying to 10000 = 10 seconds for testing
+    private static final int MAX_AUTO_SAVE_FILES = 20; // Limit the number of auto-save files (20 * 3 min = version control for your last hour of work if you mess something up)
+
 
     @Override
     public void start(Stage primaryStage) {
         //Sets up a safety net for when the user closes the window
         setupSafetyNet(primaryStage);
+
+        // Sets up auto-save functionality based on a hash of full library
+        setupAutoSave();
 
         // Sets the title of the primary stage (main application window)
        primaryStage.setTitle("My Game Library");
@@ -96,7 +131,119 @@ public class GraphicalUserInterface extends Application {
        primaryStage.setScene(scene); // Sets the scene on the stage
        primaryStage.show(); // Displays the primary stage
     }
-    
+
+
+    /**
+     * Sets up the auto-save mechanism.
+     * 
+     * Creates a designated folder for auto-save files and starts a background Timer that checks the library for changes at: 
+     * AUTO_SAVE_INTERVAL frequency (Quick-Edit Global). If any changes are detected, it triggers an auto-save operation.
+     */
+    private void setupAutoSave() {
+        try {
+            Path autoSaveDir = Paths.get(System.getProperty("user.home"), "GameLoom Exports"); // users.home is system agnostic - GameLoom Exports is the folder name it finds/makes
+            if (!Files.exists(autoSaveDir)) { // Ensure directory exists for saving files
+                Files.createDirectory(autoSaveDir); // Create folder in users home directory if it doesn't already exist
+            }
+            // Set the initial library hash
+            lastLibraryHash = calculateLibraryHash();
+            // Schedule the auto-save timer
+            autoSaveTimer = new Timer(true); // From docs.oracle: Marks this thread as either a daemon thread or a user thread.
+            autoSaveTimer.schedule(new TimerTask() { // ^>The Java Virtual Machine exits when the only threads running are all daemon threads. 
+                @Override
+                public void run() {
+                    checkAndAutoSave(autoSaveDir); // Perform auto-save check at each interval
+                }
+            }, AUTO_SAVE_INTERVAL, AUTO_SAVE_INTERVAL); // Interval every AUTO_SAVE_INTERVAL milliseconds
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+    * Calculates a hash value based on the current library contents using MD5 hashing.
+    * This hash allows the program to detect changes in the library and trigger 
+    * auto-save only when modifications are detected.
+    *
+    * @return An integer hash of the current library's state
+    */
+    private int calculateLibraryHash() {
+       try {
+           // Initialize an MD5 MessageDigest instance to compute the hash
+           MessageDigest digest = MessageDigest.getInstance("MD5");
+
+           // Iterate through each game in the library and add all attributes to the hash.
+           for (Game game : library) { // Hashing the library object will return a hash of the memory address.
+               // Retrieve the full attribute map for the game
+               Map<String, String> attributes = game.getAttributes();
+
+               // Convert each attribute key-value pair to bytes and update the digest
+               for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                   digest.update(entry.getKey().getBytes(StandardCharsets.UTF_8)); // Update with attribute key
+                   digest.update(entry.getValue().getBytes(StandardCharsets.UTF_8)); // Update with attribute value
+               }
+           }
+
+           // Complete the hash computation and retrieve the result as a byte array
+           byte[] hashBytes = digest.digest();
+           return Arrays.hashCode(hashBytes); // Return an integer representation of the hash for easy comparison
+       } catch (Exception e) {
+           e.printStackTrace();
+           return 0;
+       }    
+    }   
+
+
+    /**
+     * Checks if the library's hash has changed. If changes are detected, a new auto-save file 
+     * is created with a timestamped filename, and older auto-save files are cleaned up to stay 
+     * within the maximum limit. Current limit set to: 20
+     *
+     * @param autoSaveDir The directory for saving auto-save files
+     */
+    private void checkAndAutoSave(Path autoSaveDir) {
+        int currentLibraryHash = calculateLibraryHash();
+        // Proceed only if changes are detected (hash has changed)
+        if (currentLibraryHash != lastLibraryHash) {
+            // Generate a timestamp for the filename
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
+            File autoSaveFile = autoSaveDir.resolve("GameLoomLibrary-" + timestamp + ".csv").toFile(); // Default filename: GameLoomLibrary-<timestamp>.csv
+            // Export the library to the auto-save file
+            GameCSVExporter.exportGamesToCSV(library, autoSaveFile);
+            lastLibraryHash = currentLibraryHash; // Update last hash to the current hash
+            // Clean up older files if file count exceeds MAX_AUTO_SAVE_FILES
+            cleanUpOldAutoSaves(autoSaveDir);
+        }
+    }
+
+
+    /**
+     * Cleans up old auto-save files in the designated auto-save directory by keeping 
+     * only the most recent files, as defined by MAX_AUTO_SAVE_FILES. Files are sorted 
+     * by creation date, and the oldest are deleted first.
+     *
+     * @param autoSaveDir The directory containing auto-save files.
+     */
+    private void cleanUpOldAutoSaves(Path autoSaveDir) {
+        try (Stream<Path> files = Files.list(autoSaveDir)) {// Open a stream to list files in the auto-save directory
+            List<Path> autoSaveFiles = files
+                    .filter(path -> path.getFileName().toString().startsWith("GameLoomLibrary-")) // Filter the files in the directory to keep only those that start with "GameLoomLibrary-" (auto-save files)
+                    .sorted(Comparator.comparingLong(path -> path.toFile().lastModified())) // Sort the files by last modified time to arrange them from oldest to newest
+                    .collect(Collectors.toList()); // Collect the sorted files into a list
+
+            // Delete oldest files if file count exceeds MAX_AUTO_SAVE_FILES
+            if (autoSaveFiles.size() > MAX_AUTO_SAVE_FILES) {
+                for (Path file : autoSaveFiles.subList(0, autoSaveFiles.size() - MAX_AUTO_SAVE_FILES)) {
+                    Files.deleteIfExists(file);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     /**
      * Sets up the various tabs in the stage, besides the main library tab.
      * 
@@ -134,6 +281,7 @@ public class GraphicalUserInterface extends Application {
        tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab); // Adds all tabs to the TabPane
     }
 
+
     /**
      * Sets up the selection event for the given tab, which is displaying the game list filtered via the given word.
      * 
@@ -149,6 +297,7 @@ public class GraphicalUserInterface extends Application {
             }
         });
     }
+
 
     /**
      * Sets up a safety net for when the user closes the window by creating an alert popup and asking them if they wish to export the library
@@ -194,6 +343,8 @@ public class GraphicalUserInterface extends Application {
             }
         });
     }
+
+    
     /**
      * Creates an HBox containing the game details (name, description) and an image placeholder.
      * This method is used to display each game as an item in the game list
@@ -441,11 +592,157 @@ public class GraphicalUserInterface extends Application {
             CheckBox option = new CheckBox("Option " + (i + 1)); // Creates placeholder filter options
             filterOptions.getChildren().add(option); // Adds each option to the VBox
         }   
+        
+        /************ SORTING FEATURE */
+        Label sortLabel = new Label("Sort By:");   
+        VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
 
+        //Sort Options Dropdown
+        ComboBox<String> sortDropDown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
+        sortDropDown.getItems().addAll("Title", "Platform", "Date", "Custom"); // Adds options to the dropdown
+        sortDropDown.setPromptText("Sort by"); // Sets prompt text in the dropdown
+        
+        //Adding a label for sort by custom field
+        Label customFieldLabel = new Label("Custom Field: ");
+        TextField textField = new TextField();
+        HBox hb = new HBox();
+        hb.getChildren().addAll(textField);
+
+        /** Declared Label for error messages */
+        final Label errorMsg = new Label();
+        GridPane.setConstraints(errorMsg, 0, 1);
+        GridPane.setColumnSpan(errorMsg, 1);
+
+        /** Line Break to separate Alphabetical & Ascending */
+        Label lineBreak = new Label("-------------------------------");   
+        
+        /** Types of Option Formatting **/
+        ToggleGroup ascendGroup = new ToggleGroup();
+        RadioButton ascendButton = new RadioButton("Ascending");
+        RadioButton descendButton = new RadioButton("Descending");
+        ascendButton.setToggleGroup(ascendGroup);
+        descendButton.setToggleGroup(ascendGroup);
+
+        ToggleGroup alphaGroup = new ToggleGroup();
+        RadioButton alphaButton = new RadioButton("Alphabetical");
+        RadioButton numButton = new RadioButton("Numerical");
+        alphaButton.setToggleGroup(alphaGroup);
+        numButton.setToggleGroup(alphaGroup);
+        
+        //Default Options Selected
+        sortDropDown.getSelectionModel().selectFirst();
+        alphaButton.setSelected(true);
+        ascendButton.setSelected(true);
+
+        //Default Settings For Specific Options
+        sortDropDown.setOnAction(event -> {
+            String field = sortDropDown.getValue();
+            //byDate -- automatically selects numerical
+            if(field.equals("Date")) { 
+                numButton.setSelected(true);
+                numButton.setDisable(false);
+                alphaButton.setDisable(true);
+
+            }
+            //byTitle or byPlatform - selects alphabetical
+            else if(field.equals("Title") || field.equals("Platform")) {
+                alphaButton.setSelected(true);
+                alphaButton.setDisable(false);
+                numButton.setDisable(true);
+            } else {
+                alphaButton.setDisable(false);
+                numButton.setDisable(false);
+            }
+
+        });
+
+        //Other Options
+        sortButton.setOnAction(event -> {
+            String field = sortDropDown.getValue();     
+            ArrayList<Game> sortedLibrary  = null;
+            boolean isAscending = false;
+            boolean isAlphabetical = false;
+
+            if(ascendGroup.getSelectedToggle() != null) 
+            {
+                RadioButton ans = (RadioButton)ascendGroup.getSelectedToggle();
+                isAscending = ans.getText().equals("Ascending"); 
+            }
+            if(alphaGroup.getSelectedToggle() != null) {
+                RadioButton ans = (RadioButton)alphaGroup.getSelectedToggle();
+                isAlphabetical = ans.getText().equals("Alphabetical"); 
+            }
+            
+            if(library == null || library.isEmpty()) {
+                errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                errorMsg.setText("Please import a library");
+            } 
+            else {
+                if(field.equals("Custom")) {
+                    String customFieldText = textField.getText().trim().toLowerCase();
+                    if(customFieldText == null || customFieldText.equals("") || customFieldText.length() == 0) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Please enter a Custom Field");
+                    } else {
+                        if(customFieldText.equals("hours played")) {
+                            customFieldText = "hours";
+                        } else if (customFieldText.equals("metacritic score")){
+                            customFieldText = "Metacritic Score";
+                        } 
+                        sortedLibrary = sort(library, field, customFieldText, isAscending, isAlphabetical);            
+                    }
+                } else {
+                    sortedLibrary = sort(library, field, "", isAscending, isAlphabetical);            
+                }
+                if(sortedLibrary != null) {
+                    gameList.getChildren().clear(); //clear game list
+                    for(Game game : sortedLibrary) {
+                        gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                    }
+                }
+            }
+        });
+        
         // Add the components to the VBox
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);     
-
+        // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
+        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel, 
+        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, descendButton, lineBreak, alphaButton, numButton);  
         return sortFilterBox; // Return the fully assembled VBox
+    }
+
+
+    /***** SORTING IMPLEMENTATION */
+    /**
+     * This method sorts the games library. The sorting logic can be found in the game class.
+     * @param library list of games we are sorting
+     * @param field the field we are sorting by (i.e. Title, Platform, etc)
+     * @param customField the custom field if the custom option is selected
+     * @param isAscending whether the order is ascending or not
+     * @param isAlphabetical whether the order is alphabetical (unicode), or by numerical value 
+     * @return the game library entries sorted 
+     */
+    private ArrayList<Game> sort(ArrayList<Game> library, String field, String customField, boolean isAscending, boolean isAlphabetical) {
+        field = field.trim().toLowerCase();
+        Comparator<Game> comparator = null;
+        if(field.equals("title")) {
+            comparator = Game.byTitle;
+        } else if (field.equals("platform")){
+            comparator = Game.byPlatform;
+        } else if (field.equals("date")){
+            comparator = Game.byDate(isAscending);
+        } else {
+            if(isAlphabetical) {
+                comparator = Game.byFieldString(isAscending, customField);
+            }
+            else {
+                comparator = Game.byFieldDouble(isAscending, customField);
+            }
+        }
+        if(!isAscending) {
+            comparator = comparator.reversed();
+        }
+        Collections.sort(library, comparator);
+        return library;
     }
 
 
@@ -462,8 +759,10 @@ public class GraphicalUserInterface extends Application {
 
         // Makes the shared game list scrollable
         ScrollPane scrollPane = new ScrollPane(gameList); // Uses the shared gameList for all tabs
-        scrollPane.setFitToWidth(true); // Ensures content fits the width   
-
+        //scrollPane.setFitToWidth(true); // Ensures content fits the width   // REMOVED ON 10/26 TO ALLOW FOR HORIZONTAL SCROLLING
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Enable horizontal scrolling as needed
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Enable vertical scrolling as needed
+    
         // **Sort and Filter Panel**: Extracted to a helper method
         VBox sortFilterBox = setupSortFilterPanel();    
 
