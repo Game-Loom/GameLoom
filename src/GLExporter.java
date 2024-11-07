@@ -1,3 +1,30 @@
+/**
+ * The GLExporter class is responsible for exporting video game data from the GameLoom library to CSV files.
+ * Each game's attributes are extracted and formatted as CSV rows, ensuring data consistency and proper handling
+ * of special characters such as commas within attribute values.
+ * 
+ * This class supports:
+ * - Exporting a list of games with all their attributes to a specified CSV file.
+ * - Creating CSV headers based on game attributes.
+ * - Handling special cases, such as replacing commas in values to prevent conflicts with the CSV delimiter.
+ * 
+ * Key functionalities include:
+ * - Writing game attributes as CSV rows, formatted with a standard comma delimiter.
+ * - Automatically handling empty attribute values by replacing them with "N/A".
+ * - Safeguarding against delimiter conflicts by replacing internal commas with spaces within attribute values.
+ * 
+ * Example of how this class works:
+ *     GLExporter.exportGamesToCSV(games, new File("path/to/exported_file.csv"));
+ *     // Exports the given list of games to a CSV file with appropriate formatting and headers.
+ * 
+ * Note: The getGameValues method provides logic for formatting each game as a CSV row, ensuring data integrity and proper 
+ * structure of the output.
+ * 
+ * @author CS321-004: Group 3
+ * @version 1.0
+ */
+
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.*;
@@ -5,6 +32,7 @@ import java.util.*;
 public class GLExporter{
     /**
      * Takes in a list of games, then exports that list to a CSV file with all its attributes
+     * 
      * @param games - the list of games
      * @param file - the CSV file to export the games to
      */
@@ -36,6 +64,7 @@ public class GLExporter{
     /**
      * Returns an ArrayList of the rows for the CSV
      * Each row is a String formatted as attribute1Value, attribute2Value, ... attributNValue, as is normal for a CSV
+     * 
      * @param games List of games in the library
      * @param attributes 
      * @return
