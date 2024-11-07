@@ -67,6 +67,7 @@ public class ManualGameEntryTab {
 
         // Build the UI
         buildUI();
+        entriesBox.getStyleClass().add("fancyBackground");
     }
 
 
@@ -119,6 +120,7 @@ public class ManualGameEntryTab {
     private void addGameEntry() {
         // Create a new GameEntry instance
         GameEntry gameEntry = new GameEntry();
+
         gameEntries.add(gameEntry);
 
         // Add the UI component to entriesBox
