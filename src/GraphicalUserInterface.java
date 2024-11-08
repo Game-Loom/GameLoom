@@ -586,10 +586,14 @@ public class GraphicalUserInterface extends Application {
         // Button for triggering sort/filter functionality
         Button sortButton = new Button("Sort and Filter"); // A button for future sort/filter functionality 
 
+
+        /** FILTERING FEATURE */
         // Create dummy filter options (We can replace these with whatever key option we want the default filter options to be)
         VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
-        for (int i = 0; i < 5; i++) {
-            CheckBox option = new CheckBox("Option " + (i + 1)); // Creates placeholder filter options
+        String[] filterNames = {"Platform, Release Date, Custom"};
+        int numberOfOptions = 3;
+        for (int i = 0; i < 3; i++) {
+            CheckBox option = new CheckBox(filterNames[i] + (i + 1)); // Creates placeholder filter options
             filterOptions.getChildren().add(option); // Adds each option to the VBox
         }   
         
