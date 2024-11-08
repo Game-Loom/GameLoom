@@ -589,14 +589,32 @@ public class GraphicalUserInterface extends Application {
 
         /** FILTERING FEATURE */
         // Create dummy filter options (We can replace these with whatever key option we want the default filter options to be)
+        
         VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
-        String[] filterNames = {"Platform, Release Date, Custom"};
+    
+        String[] filterNames = {"Platform, Release Date ranging from:, Custom"};
+        /* 
         int numberOfOptions = 3;
         for (int i = 0; i < 3; i++) {
             CheckBox option = new CheckBox(filterNames[i] + (i + 1)); // Creates placeholder filter options
             filterOptions.getChildren().add(option); // Adds each option to the VBox
-        }   
-        
+        }  
+        */ 
+
+        /** Dating Ranging from _____ to ______ */
+        CheckBox dateFilter = new CheckBox("Date from:");
+        TextField startDate = new TextField();
+        startDate.setPromptText("Start Date");
+        TextField endDate = new TextField();
+        endDate.setPromptText("End Date");
+        Label rangeTo = new Label("to");
+        startDate.setPrefWidth(10); 
+        endDate.setPrefWidth(10);   
+        HBox dateFilterBox = new HBox(10, dateFilter, startDate, rangeTo, endDate);
+        filterOptions.getChildren().add(dateFilterBox);
+
+
+
         /************ SORTING FEATURE */
         Label sortLabel = new Label("Sort By:");   
         VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
@@ -709,8 +727,15 @@ public class GraphicalUserInterface extends Application {
         
         // Add the components to the VBox
         // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel, 
-        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, descendButton, lineBreak, alphaButton, numButton);  
+        sortFilterBox.getChildren().addAll(
+        sortFilterLabel, sortButton, 
+        filterOptions, 
+        sortLabel, 
+        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, 
+        descendButton, lineBreak, alphaButton, numButton);  
+
+
+        
         return sortFilterBox; // Return the fully assembled VBox
     }
 
