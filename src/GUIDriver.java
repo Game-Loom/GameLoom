@@ -48,11 +48,9 @@
  * game library.
  * 
  * @author CS321-004: Group 3
- * @version 1.5
+ * @version 1.6
  */
 
-import java.awt.Panel;
-import java.awt.Rectangle;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -61,6 +59,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+//import javafx.scene.shape.Path; // Conflicts with auto-save java.nio.file.Path but doesn't seem to break anything when I remove it, likely a relic from something old I was doing at some point 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 // Relates to files & data
@@ -88,7 +87,7 @@ import java.time.format.DateTimeFormatter; // End timer imports
 import java.util.Collections;
 import java.util.Comparator;
 
-public class GraphicalUserInterface extends Application {
+public class GUIDriver extends Application {
     // Data Structure Variables
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
@@ -115,23 +114,19 @@ public class GraphicalUserInterface extends Application {
        // **Top Tabs**: TabPane to hold all the sections of the application
        TabPane tabPane = new TabPane(); // Holds all the tabs
        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE); // Prevents tabs from being closed by the user
-       tabPane.getStyleClass().add("fancyBackground");
 
        // Initialize the shared global game list (VBox)
        gameList = new VBox(10); // VBox with 10px spacing between game items
        gameList.setPadding(new Insets(10)); // Adds padding INSIDE the VBox
-       gameList.getStyleClass().add("fancyBackground");
 
        //Sets up the various tabs and their content/actions
         setupTabs(primaryStage, tabPane);
 
        // **Set Scene and Show Stage**.
        Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
-       scene.getStylesheets().add(getClass().getResource("GUI.css").toExternalForm());
        primaryStage.setScene(scene); // Sets the scene on the stage
        primaryStage.show(); // Displays the primary stage
     }
-
 
     /**
      * Sets up the auto-save mechanism.
@@ -210,7 +205,7 @@ public class GraphicalUserInterface extends Application {
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
             File autoSaveFile = autoSaveDir.resolve("GameLoomLibrary-" + timestamp + ".csv").toFile(); // Default filename: GameLoomLibrary-<timestamp>.csv
             // Export the library to the auto-save file
-            GameCSVExporter.exportGamesToCSV(library, autoSaveFile);
+            GLExporter.exportGamesToCSV(library, autoSaveFile);
             lastLibraryHash = currentLibraryHash; // Update last hash to the current hash
             // Clean up older files if file count exceeds MAX_AUTO_SAVE_FILES
             cleanUpOldAutoSaves(autoSaveDir);
@@ -274,11 +269,16 @@ public class GraphicalUserInterface extends Application {
         setupTabActions(tab7, "physical", primaryStage);
 
        // **Manual Entry Tab**: Allows manual game entries -- separate creation logic in different file (it's kind of big)
-       ManualGameEntryTab manualEntryTab = new ManualGameEntryTab(library, gameList);
+       ManualEntryTab manualEntryTab = new ManualEntryTab(library, gameList);
        Tab manualTab = manualEntryTab.getTab(); // Adds a tab for manual game entries
 
+       // **Edit Tab**: Allows editing of game entries -- separate creation logic in different file (it's kind of big)
+       EditTab editEntryTab = new EditTab(library, gameList);
+       Tab editTab = editEntryTab.getTab();
+
        // Add all tabs to the TabPane.
-       tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab); // Adds all tabs to the TabPane
+       tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab, editTab); // Adds all tabs to the TabPane
+
     }
 
 
@@ -331,7 +331,7 @@ public class GraphicalUserInterface extends Application {
                     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
                     File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
                     if (newFile != null) {
-                        GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                        GLExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
                     }
                 }
                 else if(result.get() == noExportButton ){
@@ -392,7 +392,6 @@ public class GraphicalUserInterface extends Application {
             if (!library.contains(game)) { // Avoid adding the same game twice
                 library.add(game); // Add game to the library
                 gameList.getChildren().add(createGameItem(gameName, description)); // Display game in the UI
-                //gameList.getStyleClass().remove("fancyBackground");
             }
         }
     }
@@ -434,7 +433,7 @@ public class GraphicalUserInterface extends Application {
 
             if (selectedFile != null) { // If a file is selected
                 String selectedPlatform = platformDropdown.getValue(); // Gets the selected platform from the dropdown
-                List<Game> importedGames = GameCSVImporter.importGamesFromCSV(selectedFile.getPath()); // Imports games from the selected CSV file
+                List<Game> importedGames = GLImporter.importGamesFromCSV(selectedFile.getPath()); // Imports games from the selected CSV file
 
                 // Only assign the platform if the selected option is not "GameLoom Library" (import an existing library from our program)
                 if (!"GameLoom Library".equals(selectedPlatform)) {
@@ -476,7 +475,7 @@ public class GraphicalUserInterface extends Application {
                 fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv")); // Limits save type to CSV
                 File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
                 if (newFile != null) {
-                    GameCSVExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                    GLExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
                 }
             }
         }); 
@@ -542,7 +541,6 @@ public class GraphicalUserInterface extends Application {
         if (searchText.isEmpty()) {
             for (Game game : library) {
                 gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
-                //gameList.getStyleClass().remove("fancyBackground");
             }
         } else {
             // Filter the games based on the search keyword (searching both game name and description)
@@ -562,7 +560,6 @@ public class GraphicalUserInterface extends Application {
                 // If all terms match, add the game to the displayed game list
                 if (matchFound) {
                     gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
-                    //gameList.getStyleClass().remove("fancyBackground");
                 }
             }
         }
@@ -714,6 +711,7 @@ public class GraphicalUserInterface extends Application {
     /***** SORTING IMPLEMENTATION */
     /**
      * This method sorts the games library. The sorting logic can be found in the game class.
+     * 
      * @param library list of games we are sorting
      * @param field the field we are sorting by (i.e. Title, Platform, etc)
      * @param customField the custom field if the custom option is selected
@@ -782,12 +780,7 @@ public class GraphicalUserInterface extends Application {
         // Set components into the layout
         commonLayout.setCenter(scrollPane); // Places the scrollable game list in the center
         commonLayout.setRight(sortFilterBox); // Places the sort/filter options on the right side
-        commonLayout.setBottom(bottomLayout); // Places the search and buttons at the bottom  
-        
-        commonLayout.getStyleClass().add("fancyBackground");
-        sortFilterBox.getStyleClass().add("fancyBackground");
-
-        
+        commonLayout.setBottom(bottomLayout); // Places the search and buttons at the bottom    
 
         return commonLayout; // Return the fully assembled layout for each tab
     }

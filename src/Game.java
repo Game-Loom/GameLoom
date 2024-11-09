@@ -24,7 +24,7 @@
  *     Game game = new Game(attributes);
  * 
  * @author CS321-004: Group 3
- * @version 1.3
+ * @version 1.4
  */
 import java.util.HashMap;
 import java.util.Map;
@@ -192,6 +192,18 @@ public class Game {
             }
         }
         return false;
+    }
+
+    /**
+     * Helper method to update an attribute key/value pair
+     * Used in EditTab.java
+     */
+    public void updateAttribute(String key, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            attributes.remove(key);
+        } else {
+            attributes.put(Normalizer.normalizeKey(key), value.trim());
+        }
     }
 
     /******** SORTING IMPLEMENTATION **************/
