@@ -62,6 +62,7 @@ import javafx.scene.layout.*;
 //import javafx.scene.shape.Path; // Conflicts with auto-save java.nio.file.Path but doesn't seem to break anything when I remove it, likely a relic from something old I was doing at some point 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 // Relates to files & data
 import java.io.File;
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.security.MessageDigest; // For the MD5 hash
 import java.nio.charset.StandardCharsets;
+import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -118,6 +120,7 @@ public class GUIDriver extends Application {
        // Initialize the shared global game list (VBox)
        gameList = new VBox(10); // VBox with 10px spacing between game items
        gameList.setPadding(new Insets(10)); // Adds padding INSIDE the VBox
+       gameList.getStyleClass().add("fancyBackground");
 
        //Sets up the various tabs and their content/actions
         setupTabs(primaryStage, tabPane);
@@ -269,6 +272,15 @@ public class GUIDriver extends Application {
         setupTabActions(tab6, "nintendo", primaryStage);
         setupTabActions(tab7, "physical", primaryStage);
 
+        //Sets up the logos for every tab
+        setupTabImages(tab1, "imgs/steam.png");
+        setupTabImages(tab2, "imgs/gog.png");
+        setupTabImages(tab3, "imgs/itch.png");
+        setupTabImages(tab4, "imgs/playstation.png");
+        setupTabImages(tab5, "imgs/xbox.png");
+        setupTabImages(tab6, "imgs/nintendo.png");
+        setupTabImages(tab7, "imgs/physical.png");
+
        // **Manual Entry Tab**: Allows manual game entries -- separate creation logic in different file (it's kind of big)
        ManualEntryTab manualEntryTab = new ManualEntryTab(library, gameList);
        Tab manualTab = manualEntryTab.getTab(); // Adds a tab for manual game entries
@@ -299,6 +311,22 @@ public class GUIDriver extends Application {
         });
     }
 
+    /**
+     * Adds an the given image to the given tab
+     * 
+     * @param tab - the tab that we're setting an image for
+     * @param imagePath - the path to the image
+     */
+    private static void setupTabImages(Tab tab, String imagePath){
+        try{
+            Image image = new Image(new FileInputStream(imagePath), 25, 25, true, false);
+            ImageView logo = new ImageView(image);
+            tab.setGraphic(logo);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Sets up a safety net for when the user closes the window by creating an alert popup and asking them if they wish to export the library
@@ -835,7 +863,9 @@ public class GUIDriver extends Application {
         // Set components into the layout
         commonLayout.setCenter(scrollPane); // Places the scrollable game list in the center
         commonLayout.setRight(sortFilterBox); // Places the sort/filter options on the right side
-        commonLayout.setBottom(bottomLayout); // Places the search and buttons at the bottom    
+        commonLayout.setBottom(bottomLayout); // Places the search and buttons at the bottom
+        commonLayout.getStyleClass().add("fancyBackground");
+        sortFilterBox.getStyleClass().add("fancyBackground");
 
         return commonLayout; // Return the fully assembled layout for each tab
     }
