@@ -565,7 +565,7 @@ public class GUIDriver extends Application {
         }
     }
 
-    /**
+        /**
      * Sets up the Sort and Filter panel, which contains a label, a sort button,
      * and several dummy filter options. The panel will allow users to sort and 
      * filter the displayed game list.
@@ -583,13 +583,61 @@ public class GUIDriver extends Application {
         // Button for triggering sort/filter functionality
         Button sortButton = new Button("Sort and Filter"); // A button for future sort/filter functionality 
 
+
+        /** FILTERING FEATURE */
         // Create dummy filter options (We can replace these with whatever key option we want the default filter options to be)
-        VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
-        for (int i = 0; i < 5; i++) {
-            CheckBox option = new CheckBox("Option " + (i + 1)); // Creates placeholder filter options
-            filterOptions.getChildren().add(option); // Adds each option to the VBox
-        }   
         
+
+        /*HELLO WORLDDDDDDDDDDDDDDDDDDDDDDDDDD! */
+
+        VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
+    
+        String[] filterNames = {"Platform, Release Date ranging from:, Custom"};
+        /* 
+        int numberOfOptions = 3;
+        for (int i = 0; i < 3; i++) {
+            CheckBox option = new CheckBox(filterNames[i] + (i + 1)); // Creates placeholder filter options
+            filterOptions.getChildren().add(option); // Adds each option to the VBox
+        }  
+        */ 
+
+        /** Filter Option 1: By Platform */
+        CheckBox platformSelected = new CheckBox("Platform: ");
+        TextField platformField = new TextField();
+        platformField.setPrefWidth(63); 
+        HBox platformFilterBox = new HBox(10, platformSelected, platformField);
+
+        /** Filter Option 3: By Custom Field (Includes "keyword") */
+        CheckBox filterKeywordCheckBox = new CheckBox("Includes: ");
+        TextField targetField = new TextField();
+        targetField.setPromptText("e.g. Fantasy");
+        targetField.setPrefWidth(80); 
+        Label fieldPromptLabel = new Label("in");
+        TextField inAttribute = new TextField();
+        inAttribute.setPromptText("e.g. Genre");
+        inAttribute.setPrefWidth(80); 
+        HBox keywordHBox = new HBox(10, filterKeywordCheckBox, targetField, fieldPromptLabel, inAttribute);
+
+        /** Filter Option 3: Boxes for dates _____ to ______ */
+        CheckBox dateSelected = new CheckBox("Year from: ");
+        TextField startDate = new TextField();
+        startDate.setPromptText("e.g. 1999");
+        TextField endDate = new TextField();
+        endDate.setPromptText("e.g. 2024");
+        Label datePrompts = new Label("to");
+        startDate.setPrefWidth(63); 
+        endDate.setPrefWidth(63);   
+        HBox dateFilterBox = new HBox(10, dateSelected, startDate, datePrompts, endDate);
+
+        /** Filter Option 4: By Custom Field (Includes "keyword") */
+
+        /** Filter Option 5: By Custom FIeld (Range) */
+
+
+
+
+
+
         /************ SORTING FEATURE */
         Label sortLabel = new Label("Sort By:");   
         VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
@@ -702,8 +750,15 @@ public class GUIDriver extends Application {
         
         // Add the components to the VBox
         // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel, 
-        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, descendButton, lineBreak, alphaButton, numButton);  
+        sortFilterBox.getChildren().addAll(
+        sortFilterLabel, sortButton,
+        filterOptions, platformFilterBox, keywordHBox, dateFilterBox,  //filter options 
+        sortLabel,  //sorting options
+        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, 
+        descendButton, lineBreak, alphaButton, numButton);  
+
+
+        
         return sortFilterBox; // Return the fully assembled VBox
     }
 
@@ -711,7 +766,6 @@ public class GUIDriver extends Application {
     /***** SORTING IMPLEMENTATION */
     /**
      * This method sorts the games library. The sorting logic can be found in the game class.
-     * 
      * @param library list of games we are sorting
      * @param field the field we are sorting by (i.e. Title, Platform, etc)
      * @param customField the custom field if the custom option is selected
