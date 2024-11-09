@@ -607,7 +607,8 @@ public class GUIDriver extends Application {
         sortFilterBox.setPadding(new Insets(10)); // Padding around the box 
 
         // Label for the sort/filter panel
-        Label sortFilterLabel = new Label("Sort and Filter");   
+        Label sortFilterLabel = new Label("Sort and Filter"); 
+        sortFilterLabel.setStyle("-fx-font-weight: bold");
 
         // Button for triggering sort/filter functionality
         Button sortButton = new Button("Sort and Filter"); // A button for future sort/filter functionality 
@@ -658,6 +659,10 @@ public class GUIDriver extends Application {
         endDate.setPrefWidth(63);   
         HBox dateFilterBox = new HBox(10, dateSelected, startDate, datePrompts, endDate);
 
+        platformFilterBox.getStyleClass().add("transparent");
+        keywordHBox.getStyleClass().add("transparent");
+        dateFilterBox.getStyleClass().add("transparent");
+
         /** Filter Option 4: By Custom Field (Includes "keyword") */
 
         /** Filter Option 5: By Custom FIeld (Range) */
@@ -681,6 +686,8 @@ public class GUIDriver extends Application {
         TextField textField = new TextField();
         HBox hb = new HBox();
         hb.getChildren().addAll(textField);
+
+        hb.getStyleClass().add("transparent");
 
         /** Declared Label for error messages */
         final Label errorMsg = new Label();

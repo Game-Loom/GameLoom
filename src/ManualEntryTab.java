@@ -67,6 +67,7 @@ public class ManualEntryTab {
 
         // Build the UI
         buildUI();
+        entriesBox.getStyleClass().add("fancyBackground");
     }
 
 
