@@ -44,6 +44,10 @@ CheckBox{
     -fx-text-fill: white;
 }
 
+RadioButton{
+    -fx-text-fill: white;
+}
+
 .fancyBackground{
     -fx-background-color: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
 }

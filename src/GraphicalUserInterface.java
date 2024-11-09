@@ -59,12 +59,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 // Relates to files & data
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -273,6 +275,15 @@ public class GraphicalUserInterface extends Application {
         setupTabActions(tab6, "nintendo", primaryStage);
         setupTabActions(tab7, "physical", primaryStage);
 
+        //Sets up the logos for every tab
+       setupTabImages(tab1, "imgs/steam.png");
+       setupTabImages(tab2, "imgs/gog.png");
+       setupTabImages(tab3, "imgs/itch.png");
+       setupTabImages(tab4, "imgs/playstation.png");
+       setupTabImages(tab5, "imgs/xbox.png");
+       setupTabImages(tab6, "imgs/nintendo.png");
+       setupTabImages(tab7, "imgs/physical.png");
+
        // **Manual Entry Tab**: Allows manual game entries -- separate creation logic in different file (it's kind of big)
        ManualGameEntryTab manualEntryTab = new ManualGameEntryTab(library, gameList);
        Tab manualTab = manualEntryTab.getTab(); // Adds a tab for manual game entries
@@ -296,6 +307,23 @@ public class GraphicalUserInterface extends Application {
                 tab.setContent(createCommonTabLayout(primaryStage)); //Sets the tab layout
             }
         });
+    }
+
+    /**
+     * Adds an the given image to the given tab
+     * 
+     * @param tab - the tab that we're setting an image for
+     * @param imagePath - the path to the image
+     */
+    private static void setupTabImages(Tab tab, String imagePath){
+        try{
+            Image image = new Image(new FileInputStream(imagePath), 25, 25, true, false);
+            ImageView logo = new ImageView(image);
+            tab.setGraphic(logo);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -586,13 +614,58 @@ public class GraphicalUserInterface extends Application {
         // Button for triggering sort/filter functionality
         Button sortButton = new Button("Sort and Filter"); // A button for future sort/filter functionality 
 
+
+        /** FILTERING FEATURE */
         // Create dummy filter options (We can replace these with whatever key option we want the default filter options to be)
-        VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
-        for (int i = 0; i < 5; i++) {
-            CheckBox option = new CheckBox("Option " + (i + 1)); // Creates placeholder filter options
-            filterOptions.getChildren().add(option); // Adds each option to the VBox
-        }   
         
+        VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
+    
+        String[] filterNames = {"Platform, Release Date ranging from:, Custom"};
+        /* 
+        int numberOfOptions = 3;
+        for (int i = 0; i < 3; i++) {
+            CheckBox option = new CheckBox(filterNames[i] + (i + 1)); // Creates placeholder filter options
+            filterOptions.getChildren().add(option); // Adds each option to the VBox
+        }  
+        */ 
+
+        /** Filter Option 1: By Platform */
+        CheckBox platformSelected = new CheckBox("Platform: ");
+        TextField platformField = new TextField();
+        platformField.setPrefWidth(63); 
+        HBox platformFilterBox = new HBox(10, platformSelected, platformField);
+
+        /** Filter Option 3: By Custom Field (Includes "keyword") */
+        CheckBox filterKeywordCheckBox = new CheckBox("Includes: ");
+        TextField targetField = new TextField();
+        targetField.setPromptText("e.g. Fantasy");
+        targetField.setPrefWidth(80); 
+        Label fieldPromptLabel = new Label("in");
+        TextField inAttribute = new TextField();
+        inAttribute.setPromptText("e.g. Genre");
+        inAttribute.setPrefWidth(80); 
+        HBox keywordHBox = new HBox(10, filterKeywordCheckBox, targetField, fieldPromptLabel, inAttribute);
+
+        /** Filter Option 3: Boxes for dates _____ to ______ */
+        CheckBox dateSelected = new CheckBox("Year from: ");
+        TextField startDate = new TextField();
+        startDate.setPromptText("e.g. 1999");
+        TextField endDate = new TextField();
+        endDate.setPromptText("e.g. 2024");
+        Label datePrompts = new Label("to");
+        startDate.setPrefWidth(63); 
+        endDate.setPrefWidth(63);   
+        HBox dateFilterBox = new HBox(10, dateSelected, startDate, datePrompts, endDate);
+
+        /** Filter Option 4: By Custom Field (Includes "keyword") */
+
+        /** Filter Option 5: By Custom FIeld (Range) */
+
+
+
+
+
+
         /************ SORTING FEATURE */
         Label sortLabel = new Label("Sort By:");   
         VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
@@ -705,8 +778,15 @@ public class GraphicalUserInterface extends Application {
         
         // Add the components to the VBox
         // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
-        sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions, sortLabel, 
-        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, descendButton, lineBreak, alphaButton, numButton);  
+        sortFilterBox.getChildren().addAll(
+        sortFilterLabel, sortButton,
+        filterOptions, platformFilterBox, keywordHBox, dateFilterBox,  //filter options 
+        sortLabel,  //sorting options
+        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, 
+        descendButton, lineBreak, alphaButton, numButton);  
+
+
+        
         return sortFilterBox; // Return the fully assembled VBox
     }
 
