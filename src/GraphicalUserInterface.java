@@ -601,17 +601,40 @@ public class GraphicalUserInterface extends Application {
         }  
         */ 
 
-        /** Dating Ranging from _____ to ______ */
-        CheckBox dateFilter = new CheckBox("Date from:");
+        /** Filter Option 1: By Platform */
+        CheckBox platformSelected = new CheckBox("Platform: ");
+        TextField platformField = new TextField();
+        platformField.setPrefWidth(63); 
+        HBox platformFilterBox = new HBox(10, platformSelected, platformField);
+
+        /** Filter Option 3: By Custom Field (Includes "keyword") */
+        CheckBox filterKeywordCheckBox = new CheckBox("Includes: ");
+        TextField targetField = new TextField();
+        targetField.setPromptText("e.g. Fantasy");
+        targetField.setPrefWidth(80); 
+        Label fieldPromptLabel = new Label("in");
+        TextField inAttribute = new TextField();
+        inAttribute.setPromptText("e.g. Genre");
+        inAttribute.setPrefWidth(80); 
+        HBox keywordHBox = new HBox(10, filterKeywordCheckBox, targetField, fieldPromptLabel, inAttribute);
+
+        /** Filter Option 3: Boxes for dates _____ to ______ */
+        CheckBox dateSelected = new CheckBox("Year from: ");
         TextField startDate = new TextField();
-        startDate.setPromptText("Start Date");
+        startDate.setPromptText("e.g. 1999");
         TextField endDate = new TextField();
-        endDate.setPromptText("End Date");
-        Label rangeTo = new Label("to");
-        startDate.setPrefWidth(10); 
-        endDate.setPrefWidth(10);   
-        HBox dateFilterBox = new HBox(10, dateFilter, startDate, rangeTo, endDate);
-        filterOptions.getChildren().add(dateFilterBox);
+        endDate.setPromptText("e.g. 2024");
+        Label datePrompts = new Label("to");
+        startDate.setPrefWidth(63); 
+        endDate.setPrefWidth(63);   
+        HBox dateFilterBox = new HBox(10, dateSelected, startDate, datePrompts, endDate);
+
+        /** Filter Option 4: By Custom Field (Includes "keyword") */
+
+        /** Filter Option 5: By Custom FIeld (Range) */
+
+
+
 
 
 
@@ -728,9 +751,9 @@ public class GraphicalUserInterface extends Application {
         // Add the components to the VBox
         // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
         sortFilterBox.getChildren().addAll(
-        sortFilterLabel, sortButton, 
-        filterOptions, 
-        sortLabel, 
+        sortFilterLabel, sortButton,
+        filterOptions, platformFilterBox, keywordHBox, dateFilterBox,  //filter options 
+        sortLabel,  //sorting options
         sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, 
         descendButton, lineBreak, alphaButton, numButton);  
 
