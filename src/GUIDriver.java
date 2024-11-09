@@ -124,6 +124,7 @@ public class GUIDriver extends Application {
 
        // **Set Scene and Show Stage**.
        Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
+       scene.getStylesheets().add(getClass().getResource("GUI.css").toExternalForm());
        primaryStage.setScene(scene); // Sets the scene on the stage
        primaryStage.show(); // Displays the primary stage
     }
