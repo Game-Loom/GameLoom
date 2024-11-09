@@ -59,12 +59,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 // Relates to files & data
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -273,6 +275,15 @@ public class GraphicalUserInterface extends Application {
         setupTabActions(tab6, "nintendo", primaryStage);
         setupTabActions(tab7, "physical", primaryStage);
 
+        //Sets up the logos for every tab
+       setupTabImages(tab1, "imgs/steam.png");
+       setupTabImages(tab2, "imgs/gog.png");
+       setupTabImages(tab3, "imgs/itch.png");
+       setupTabImages(tab4, "imgs/playstation.png");
+       setupTabImages(tab5, "imgs/xbox.png");
+       setupTabImages(tab6, "imgs/nintendo.png");
+       setupTabImages(tab7, "imgs/physical.png");
+
        // **Manual Entry Tab**: Allows manual game entries -- separate creation logic in different file (it's kind of big)
        ManualGameEntryTab manualEntryTab = new ManualGameEntryTab(library, gameList);
        Tab manualTab = manualEntryTab.getTab(); // Adds a tab for manual game entries
@@ -296,6 +307,23 @@ public class GraphicalUserInterface extends Application {
                 tab.setContent(createCommonTabLayout(primaryStage)); //Sets the tab layout
             }
         });
+    }
+
+    /**
+     * Adds an the given image to the given tab
+     * 
+     * @param tab - the tab that we're setting an image for
+     * @param imagePath - the path to the image
+     */
+    private static void setupTabImages(Tab tab, String imagePath){
+        try{
+            Image image = new Image(new FileInputStream(imagePath), 25, 25, true, false);
+            ImageView logo = new ImageView(image);
+            tab.setGraphic(logo);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 
