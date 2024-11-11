@@ -228,8 +228,6 @@ public class Game {
 
                 String date1 = game1.getAttribute("release_date");
                 String date2 = game2.getAttribute("release_date");
-                System.out.println(date1);
-
                 boolean date1NotValid = (date1.equals("N/A") || date1.length() != 10);
                 boolean date2NotValid = (date2.equals("N/A") || date2.length() != 10);
 
