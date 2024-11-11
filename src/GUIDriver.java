@@ -53,6 +53,7 @@
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -640,7 +641,9 @@ public class GUIDriver extends Application {
         platformTextField.setPromptText("e.g. Steam");
         platformTextField.setPrefWidth(70); 
         HBox platformFilterBox = new HBox(10, platformCheckBox, platformTextField);
-        
+        platformFilterBox.setAlignment(Pos.CENTER_LEFT);
+
+
         /** Filter Option 2: Boxes for dates _____ to ______ */
         CheckBox dateCheckBox = new CheckBox("Year from: ");
         TextField startDateTextField = new TextField();
@@ -651,9 +654,11 @@ public class GUIDriver extends Application {
         startDateTextField.setPrefWidth(63); 
         endDateTextField.setPrefWidth(63);   
         HBox dateFilterBox = new HBox(10, dateCheckBox, startDateTextField, toLabel, endDateTextField);
+        dateFilterBox.setAlignment(Pos.CENTER_LEFT);
 
+        
         /** Filter Option 3: By Custom Field (Includes "keyword") */
-        CheckBox filterKeywordCheckBox = new CheckBox("Includes: ");
+        CheckBox filterKeywordCheckBox = new CheckBox("Word: ");
         TextField targetField = new TextField();
         targetField.setPromptText("e.g. Fantasy");
         targetField.setPrefWidth(80); 
@@ -662,15 +667,27 @@ public class GUIDriver extends Application {
         inAttribute.setPromptText("e.g. Genre");
         inAttribute.setPrefWidth(80); 
         HBox keywordFilterHBox = new HBox(10, filterKeywordCheckBox, targetField, fieldPromptLabel, inAttribute);
+        keywordFilterHBox.setAlignment(Pos.CENTER_LEFT);
+
+
+        /** Filter Option 4: By Custom Field (Numbers Ranging From) */
+        CheckBox numberCheckBox = new CheckBox("Numbers ranging from: ");
+        TextField startNumberTextField = new TextField();
+        TextField endNumberTextField = new TextField();
+        Label toNumLabel = new Label("to");
+        startNumberTextField.setPrefWidth(50); 
+        endNumberTextField.setPrefWidth(50);   
+        Label inLabel = new Label("in");
+        TextField customField = new TextField();
+        customField.setPromptText("e.g. hours");
+        customField.setPrefWidth(70);   
+        HBox numberFilterHBox = new HBox(10, numberCheckBox, startNumberTextField, toNumLabel, endNumberTextField, inLabel, customField);
+        numberFilterHBox.setAlignment(Pos.CENTER);
 
         platformFilterBox.getStyleClass().add("transparent");
         keywordFilterHBox.getStyleClass().add("transparent");
         dateFilterBox.getStyleClass().add("transparent");
-
-        /** Filter Option 4: By Custom Field (Includes "keyword") */
-
-        /** Filter Option 5: By Custom FIeld (Range) */
-
+        numberFilterHBox.getStyleClass().add("transparent");
 
         /************ SORTING FEATURE */
         Label sortLabel = new Label("Sort By:");   
@@ -844,7 +861,7 @@ public class GUIDriver extends Application {
         //old: sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
         sortFilterBox.getChildren().addAll(
         sortFilterLabel, sortButton, resetButton, errorMsg, //Main features: title, button, error message
-        filterLabel, filterOptions, platformFilterBox, keywordFilterHBox, dateFilterBox,  //filter options 
+        filterLabel, filterOptions, platformFilterBox, dateFilterBox, keywordFilterHBox, numberFilterHBox,  //filter options 
         sortLabel, sortDropDown, customFieldLabel, hb, sortOptions, ascendButton,  //sorting options
         descendButton, lineBreak, alphaButton, numButton);  
 
