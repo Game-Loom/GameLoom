@@ -727,7 +727,7 @@ public class GUIDriver extends Application {
         alphaButton.setToggleGroup(alphaGroup);
         numButton.setToggleGroup(alphaGroup);
         
-        //Default Options Selected upon Launch
+        //Default Options Selected upon Launch (alphabetical & ascending)
         sortDropDown.getSelectionModel().selectFirst();
         alphaButton.setSelected(true);
         ascendButton.setSelected(true);
@@ -836,6 +836,13 @@ public class GUIDriver extends Application {
                         errorMsg.setText("Invalid format: Please enter a 4 digit date ");
                         errorPresent = true;
                     }
+                    
+                    if(startYear > endYear) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Invalid range: Start year must be earlier/same as end year");
+                        errorPresent = true;
+                    }
+
                     int[] datesTuple = {startYear, endYear};
                     
                     List<Game> results = filter(tmpLibrary, "release_date", "", "", datesTuple, false);
