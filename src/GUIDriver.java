@@ -886,11 +886,12 @@ public class GUIDriver extends Application {
      * @param field The field we are sorting by
      * @param customField the custom field if the custom option is selected
      * @param keyword the desired keyword (i.e. Fantasy in field: Genre)
-     * @param dateRange tuple with the start and end date if applicable
+     * @param numberRange tuple with the start and end number if applicable
      * @param isWord whether the filtered phrase is a word (i.e. platform, custom field) or a number
+     * @param isDate whethere the phrase is a date or a number
      * @return the game library entries filtered
      */
-    private List<Game> filter(ArrayList<Game> library, String field, String customField, String keyword, int[] dateRange, boolean isWord) {
+    private List<Game> filter(ArrayList<Game> library, String field, String customField, String keyword, int[] numberRange, boolean isWord, boolean isDate) {
         ArrayList<Game> filteredLibraryTemp = null; 
         if(field.equals("platform")) {
             filteredLibraryTemp = sort(library, field, customField, true, true); //sorts ascending alphabetically
@@ -921,7 +922,7 @@ public class GUIDriver extends Application {
                         // System.out.println("finding attribute: " + field + ", attribute is: " + attribute);
                         attribute = attribute.substring(0,4);
                         int date = Integer.parseInt(attribute);
-                        if(date >= dateRange[0] && date <= dateRange[1]) {
+                        if(date >= numberRange[0] && date <= numberRange[1]) {
                             isEqual = true;
                         }
                     }
