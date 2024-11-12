@@ -151,7 +151,7 @@ public class Game {
      * @param key The original key string.
      * @return A formatted string with capitalized words and spaces instead of underscores.
      */
-    private String capitalizeAndFormatKey(String key) {
+    protected String capitalizeAndFormatKey(String key) {
         String[] words = key.split("_");
         StringBuilder formattedKey = new StringBuilder();
 
@@ -219,7 +219,8 @@ public class Game {
     public String getTitle() {
         return getAttribute("game");
     }
-    
+
+    // TODO: replace if statements with capitalizeAndFormatKey
     public static final Comparator<Game> byDate (boolean isAscending) {
         return new Comparator<Game>() {
         // YYYY-MM-DATE  ex: attributes.put("release_date", "2021-05-20"); 
@@ -313,6 +314,7 @@ public class Game {
                         return 0;
                     }
                     else if(field1 == negInf) {
+                        System.out.println("in field: + " + fieldName + " : " + field1 + "vs " + field2 + " = (isAscending = 1)  = " + isAscending);
                         return isAscending ? 1 : -1; 
                         //if ascending, all invalid date goes to end
                         //if descending, all invalid dates go to start 

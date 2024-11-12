@@ -86,9 +86,7 @@ import java.util.stream.Stream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter; // End timer imports
 
-
 import java.util.Collections;
-import java.util.Comparator;
 
 public class GUIDriver extends Application {
     // Data Structure Variables
@@ -595,7 +593,8 @@ public class GUIDriver extends Application {
         }
     }
 
-        /**
+
+    /**
      * Sets up the Sort and Filter panel, which contains a label, a sort button,
      * and several dummy filter options. The panel will allow users to sort and 
      * filter the displayed game list.
@@ -679,7 +678,7 @@ public class GUIDriver extends Application {
         endNumberTextField.setPrefWidth(50);   
         Label inLabel = new Label("in");
         TextField customField = new TextField();
-        customField.setPromptText("e.g. hours");
+        customField.setPromptText("e.g. hours played");
         customField.setPrefWidth(70);   
         HBox numberFilterHBox = new HBox(10, numberCheckBox, startNumberTextField, toNumLabel, endNumberTextField, inLabel, customField);
         numberFilterHBox.setAlignment(Pos.CENTER);
@@ -755,17 +754,21 @@ public class GUIDriver extends Application {
         });
 
         //General Option Handling
+
         sortButton.setOnAction(event -> {
             String field = sortDropDown.getValue();     
             ArrayList<Game> tmpLibrary = library;
             ArrayList<Game> sortedLibrary  = null;
-            List<Game> filteredLibrary = null;
             boolean errorPresent = false; //if true, does not sort or filter library
             boolean isAscending = false;
             boolean isAlphabetical = false;
             String customFieldText = "";
 
             int zero = 0; // bypass empty library error to test other errors  - will remove later
+
+            System.out.println("fieldDropDown is: " + field);
+            System.out.println("equals custom is: " + field.equals("Custom"));
+
 
             //Error Handling 1: Empty Library
             if((tmpLibrary == null || tmpLibrary.isEmpty()) && zero == 1) {
@@ -782,18 +785,20 @@ public class GUIDriver extends Application {
                     RadioButton ans = (RadioButton)alphaGroup.getSelectedToggle();
                     isAlphabetical = ans.getText().equals("Alphabetical"); 
                 }
-                else if(field.equals("Custom")) { //checks if custom or not and custom field
+                
+                if(field.equals("Custom")) { //checks if custom or not and custom field
                         customFieldText = textField.getText().trim().toLowerCase();
+                        System.out.println("customField is: " + customFieldText);
                         if(customFieldText == null || customFieldText.equals("") || customFieldText.length() == 0) {
                             errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                             errorMsg.setText("Please enter a Custom Field");
                             errorPresent = true;
                         } else {
-                            if(customFieldText.equals("hours played")) {
-                                customFieldText = "hours";
+                            if(customFieldText.equals("hours")) {
+                                customFieldText = "hours played";
                             } else if (customFieldText.equals("metacritic score")){
-                                customFieldText = "Metacritic Score";
-                            } 
+                                customFieldText = "metascore";
+                            }
                         }
                 } 
 
@@ -808,7 +813,7 @@ public class GUIDriver extends Application {
                         errorMsg.setText("Please enter a platform");
                         errorPresent = true;
                     } else {
-                        List<Game> results = filter(tmpLibrary, "platform", "", text, null, true);
+                        List<Game> results = filter(tmpLibrary, "platform", "", text, null, true, false);
                         if(results != null) {
                             tmpLibrary = new ArrayList<Game>(results);
                         }
@@ -843,9 +848,39 @@ public class GUIDriver extends Application {
                         errorPresent = true;
                     }
 
-                    int[] datesTuple = {startYear, endYear};
+                    double[] datesTuple = {startYear, endYear};
                     
-                    List<Game> results = filter(tmpLibrary, "release_date", "", "", datesTuple, false);
+                    List<Game> results = filter(tmpLibrary, "release_date", "", "", datesTuple, false, true);
+                    if(results != null) {
+                        tmpLibrary = new ArrayList<Game>(results);
+                    }
+                }
+                //TODO: else statement: Clear box if not selected
+
+
+                if(numberCheckBox.isSelected()) {
+                    String startNumText = startNumberTextField.getText().trim(); 
+                    String endNumText = endNumberTextField.getText().trim();
+                    double startNum = -1;
+                    double endNum = -1;
+
+                    try {
+                        startNum = Double.parseDouble(startNumText);
+                        endNum = Double.parseDouble(endNumText);
+                    } catch (NumberFormatException e) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Invalid format: Please an integer or decimal (e.g. 1, 2.0) ");
+                        errorPresent = true;
+                    }
+                    
+                    if(startNum > endNum) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Invalid range: Start number must be less/equal to end number");
+                        errorPresent = true;
+                    }
+
+                    double[] numbersTuple = {startNum, endNum};
+                    List<Game> results = filter(tmpLibrary, field, "", "", numbersTuple, false, false);
                     if(results != null) {
                         tmpLibrary = new ArrayList<Game>(results);
                     }
@@ -872,9 +907,15 @@ public class GUIDriver extends Application {
         sortLabel, sortDropDown, customFieldLabel, hb, sortOptions, ascendButton,  //sorting options
         descendButton, lineBreak, alphaButton, numButton);  
 
-
-        
         return sortFilterBox; // Return the fully assembled VBox
+    }
+
+    /**
+     * This method converts words in GUI to keys  
+     * @return
+     */
+    private String wordToKey() {
+        return "";
     }
 
 
@@ -888,18 +929,23 @@ public class GUIDriver extends Application {
      * @param keyword the desired keyword (i.e. Fantasy in field: Genre)
      * @param numberRange tuple with the start and end number if applicable
      * @param isWord whether the filtered phrase is a word (i.e. platform, custom field) or a number
-     * @param isDate whethere the phrase is a date or a number
+     * @param isDate whether phrase is a date
      * @return the game library entries filtered
      */
-    private List<Game> filter(ArrayList<Game> library, String field, String customField, String keyword, int[] numberRange, boolean isWord, boolean isDate) {
+    private List<Game> filter(ArrayList<Game> library, String field, String customField, String keyword, double[] numberRange, boolean isWord, boolean isDate) {
         ArrayList<Game> filteredLibraryTemp = null; 
-        if(field.equals("platform")) {
+        field = library.get(0).capitalizeAndFormatKey(field); //puts field into key format (underscores) to check against table of keys
+        if(isWord) {
             filteredLibraryTemp = sort(library, field, customField, true, true); //sorts ascending alphabetically
-        } else if(field.equals("release_date")){
-            filteredLibraryTemp = sort(library, field, customField, true, false); //sorts ascending by date
+        } else { 
+            filteredLibraryTemp = sort(library, field, customField, true, false); //sorts ascending by the number
+        
+            /* 
             for(Game game : filteredLibraryTemp) {
-                System.out.println(game.getAttribute("release_date"));
+                System.out.println(game.getAttribute("hours_played"));
             }
+            */
+            
         }
 
         if(filteredLibraryTemp == null) {
@@ -911,24 +957,31 @@ public class GUIDriver extends Application {
 
         //marks the section with that platform
         for(int i = 0; i < filteredLibraryTemp.size(); i++) {
-            String attribute = filteredLibraryTemp.get(i).getAttribute(field);
+            String attribute = filteredLibraryTemp.get(i).getAttribute(field).trim();
             boolean isEqual = false;
             
-            if(isWord){ 
-                isEqual = attribute.equals(keyword);
-            } else {
-                try {
-                    if(attribute.length() == 10) {
-                        // System.out.println("finding attribute: " + field + ", attribute is: " + attribute);
-                        attribute = attribute.substring(0,4);
-                        int date = Integer.parseInt(attribute);
-                        if(date >= numberRange[0] && date <= numberRange[1]) {
+            if(attribute.equals("N/A") || attribute.isEmpty()) {
+                isEqual = false;
+            }
+            else { 
+                if(isWord){ 
+                    isEqual = attribute.equals(keyword);
+                } else {
+                    try {
+                        if(isDate) { //gets first four digits if date-formatted string
+                            if(attribute.length() == 10) {
+                                attribute = attribute.substring(0,4);
+                                // System.out.println("finding attribute: " + field + ", attribute is: " + attribute);
+                            }
+                        }
+                        Double myData = Double.parseDouble(attribute);
+                        if(myData >= numberRange[0] && myData <= numberRange[1]) {
                             isEqual = true;
                         }
+                    } catch (NumberFormatException e) {
+                        // TODO: handle exception
+                        System.out.println("Error with parsing double");
                     }
-                } catch (NumberFormatException e) {
-                    // TODO: handle exception
-                    System.out.println("error with parsing int");
                 }
             }
 
@@ -945,13 +998,14 @@ public class GUIDriver extends Application {
             }
         }
        if(startIndex != -1 && endIndex != -1) { //gets the sublist
-            endIndex += 1; //increments due to ending index of sublist being exclusive
+            endIndex += 1; //increments due to ending argument of sublist(start, end) being exclusive
             return filteredLibraryTemp.subList(startIndex, endIndex);
        } 
        return null;
     }
 
     /***** SORTING IMPLEMENTATION */
+    //TODO: replace conditionals with capitalizeAndFormatKey (2)
     /**
      * This method sorts the games library. The sorting comparison logic can be found in the game class.
      * @param myLibrary list of games we are sorting
@@ -971,6 +1025,8 @@ public class GUIDriver extends Application {
         } else if (field.equals("date")){
             comparator = Game.byDate(isAscending);
         } else {
+            customField = myLibrary.get(0).capitalizeAndFormatKey(customField); //puts field into key format (underscores) to check against table of keys
+            System.out.println("field is: " + customField + "and isALphabetical = " + isAlphabetical);
             if(isAlphabetical) {
                 comparator = Game.byFieldString(isAscending, customField);
             }
