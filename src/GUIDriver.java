@@ -66,6 +66,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 // Relates to files & data
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +76,7 @@ import java.util.Map;
 import java.util.Timer; 
 import java.util.TimerTask;
 import java.security.MessageDigest; // For the MD5 hash
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.StandardCharsets;
 import java.io.FileInputStream;
 import java.nio.file.Files;
@@ -766,8 +768,8 @@ public class GUIDriver extends Application {
 
             int zero = 0; // bypass empty library error to test other errors  - will remove later
 
-            System.out.println("fieldDropDown is: " + field);
-            System.out.println("equals custom is: " + field.equals("Custom"));
+            // System.out.println("fieldDropDown is: " + field);
+            // System.out.println("equals custom is: " + field.equals("Custom"));
 
 
             //Error Handling 1: Empty Library
@@ -794,11 +796,11 @@ public class GUIDriver extends Application {
                             errorMsg.setText("Please enter a Custom Field");
                             errorPresent = true;
                         } else {
+                            //normalize the key
+                            field = Normalizer.normalizeKey(field);
                             if(customFieldText.equals("hours")) {
                                 customFieldText = "hours played";
-                            } else if (customFieldText.equals("metacritic score")){
-                                customFieldText = "metascore";
-                            }
+                            } 
                         }
                 } 
 
@@ -855,8 +857,6 @@ public class GUIDriver extends Application {
                         tmpLibrary = new ArrayList<Game>(results);
                     }
                 }
-                //TODO: else statement: Clear box if not selected
-
 
                 if(numberCheckBox.isSelected()) {
                     String startNumText = startNumberTextField.getText().trim(); 
@@ -886,6 +886,9 @@ public class GUIDriver extends Application {
                     }
                 }
 
+                //TODO: else statement: Clear box if not selected
+                /* Clear All Unselected Boxes */
+
                 /** Sort Handling */
                 if(!errorPresent) {
                     sortedLibrary = sort(tmpLibrary, field, customFieldText, isAscending, isAlphabetical);            
@@ -910,6 +913,7 @@ public class GUIDriver extends Application {
         return sortFilterBox; // Return the fully assembled VBox
     }
 
+    //TODO: finish this helper method
     /**
      * This method converts words in GUI to keys  
      * @return
@@ -934,18 +938,24 @@ public class GUIDriver extends Application {
      */
     private List<Game> filter(ArrayList<Game> library, String field, String customField, String keyword, double[] numberRange, boolean isWord, boolean isDate) {
         ArrayList<Game> filteredLibraryTemp = null; 
-        field = library.get(0).capitalizeAndFormatKey(field); //puts field into key format (underscores) to check against table of keys
+        customField = Normalizer.normalizeKey(customField);
         if(isWord) {
             filteredLibraryTemp = sort(library, field, customField, true, true); //sorts ascending alphabetically
         } else { 
             filteredLibraryTemp = sort(library, field, customField, true, false); //sorts ascending by the number
-        
-            /* 
-            for(Game game : filteredLibraryTemp) {
-                System.out.println(game.getAttribute("hours_played"));
+
+
+             //for debugging
+            if(filteredLibraryTemp == null) {
+                System.out.println("Error, its null");
+            } else {
+                System.out.println("size of library = " + filteredLibraryTemp.size());
             }
-            */
-            
+
+            int size = filteredLibraryTemp.size();
+            for(int i = 0; i < 10; i++) {
+                System.out.println("arr[" + i + "]" + filteredLibraryTemp.get(i).getAttribute("hours_played"));
+            }
         }
 
         if(filteredLibraryTemp == null) {
@@ -1005,7 +1015,6 @@ public class GUIDriver extends Application {
     }
 
     /***** SORTING IMPLEMENTATION */
-    //TODO: replace conditionals with capitalizeAndFormatKey (2)
     /**
      * This method sorts the games library. The sorting comparison logic can be found in the game class.
      * @param myLibrary list of games we are sorting
@@ -1017,6 +1026,7 @@ public class GUIDriver extends Application {
      */
     private ArrayList<Game> sort(ArrayList<Game> myLibrary, String field, String customField, boolean isAscending, boolean isAlphabetical) {
         field = field.trim().toLowerCase();
+        customField = Normalizer.normalizeKey(customField);
         Comparator<Game> comparator = null;
         if(field.equals("title")) {
             comparator = Game.byTitle;
@@ -1025,8 +1035,6 @@ public class GUIDriver extends Application {
         } else if (field.equals("date")){
             comparator = Game.byDate(isAscending);
         } else {
-            customField = myLibrary.get(0).capitalizeAndFormatKey(customField); //puts field into key format (underscores) to check against table of keys
-            System.out.println("field is: " + customField + "and isALphabetical = " + isAlphabetical);
             if(isAlphabetical) {
                 comparator = Game.byFieldString(isAscending, customField);
             }

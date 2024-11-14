@@ -220,7 +220,6 @@ public class Game {
         return getAttribute("game");
     }
 
-    // TODO: replace if statements with capitalizeAndFormatKey
     public static final Comparator<Game> byDate (boolean isAscending) {
         return new Comparator<Game>() {
         // YYYY-MM-DATE  ex: attributes.put("release_date", "2021-05-20"); 
@@ -298,7 +297,7 @@ public class Game {
             return Double.NEGATIVE_INFINITY;
         }
     }
-        
+
     public static final Comparator<Game> byFieldDouble (boolean isAscending, String fieldName) {
         return new Comparator<Game>() {
             @Override
@@ -309,18 +308,23 @@ public class Game {
 
                 //if double could not be parsed (returns negative infinity)
                 //field will be moved to the end
+            
+                System.out.print(fieldName + " of game1= " + field1 + "vs game2= " + field2);
                 if(field1 == negInf || field2 == negInf) {
                     if(field1 == negInf && field2 == negInf) {
                         return 0;
                     }
                     else if(field1 == negInf) {
-                        System.out.println("in field: + " + fieldName + " : " + field1 + "vs " + field2 + " = (isAscending = 1)  = " + isAscending);
+                        System.out.println( "will return (true = 1)" + isAscending);
+
                         return isAscending ? 1 : -1; 
                         //if ascending, all invalid date goes to end
                         //if descending, all invalid dates go to start 
-                        // due to nature of Collections.reversed() 
+                        // so when Collections.reversed() is called for descending, the invalid dates
+                        // end up at the end 
                     }
                     else {
+                        System.out.println( "will return (true = -1)" + isAscending);
                         return isAscending ? -1 : 1;
                     }
                 }
