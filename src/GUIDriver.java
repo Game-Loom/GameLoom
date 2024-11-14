@@ -760,10 +760,12 @@ public class GUIDriver extends Application {
                 numButton.setDisable(false);
             }
 
+            //custom field prompt only appears if custom is selected
             if(field.equals("Custom")) {
                 customFieldLabel.setVisible(true);
                 textField.setVisible(true);
             } else {
+                textField.clear();
                 customFieldLabel.setVisible(false);
                 textField.setVisible(false);
             }
@@ -830,6 +832,8 @@ public class GUIDriver extends Application {
                             tmpLibrary = new ArrayList<Game>(results);
                         }
                     }
+                } else {
+                    platformTextField.clear();
                 }
 
                 //If date is selected, sort by date, then remove that section of with the dates grouped together
@@ -866,6 +870,9 @@ public class GUIDriver extends Application {
                     if(results != null) {
                         tmpLibrary = new ArrayList<Game>(results);
                     }
+                } else {
+                    startDateTextField.clear();
+                    endDateTextField.clear();
                 }
 
                 if(numberCheckBox.isSelected()) {
@@ -894,10 +901,19 @@ public class GUIDriver extends Application {
                     if(results != null) {
                         tmpLibrary = new ArrayList<Game>(results);
                     }
+                } else {
+                    startNumberTextField.clear();
+                    endNumberTextField.clear();
+                    customField.clear();
+                }
+                
+                //TODO: else statement: Keyword in Word
+                if(filterKeywordCheckBox.isSelected()) {
+                } else {
+                    targetField.clear();
+                    inAttribute.clear();
                 }
 
-                //TODO: else statement: Clear box if not selected
-                /* Clear All Unselected Boxes */
 
                 /** Sort Handling */
                 if(!errorPresent) {
@@ -922,16 +938,6 @@ public class GUIDriver extends Application {
 
         return sortFilterBox; // Return the fully assembled VBox
     }
-
-    //TODO: finish this helper method
-    /**
-     * This method converts words in GUI to keys  
-     * @return
-     */
-    private String wordToKey() {
-        return "";
-    }
-
 
     /** FILTER IMPLEMENTATION */
 
