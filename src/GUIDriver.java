@@ -484,6 +484,8 @@ public class GUIDriver extends Application {
     }
 
 
+    //General Option Handling
+
     /**
      * Creates and sets up the export button, which allows the user to export the game library to a CSV file.
      *
@@ -700,8 +702,12 @@ public class GUIDriver extends Application {
         sortDropDown.setPromptText("Sort by"); // Sets prompt text in the dropdown
         
         //Adding a label for sort by custom field
+        //invisible by default
         Label customFieldLabel = new Label("Custom Field: ");
         TextField textField = new TextField();
+        textField.setPromptText("e.g. hours played");
+        customFieldLabel.setVisible(false);
+        textField.setVisible(false);
         HBox hb = new HBox();
         hb.getChildren().addAll(textField);
         hb.getStyleClass().add("transparent");
@@ -710,6 +716,7 @@ public class GUIDriver extends Application {
         final Label errorMsg = new Label();
         GridPane.setConstraints(errorMsg, 0, 1);
         GridPane.setColumnSpan(errorMsg, 1);
+
 
         /** Line Break to separate Alphabetical & Ascending */
         Label lineBreak = new Label("-------------------------------");   
@@ -748,14 +755,20 @@ public class GUIDriver extends Application {
                 alphaButton.setSelected(true);
                 alphaButton.setDisable(false);
                 numButton.setDisable(true);
-            } else {
+            } else { //no selection restrictions
                 alphaButton.setDisable(false);
                 numButton.setDisable(false);
             }
 
+            if(field.equals("Custom")) {
+                customFieldLabel.setVisible(true);
+                textField.setVisible(true);
+            } else {
+                customFieldLabel.setVisible(false);
+                textField.setVisible(false);
+            }
         });
 
-        //General Option Handling
 
         sortButton.setOnAction(event -> {
             String field = sortDropDown.getValue();     
@@ -766,11 +779,8 @@ public class GUIDriver extends Application {
             boolean isAlphabetical = false;
             String customFieldText = "";
 
+            //TODO: remove this debugging bypass empty library error
             int zero = 0; // bypass empty library error to test other errors  - will remove later
-
-            // System.out.println("fieldDropDown is: " + field);
-            // System.out.println("equals custom is: " + field.equals("Custom"));
-
 
             //Error Handling 1: Empty Library
             if((tmpLibrary == null || tmpLibrary.isEmpty()) && zero == 1) {
@@ -790,14 +800,14 @@ public class GUIDriver extends Application {
                 
                 if(field.equals("Custom")) { //checks if custom or not and custom field
                         customFieldText = textField.getText().trim().toLowerCase();
-                        System.out.println("customField is: " + customFieldText);
+                        System.out.println("initial customField is: " + customFieldText);
                         if(customFieldText == null || customFieldText.equals("") || customFieldText.length() == 0) {
                             errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                             errorMsg.setText("Please enter a Custom Field");
                             errorPresent = true;
                         } else {
                             //normalize the key
-                            field = Normalizer.normalizeKey(field);
+                            customFieldText = Normalizer.normalizeKey(customFieldText);
                             if(customFieldText.equals("hours")) {
                                 customFieldText = "hours played";
                             } 
@@ -880,7 +890,7 @@ public class GUIDriver extends Application {
                     }
 
                     double[] numbersTuple = {startNum, endNum};
-                    List<Game> results = filter(tmpLibrary, field, "", "", numbersTuple, false, false);
+                    List<Game> results = filter(tmpLibrary, field, customFieldText, "", numbersTuple, false, false);
                     if(results != null) {
                         tmpLibrary = new ArrayList<Game>(results);
                     }
@@ -923,12 +933,14 @@ public class GUIDriver extends Application {
     }
 
 
-    /** FILTERING IMPLEMENTATION */
+    /** FILTER IMPLEMENTATION */
+
+    //TODO: implement keyword in word
 
     /**
      * This method filters the game library by sorting it and making a sublist.
      * @param library list of games we are filtering
-     * @param field The field we are sorting by
+     * @param field The field type we are sorting by (platform, custom, etc)
      * @param customField the custom field if the custom option is selected
      * @param keyword the desired keyword (i.e. Fantasy in field: Genre)
      * @param numberRange tuple with the start and end number if applicable
@@ -942,20 +954,29 @@ public class GUIDriver extends Application {
         if(isWord) {
             filteredLibraryTemp = sort(library, field, customField, true, true); //sorts ascending alphabetically
         } else { 
+
             filteredLibraryTemp = sort(library, field, customField, true, false); //sorts ascending by the number
-
-
-             //for debugging
-            if(filteredLibraryTemp == null) {
-                System.out.println("Error, its null");
-            } else {
-                System.out.println("size of library = " + filteredLibraryTemp.size());
-            }
-
-            int size = filteredLibraryTemp.size();
-            for(int i = 0; i < 10; i++) {
-                System.out.println("arr[" + i + "]" + filteredLibraryTemp.get(i).getAttribute("hours_played"));
-            }
+            
+            //TODO: take out isWord boolean and replace with check if keyword == "";
+        
+            //for debugging
+                // System.out.print("\n\n\nfilter time:");
+                // System.out.print("attributes list is:");
+                // String strArr = String.join(" , ", attributes);
+                // System.out.println(strArr);
+                // if(filteredLibraryTemp == null) {
+                //     System.out.println("Error, its null");
+                // } else {
+                //     System.out.println(" size of library = " + filteredLibraryTemp.size());
+                // }
+                // int size= filteredLibraryTemp.size();
+                // for(int i = 0; i < 10; i++) {
+                //     System.out.println("arr[" + i + "]'s" + customField + ":" + filteredLibraryTemp.get(i).getAttribute(customField));
+                // }
+                // System.out.println("...\n");
+                // for(int j = size - 10; j < size-1; j++)
+                // System.out.println("arr[ " + (j) + "]" + customField + ":" + filteredLibraryTemp.get(j).getAttribute(customField));
+                // System.out.println();
         }
 
         if(filteredLibraryTemp == null) {
@@ -964,11 +985,13 @@ public class GUIDriver extends Application {
 
         int startIndex = -1; 
         int endIndex = -1;
-
+        String fieldToFind = customField.equals("") ? field : customField; 
+        System.out.println("fieldToFind: " + fieldToFind);
+ 
         //marks the section with that platform
         for(int i = 0; i < filteredLibraryTemp.size(); i++) {
-            String attribute = filteredLibraryTemp.get(i).getAttribute(field).trim();
             boolean isEqual = false;
+            String attribute = filteredLibraryTemp.get(i).getAttribute(fieldToFind).trim();
             
             if(attribute.equals("N/A") || attribute.isEmpty()) {
                 isEqual = false;
@@ -1027,6 +1050,12 @@ public class GUIDriver extends Application {
     private ArrayList<Game> sort(ArrayList<Game> myLibrary, String field, String customField, boolean isAscending, boolean isAlphabetical) {
         field = field.trim().toLowerCase();
         customField = Normalizer.normalizeKey(customField);
+        
+        System.out.print("sort called, prompts are: "); 
+        String[] parameters = {String.valueOf(myLibrary.size()), field, customField, Boolean.toString(isAscending), Boolean.toString(isAlphabetical)};
+        String strArr = String.join(" , ", parameters);
+        System.out.println(strArr);
+
         Comparator<Game> comparator = null;
         if(field.equals("title")) {
             comparator = Game.byTitle;

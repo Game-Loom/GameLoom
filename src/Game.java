@@ -309,13 +309,14 @@ public class Game {
                 //if double could not be parsed (returns negative infinity)
                 //field will be moved to the end
             
-                System.out.print(fieldName + " of game1= " + field1 + "vs game2= " + field2);
+                // System.out.print(fieldName + " of game1= " + field1 + "vs game2= " + field2);
                 if(field1 == negInf || field2 == negInf) {
                     if(field1 == negInf && field2 == negInf) {
+                        // System.out.println();
                         return 0;
                     }
                     else if(field1 == negInf) {
-                        System.out.println( "will return (true = 1)" + isAscending);
+                        // System.out.println( "will return (true = 1)" + isAscending);
 
                         return isAscending ? 1 : -1; 
                         //if ascending, all invalid date goes to end
@@ -324,7 +325,7 @@ public class Game {
                         // end up at the end 
                     }
                     else {
-                        System.out.println( "will return (true = -1)" + isAscending);
+                        // System.out.println( "will return (true = -1)" + isAscending);
                         return isAscending ? -1 : 1;
                     }
                 }
