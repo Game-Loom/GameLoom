@@ -563,8 +563,9 @@ public class GUIDriver extends Application {
      * 
      * @param searchText The search query entered by the user. Multiple keywords should be separated by spaces.
      */
-    private void filterGameList(String searchText) {
+    private ArrayList<Game> filterGameList(String searchText) {
         gameList.getChildren().clear(); // Clear the current game list in the UI    
+        ArrayList<Game> gameSearchResults = new ArrayList<Game>();;
 
         // Split searchText by space to handle multiple keywords
         String[] searchTerms = searchText.split("\\s");    
@@ -586,6 +587,8 @@ public class GUIDriver extends Application {
                     if (!gameName.contains(term) && !description.contains(term)) {
                         matchFound = false; // Set matchFound to false if any term doesn't match
                         break; // Exit the loop early since this game doesn't match
+                    } else {
+                        gameSearchResults.add(game); //if found, add the game
                     }
                 }
 
@@ -595,6 +598,7 @@ public class GUIDriver extends Application {
                 }
             }
         }
+        return gameSearchResults;
     }
 
 
@@ -662,14 +666,14 @@ public class GUIDriver extends Application {
         
         /** Filter Option 3: By Custom Field (Includes "keyword") */
         CheckBox filterKeywordCheckBox = new CheckBox("Word: ");
-        TextField targetField = new TextField();
-        targetField.setPromptText("e.g. Fantasy");
-        targetField.setPrefWidth(80); 
+        TextField keywordTextField = new TextField();
+        keywordTextField.setPromptText("e.g. Fantasy");
+        keywordTextField.setPrefWidth(80); 
         Label fieldPromptLabel = new Label("in");
-        TextField inAttribute = new TextField();
-        inAttribute.setPromptText("e.g. Genre");
-        inAttribute.setPrefWidth(80); 
-        HBox keywordFilterHBox = new HBox(10, filterKeywordCheckBox, targetField, fieldPromptLabel, inAttribute);
+        TextField attributeTextField = new TextField();
+        attributeTextField.setPromptText("e.g. Genre");
+        attributeTextField.setPrefWidth(80); 
+        HBox keywordFilterHBox = new HBox(10, filterKeywordCheckBox, keywordTextField, fieldPromptLabel, attributeTextField);
         keywordFilterHBox.setAlignment(Pos.CENTER_LEFT);
 
 
@@ -897,7 +901,7 @@ public class GUIDriver extends Application {
                     }
 
                     double[] numbersTuple = {startNum, endNum};
-                    List<Game> results = filter(tmpLibrary, field, customFieldText, "", numbersTuple, false, false);
+                    List<Game> results = filter(tmpLibrary, field, customFieldText, "", numbersTuple, true, false);
                     if(results != null) {
                         tmpLibrary = new ArrayList<Game>(results);
                     }
@@ -909,9 +913,22 @@ public class GUIDriver extends Application {
                 
                 //TODO: else statement: Keyword in Word
                 if(filterKeywordCheckBox.isSelected()) {
+                    String keywordInput = keywordTextField.getText().trim(); 
+                    String customAttributeInput = attributeTextField.getText().trim();
+                    customAttributeInput = Normalizer.normalizeKey(keywordInput);
+                    if(keywordInput.isEmpty() || customAttributeInput.isEmpty()) { //Error Handling
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Please enter a keyword and a field");
+                        errorPresent = true;
+                    } else {
+                        List<Game> results = filter(tmpLibrary, "custom", customAttributeInput, keywordInput, null, true, false);
+                        if(results != null) {
+                            tmpLibrary = new ArrayList<Game>(results);
+                        }
+                    }
                 } else {
-                    targetField.clear();
-                    inAttribute.clear();
+                    keywordTextField.clear();
+                    attributeTextField.clear();
                 }
 
 
@@ -958,32 +975,35 @@ public class GUIDriver extends Application {
         ArrayList<Game> filteredLibraryTemp = null; 
         customField = Normalizer.normalizeKey(customField);
         if(isWord) {
-            filteredLibraryTemp = sort(library, field, customField, true, true); //sorts ascending alphabetically
+            if(field.equals("platform")) {
+                filteredLibraryTemp = sort(library, field, customField, true, true); //sorts ascending alphabetically
+            } else { //custom field
+                filteredLibraryTemp = filterGameList(keyword);
+            }
         } else { 
-
             filteredLibraryTemp = sort(library, field, customField, true, false); //sorts ascending by the number
             
-            //TODO: take out isWord boolean and replace with check if keyword == "";
-        
+            //TODO: take out isWord boolean and replace with check if keyword == field != number;
             //for debugging
-                // System.out.print("\n\n\nfilter time:");
-                // System.out.print("attributes list is:");
-                // String strArr = String.join(" , ", attributes);
-                // System.out.println(strArr);
-                // if(filteredLibraryTemp == null) {
-                //     System.out.println("Error, its null");
-                // } else {
-                //     System.out.println(" size of library = " + filteredLibraryTemp.size());
-                // }
-                // int size= filteredLibraryTemp.size();
-                // for(int i = 0; i < 10; i++) {
-                //     System.out.println("arr[" + i + "]'s" + customField + ":" + filteredLibraryTemp.get(i).getAttribute(customField));
-                // }
-                // System.out.println("...\n");
-                // for(int j = size - 10; j < size-1; j++)
-                // System.out.println("arr[ " + (j) + "]" + customField + ":" + filteredLibraryTemp.get(j).getAttribute(customField));
-                // System.out.println();
         }
+        
+        System.out.print("\n\n\nfilter time:");
+        System.out.print("attributes list is:");
+        String strArr = String.join(" , ", attributes);
+        System.out.println(strArr);
+        if(filteredLibraryTemp == null) {
+            System.out.println("Error, its null");
+        } else {
+            System.out.println(" size of library = " + filteredLibraryTemp.size());
+        }
+        int size= filteredLibraryTemp.size();
+        for(int i = 0; i < 10; i++) {
+            System.out.println("arr[" + i + "]'s" + customField + ":" + filteredLibraryTemp.get(i).getAttribute(customField));
+        }
+        System.out.println("...\n");
+        for(int j = size - 10; j < size-1; j++)
+        System.out.println("arr[ " + (j) + "]" + customField + ":" + filteredLibraryTemp.get(j).getAttribute(customField));
+        System.out.println();
 
         if(filteredLibraryTemp == null) {
             return null;
@@ -993,6 +1013,8 @@ public class GUIDriver extends Application {
         int endIndex = -1;
         String fieldToFind = customField.equals("") ? field : customField; 
         System.out.println("fieldToFind: " + fieldToFind);
+
+        
  
         //marks the section with that platform
         for(int i = 0; i < filteredLibraryTemp.size(); i++) {
