@@ -53,6 +53,7 @@
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -65,6 +66,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 // Relates to files & data
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +76,7 @@ import java.util.Map;
 import java.util.Timer; 
 import java.util.TimerTask;
 import java.security.MessageDigest; // For the MD5 hash
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.StandardCharsets;
 import java.io.FileInputStream;
 import java.nio.file.Files;
@@ -85,9 +88,7 @@ import java.util.stream.Stream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter; // End timer imports
 
-
 import java.util.Collections;
-import java.util.Comparator;
 
 public class GUIDriver extends Application {
     // Data Structure Variables
@@ -536,6 +537,8 @@ public class GUIDriver extends Application {
     }
 
 
+    //General Option Handling
+
     /**
      * Creates and sets up the export button, which allows the user to export the game library to a CSV file.
      *
@@ -613,8 +616,9 @@ public class GUIDriver extends Application {
      * 
      * @param searchText The search query entered by the user. Multiple keywords should be separated by spaces.
      */
-    private void filterGameList(String searchText) {
+    private ArrayList<Game> filterGameList(String searchText) {
         gameList.getChildren().clear(); // Clear the current game list in the UI    
+        ArrayList<Game> gameSearchResults = new ArrayList<Game>();
 
         // Split searchText by space to handle multiple keywords
         String[] searchTerms = searchText.split("\\s");    
@@ -636,18 +640,21 @@ public class GUIDriver extends Application {
                     if (!gameName.contains(term) && !description.contains(term)) {
                         matchFound = false; // Set matchFound to false if any term doesn't match
                         break; // Exit the loop early since this game doesn't match
-                    }
+                    } 
                 }
 
-                // If all terms match, add the game to the displayed game list
+                // If all terms match, add the game to the displayed game list and the results
                 if (matchFound) {
                     gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                    gameSearchResults.add(game); 
                 }
             }
         }
+        return gameSearchResults;
     }
 
-        /**
+
+    /**
      * Sets up the Sort and Filter panel, which contains a label, a sort button,
      * and several dummy filter options. The panel will allow users to sort and 
      * filter the displayed game list.
@@ -656,74 +663,88 @@ public class GUIDriver extends Application {
      */
     private VBox setupSortFilterPanel() {
         // **Sort and Filter Panel**: Right side panel with options
-        VBox sortFilterBox = new VBox(10); // VBox with 10px spacing
-        sortFilterBox.setPadding(new Insets(10)); // Padding around the box 
+        VBox sortFilterBox = new VBox(5); // VBox with 10px spacing
+        sortFilterBox.setPadding(new Insets(5)); // Padding around the box 
 
         // Label for the sort/filter panel
         Label sortFilterLabel = new Label("Sort and Filter"); 
         sortFilterLabel.setStyle("-fx-font-weight: bold");
 
         // Button for triggering sort/filter functionality
-        Button sortButton = new Button("Sort and Filter"); // A button for future sort/filter functionality 
+        Button sortButton = new Button("Sort and Filter");  
+        Button resetButton = new Button("Reset");  
 
+        // Default Settings For Specific Options
+        resetButton.setOnAction(event -> {
+            gameList.getChildren().clear(); // Clear the current game list in the UI    
+            for(Game game : library) {
+                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+            }
+        });
 
-        /** FILTERING FEATURE */
-        // Create dummy filter options (We can replace these with whatever key option we want the default filter options to be)
-        
-
-        /*HELLO WORLDDDDDDDDDDDDDDDDDDDDDDDDDD! */
-
+        /** FILTERING FEATURE */    
         VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
-    
-        String[] filterNames = {"Platform, Release Date ranging from:, Custom"};
         /* 
-        int numberOfOptions = 3;
-        for (int i = 0; i < 3; i++) {
-            CheckBox option = new CheckBox(filterNames[i] + (i + 1)); // Creates placeholder filter options
-            filterOptions.getChildren().add(option); // Adds each option to the VBox
-        }  
+            int numberOfOptions = 3;
+            for (int i = 0; i < 3; i++) {
+                CheckBox option = new CheckBox(filterNames[i] + (i + 1)); // Creates placeholder filter options
+                filterOptions.getChildren().add(option); // Adds each option to the VBox
+            }  
         */ 
+        Label filterLabel = new Label("Filter by:"); 
 
         /** Filter Option 1: By Platform */
-        CheckBox platformSelected = new CheckBox("Platform: ");
-        TextField platformField = new TextField();
-        platformField.setPrefWidth(63); 
-        HBox platformFilterBox = new HBox(10, platformSelected, platformField);
+        CheckBox platformCheckBox = new CheckBox("Platform: ");
+        TextField platformTextField = new TextField("");
+        platformTextField.setPromptText("e.g. Steam");
+        platformTextField.setPrefWidth(70); 
+        HBox platformFilterBox = new HBox(10, platformCheckBox, platformTextField);
+        platformFilterBox.setAlignment(Pos.CENTER_LEFT);
 
+
+        /** Filter Option 2: Boxes for dates _____ to ______ */
+        CheckBox dateCheckBox = new CheckBox("Year from: ");
+        TextField startDateTextField = new TextField();
+        startDateTextField.setPromptText("e.g. 1999");
+        TextField endDateTextField = new TextField();
+        endDateTextField.setPromptText("e.g. 2024");
+        Label toLabel = new Label("to");
+        startDateTextField.setPrefWidth(63); 
+        endDateTextField.setPrefWidth(63);   
+        HBox dateFilterBox = new HBox(10, dateCheckBox, startDateTextField, toLabel, endDateTextField);
+        dateFilterBox.setAlignment(Pos.CENTER_LEFT);
+
+        
         /** Filter Option 3: By Custom Field (Includes "keyword") */
-        CheckBox filterKeywordCheckBox = new CheckBox("Includes: ");
-        TextField targetField = new TextField();
-        targetField.setPromptText("e.g. Fantasy");
-        targetField.setPrefWidth(80); 
+        CheckBox filterKeywordCheckBox = new CheckBox("Word: ");
+        TextField keywordTextField = new TextField();
+        keywordTextField.setPromptText("e.g. german");
+        keywordTextField.setPrefWidth(90); 
         Label fieldPromptLabel = new Label("in");
-        TextField inAttribute = new TextField();
-        inAttribute.setPromptText("e.g. Genre");
-        inAttribute.setPrefWidth(80); 
-        HBox keywordHBox = new HBox(10, filterKeywordCheckBox, targetField, fieldPromptLabel, inAttribute);
+        TextField attributeTextField = new TextField();
+        attributeTextField.setPromptText("e.g. languages");
+        attributeTextField.setPrefWidth(90); 
+        HBox keywordFilterHBox = new HBox(10, filterKeywordCheckBox, keywordTextField, fieldPromptLabel, attributeTextField);
+        keywordFilterHBox.setAlignment(Pos.CENTER_LEFT);
 
-        /** Filter Option 3: Boxes for dates _____ to ______ */
-        CheckBox dateSelected = new CheckBox("Year from: ");
-        TextField startDate = new TextField();
-        startDate.setPromptText("e.g. 1999");
-        TextField endDate = new TextField();
-        endDate.setPromptText("e.g. 2024");
-        Label datePrompts = new Label("to");
-        startDate.setPrefWidth(63); 
-        endDate.setPrefWidth(63);   
-        HBox dateFilterBox = new HBox(10, dateSelected, startDate, datePrompts, endDate);
+        /** Filter Option 4: By Custom Field (Numbers Ranging From) */
+        CheckBox numberCheckBox = new CheckBox("Numbers ranging from: ");
+        TextField startNumberTextField = new TextField();
+        TextField endNumberTextField = new TextField();
+        Label toNumLabel = new Label("to");
+        startNumberTextField.setPrefWidth(50); 
+        endNumberTextField.setPrefWidth(50);   
+        Label inLabel = new Label("in");
+        TextField customField = new TextField();
+        customField.setPromptText("e.g. hours played");
+        customField.setPrefWidth(70);   
+        HBox numberFilterHBox = new HBox(10, numberCheckBox, startNumberTextField, toNumLabel, endNumberTextField, inLabel, customField);
+        numberFilterHBox.setAlignment(Pos.CENTER);
 
         platformFilterBox.getStyleClass().add("transparent");
-        keywordHBox.getStyleClass().add("transparent");
+        keywordFilterHBox.getStyleClass().add("transparent");
         dateFilterBox.getStyleClass().add("transparent");
-
-        /** Filter Option 4: By Custom Field (Includes "keyword") */
-
-        /** Filter Option 5: By Custom FIeld (Range) */
-
-
-
-
-
+        numberFilterHBox.getStyleClass().add("transparent");
 
         /************ SORTING FEATURE */
         Label sortLabel = new Label("Sort By:");   
@@ -735,11 +756,14 @@ public class GUIDriver extends Application {
         sortDropDown.setPromptText("Sort by"); // Sets prompt text in the dropdown
         
         //Adding a label for sort by custom field
+        //invisible by default
         Label customFieldLabel = new Label("Custom Field: ");
         TextField textField = new TextField();
+        textField.setPromptText("e.g. hours played");
+        customFieldLabel.setVisible(false);
+        textField.setVisible(false);
         HBox hb = new HBox();
         hb.getChildren().addAll(textField);
-
         hb.getStyleClass().add("transparent");
 
         /** Declared Label for error messages */
@@ -751,19 +775,19 @@ public class GUIDriver extends Application {
         Label lineBreak = new Label("-------------------------------");   
         
         /** Types of Option Formatting **/
+        //Button Declaration (Ascending, Descending, Alphabetical, Numerical)
         ToggleGroup ascendGroup = new ToggleGroup();
         RadioButton ascendButton = new RadioButton("Ascending");
         RadioButton descendButton = new RadioButton("Descending");
         ascendButton.setToggleGroup(ascendGroup);
         descendButton.setToggleGroup(ascendGroup);
-
         ToggleGroup alphaGroup = new ToggleGroup();
         RadioButton alphaButton = new RadioButton("Alphabetical");
         RadioButton numButton = new RadioButton("Numerical");
         alphaButton.setToggleGroup(alphaGroup);
         numButton.setToggleGroup(alphaGroup);
         
-        //Default Options Selected
+        //Default Options Selected upon Launch (alphabetical & ascending)
         sortDropDown.getSelectionModel().selectFirst();
         alphaButton.setSelected(true);
         ascendButton.setSelected(true);
@@ -783,87 +807,332 @@ public class GUIDriver extends Application {
                 alphaButton.setSelected(true);
                 alphaButton.setDisable(false);
                 numButton.setDisable(true);
-            } else {
+            } else { //no selection restrictions
                 alphaButton.setDisable(false);
                 numButton.setDisable(false);
             }
 
+            //custom field prompt only appears if custom is selected
+            if(field.equals("Custom")) {
+                customFieldLabel.setVisible(true);
+                textField.setVisible(true);
+            } else {
+                textField.clear();
+                customFieldLabel.setVisible(false);
+                textField.setVisible(false);
+            }
         });
 
-        //Other Options
+
         sortButton.setOnAction(event -> {
             String field = sortDropDown.getValue();     
+            ArrayList<Game> tmpLibrary = library;
             ArrayList<Game> sortedLibrary  = null;
+            boolean errorPresent = false; //if true, does not sort or filter library
             boolean isAscending = false;
             boolean isAlphabetical = false;
+            String customFieldText = "";
 
-            if(ascendGroup.getSelectedToggle() != null) 
-            {
-                RadioButton ans = (RadioButton)ascendGroup.getSelectedToggle();
-                isAscending = ans.getText().equals("Ascending"); 
-            }
-            if(alphaGroup.getSelectedToggle() != null) {
-                RadioButton ans = (RadioButton)alphaGroup.getSelectedToggle();
-                isAlphabetical = ans.getText().equals("Alphabetical"); 
-            }
-            
-            if(library == null || library.isEmpty()) {
+            /*
+                int zero = 0; // bypass empty library error to test other errors
+                if((tmpLibrary == null || tmpLibrary.isEmpty()) && zero == 1) {
+             */
+
+            //Error Handling 1: Empty Library
+            if((tmpLibrary == null || tmpLibrary.isEmpty())) {
                 errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                 errorMsg.setText("Please import a library");
+                errorPresent = true;
             } 
-            else {
-                if(field.equals("Custom")) {
-                    String customFieldText = textField.getText().trim().toLowerCase();
-                    if(customFieldText == null || customFieldText.equals("") || customFieldText.length() == 0) {
+            else { //Part 1: Marking Sort Condtions
+                if(ascendGroup.getSelectedToggle() != null) { //checks if ascending or not
+                    RadioButton ans = (RadioButton)ascendGroup.getSelectedToggle();
+                    isAscending = ans.getText().equals("Ascending"); 
+                }
+                else if(alphaGroup.getSelectedToggle() != null) { //checks if alphabetical or not
+                    RadioButton ans = (RadioButton)alphaGroup.getSelectedToggle();
+                    isAlphabetical = ans.getText().equals("Alphabetical"); 
+                }
+                
+                if(field.equals("Custom")) { //checks if custom or not and custom field
+                        customFieldText = textField.getText().trim().toLowerCase();
+                        // System.out.println("initial customField is: " + customFieldText);
+                        if(customFieldText == null || customFieldText.equals("") || customFieldText.length() == 0) {
+                            errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                            errorMsg.setText("Please enter a Custom Field");
+                            errorPresent = true;
+                        } else {
+                            //normalize the key
+                            customFieldText = Normalizer.normalizeKey(customFieldText);
+                            if(customFieldText.equals("hours")) {
+                                customFieldText = "hours played";
+                            } 
+                        }
+                } 
+
+                /* Part 2: Necessary Filter Handling (i.e. get the range of a sorted list) */
+                //Filters before sort is called
+    
+                //Note: This should not be moved in terms of order
+                //This is due to it creating a new library due to its search dependency
+                if(filterKeywordCheckBox.isSelected()) {
+                    String keywordInput = keywordTextField.getText().trim().toLowerCase(); 
+                    String customAttributeInput = attributeTextField.getText().trim().toLowerCase();
+                    customAttributeInput = Normalizer.normalizeKey(customAttributeInput);
+
+                    if(keywordInput.isEmpty() || customAttributeInput.isEmpty()) { //Error Handling
                         errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
-                        errorMsg.setText("Please enter a Custom Field");
+                        errorMsg.setText("Please enter a keyword and a field");
+                        errorPresent = true;
                     } else {
-                        if(customFieldText.equals("hours played")) {
-                            customFieldText = "hours";
-                        } else if (customFieldText.equals("metacritic score")){
-                            customFieldText = "Metacritic Score";
-                        } 
-                        sortedLibrary = sort(library, field, customFieldText, isAscending, isAlphabetical);            
+                        ArrayList<Game> results = filter(tmpLibrary, "custom", customAttributeInput, keywordInput, null, false);
+                        if(results != null) {
+                            tmpLibrary = results;
+                        }
                     }
                 } else {
-                    sortedLibrary = sort(library, field, "", isAscending, isAlphabetical);            
+                    keywordTextField.clear();
+                    attributeTextField.clear();
                 }
-                if(sortedLibrary != null) {
+
+
+                //If platform is selected, sort by platform, then remove that section of with the platform grouped together
+                if(platformCheckBox.isSelected()) {
+                    String text = platformTextField.getText().trim(); 
+                    if(text.isEmpty()) { //Error Handling
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Please enter a platform");
+                        errorPresent = true;
+                    } else {
+                        ArrayList<Game> results = filter(tmpLibrary, "platform", "", text, null, false);
+                        if(results != null) {
+                            tmpLibrary = results;
+                        }
+                        // System.out.println("finished filter by platform, size = " + tmpLibrary.size());
+                    }
+                } else {
+                    platformTextField.clear();
+                }
+
+                //If date is selected, sort by date, then remove that section of with the dates grouped together
+                if(dateCheckBox.isSelected()) {
+                    String startDateText = startDateTextField.getText().trim(); 
+                    String endDateText = endDateTextField.getText().trim();
+                    int startYear = -1;
+                    int endYear = -1;
+
+                    if(startDateText.length() != 4 && startDateText.length() != 4) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Invalid length: Dates must be 4 digits");
+                        errorPresent = true;
+                    }
+
+                    try {
+                        startYear = Integer.parseInt(startDateText);
+                        endYear = Integer.parseInt(endDateText);
+                    } catch (NumberFormatException e) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Invalid format: Please enter a 4 digit date ");
+                        errorPresent = true;
+                    }
+                    
+                    if(startYear > endYear) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Invalid range: Start year must be earlier/same as end year");
+                        errorPresent = true;
+                    }
+
+                    double[] datesTuple = {startYear, endYear};
+                    System.out.println("calling filterDate, size = " + tmpLibrary.size());
+                    
+                    ArrayList<Game> results = filter(tmpLibrary, "release_date", "", "", datesTuple, true);
+                    if(results != null) {
+                        tmpLibrary = results;
+                    }
+                } else {
+                    startDateTextField.clear();
+                    endDateTextField.clear();
+                }
+
+                if(numberCheckBox.isSelected()) {
+                    String startNumText = startNumberTextField.getText().trim(); 
+                    String endNumText = endNumberTextField.getText().trim();
+                    double startNum = -1;
+                    double endNum = -1;
+
+                    try {
+                        startNum = Double.parseDouble(startNumText);
+                        endNum = Double.parseDouble(endNumText);
+                    } catch (NumberFormatException e) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Invalid format: Please an integer or decimal (e.g. 1, 2.0) ");
+                        errorPresent = true;
+                    }
+                    
+                    if(startNum > endNum) {
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Invalid range: Start number must be less/equal to end number");
+                        errorPresent = true;
+                    }
+
+                    double[] numbersTuple = {startNum, endNum};
+                    ArrayList<Game> results = filter(tmpLibrary, field, customFieldText, "", numbersTuple, false);
+                    if(results != null) {
+                        tmpLibrary = results;
+                    }
+                } else {
+                    startNumberTextField.clear();
+                    endNumberTextField.clear();
+                    customField.clear();
+                }
+                
+                /** Sort Handling */
+                if(!errorPresent) {
+                    errorMsg.setText("");
+                    sortedLibrary = sort(tmpLibrary, field, customFieldText, isAscending, isAlphabetical);            
                     gameList.getChildren().clear(); //clear game list
-                    for(Game game : sortedLibrary) {
-                        gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                    if(sortedLibrary != null) {
+                        for(Game game : sortedLibrary) { //populate game list
+                            gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                        }
                     }
                 }
             }
         });
         
         // Add the components to the VBox
-        // sortFilterBox.getChildren().addAll(sortFilterLabel, sortButton, filterOptions);  
         sortFilterBox.getChildren().addAll(
-        sortFilterLabel, sortButton,
-        filterOptions, platformFilterBox, keywordHBox, dateFilterBox,  //filter options 
-        sortLabel,  //sorting options
-        sortDropDown, errorMsg, customFieldLabel, hb, sortOptions, ascendButton, 
+        sortFilterLabel, sortButton, resetButton, errorMsg, //Main features: title, button, error message
+        filterLabel, filterOptions, platformFilterBox, dateFilterBox, keywordFilterHBox, numberFilterHBox,  //filter options 
+        sortLabel, sortDropDown, customFieldLabel, hb, sortOptions, ascendButton,  //sorting options
         descendButton, lineBreak, alphaButton, numButton);  
 
-
-        
         return sortFilterBox; // Return the fully assembled VBox
     }
 
+    /** FILTER IMPLEMENTATION */
+
+    /**
+     * This method filters the game library by doing sublist operations.
+     * @param library list of games we are filtering
+     * @param field The field type we are sorting by (platform, custom, etc)
+     * @param customField the custom field if the custom option is selected
+     * @param keyword the target keyword (i.e. "German" in languages)
+     * @param numberRange tuple with the start and end number if applicable, otherwise null
+     * @param isDate boolean of whether phrase is a date
+     * @return the game library entries filtered
+     */
+    private ArrayList<Game> filter(ArrayList<Game> library, String field, String customField, String keyword, double[] numberRange, boolean isDate) {
+        ArrayList<Game> filteredLibraryTemp = null; 
+        customField = Normalizer.normalizeKey(customField);
+        ArrayList<Game> filteredResults = new ArrayList<Game>();
+
+        
+        if(numberRange == null && !(field.equals("platform"))) {
+            filteredLibraryTemp = filterGameList(keyword); //calls filter implementation for search to get list with custom fields
+            for(Game game : filteredLibraryTemp) { //only accepts keyword matching custom fields
+                String myAttribute = game.getAttribute(customField);
+                if(myAttribute.contains(keyword)) {
+                    filteredResults.add(game);
+                }
+            }
+                /* 
+                for(int i = 0; i < 5; i++) {
+                    if(i >= filteredResults.size()) {
+                        break;
+                    }
+                    System.out.println("value of arr[" + i + "]'s " + customField + " = " + filteredResults.get(i).getAttribute(customField));
+                }
+                */
+            
+            return filteredResults;
+        }
+
+        //print debugging
+        System.out.print("\n\n\nfilter time:");
+        System.out.print("attributes list is:");
+        String strArr = String.join(" , ", attributes);
+        // System.out.println(strArr);
+        filteredLibraryTemp = library;
+
+        if(filteredLibraryTemp == null || filteredLibraryTemp.size() == 0) {
+            System.out.println("Error, its null");
+            return null;
+        } else {
+            System.out.println(" size of library = " + filteredLibraryTemp.size());
+        }
+
+        int size= filteredLibraryTemp.size();
+        for(int i = 0; i < 5; i++) {
+            System.out.println("value of arr[" + i + "]'s " + field + " = " + filteredLibraryTemp.get(i).getAttribute(field));
+        }
+        System.out.println("...\n");
+        for(int j = size - 5; j < size-1; j++) {
+            System.out.println("arr[ " + (j) + "]" + field + " = " + filteredLibraryTemp.get(j).getAttribute(field));
+        }
+
+        String fieldToFind = customField.equals("") ? field : customField;  //whether field is custom or not
+        String attribute = "";
+        // System.out.println("fieldToFind: " + fieldToFind); //print debugging line
+ 
+        if(numberRange == null) { //is a word, not custom field
+            for(Game game : filteredLibraryTemp) { //only accepts keyword matching custom fields
+                attribute = game.getAttribute(fieldToFind);
+                if(attribute.equals("N/A") || attribute.isEmpty()) {
+                    break;
+                }
+                else if(attribute.contains(keyword)) {
+                    filteredResults.add(game);
+                }
+            }
+            return filteredResults;
+        } else {
+            for(Game game : filteredLibraryTemp) { //only accepts keyword matching custom fields
+                attribute = game.getAttribute(fieldToFind);
+                try {
+                    if(isDate) { //gets first four digits if date-formatted string
+                        if(attribute.length() == 10) {
+                            attribute = attribute.substring(0,4);
+                        }
+                    } 
+                    // System.out.println("finding attribute: " + fieldToFind + ", attribute is: " + attribute);
+                    Double myData = Double.parseDouble(attribute);
+                    // System.out.print("data = " + myData + ">=  " + numberRange[0] + "<=" + numberRange[1]);
+                    if(myData >= numberRange[0] && myData <= numberRange[1]) {
+                        // System.out.print("---> equal = true?");
+                        filteredResults.add(game);
+                    }
+                    // System.out.println();
+                } catch (NumberFormatException e) {
+                    // TODO: handle exception
+                    // System.out.println("Error with parsing double");
+                }
+            }
+            return filteredResults;
+        }
+        
+    }
 
     /***** SORTING IMPLEMENTATION */
     /**
-     * This method sorts the games library. The sorting logic can be found in the game class.
-     * @param library list of games we are sorting
+     * This method sorts the games library. The sorting comparison logic can be found in the game class.
+     * @param myLibrary list of games we are sorting
      * @param field the field we are sorting by (i.e. Title, Platform, etc)
-     * @param customField the custom field if the custom option is selected
+     * @param customField the custom field if the custom option is selected, empty string if not applicable
      * @param isAscending whether the order is ascending or not
      * @param isAlphabetical whether the order is alphabetical (unicode), or by numerical value 
-     * @return the game library entries sorted 
+     * @return a list representing the sorted game library entries 
      */
-    private ArrayList<Game> sort(ArrayList<Game> library, String field, String customField, boolean isAscending, boolean isAlphabetical) {
+    private ArrayList<Game> sort(ArrayList<Game> myLibrary, String field, String customField, boolean isAscending, boolean isAlphabetical) {
         field = field.trim().toLowerCase();
+        customField = Normalizer.normalizeKey(customField);
+        /* 
+            System.out.print("sort called, prompts are: "); 
+            String[] parameters = {String.valueOf(myLibrary.size()), field, customField, Boolean.toString(isAscending), Boolean.toString(isAlphabetical)};
+            String strArr = String.join(" , ", parameters);
+            System.out.println(strArr);
+        */
+       
         Comparator<Game> comparator = null;
         if(field.equals("title")) {
             comparator = Game.byTitle;
@@ -882,8 +1151,8 @@ public class GUIDriver extends Application {
         if(!isAscending) {
             comparator = comparator.reversed();
         }
-        Collections.sort(library, comparator);
-        return library;
+        Collections.sort(myLibrary, comparator);
+        return myLibrary;
     }
 
 
