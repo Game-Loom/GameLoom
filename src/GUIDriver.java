@@ -937,8 +937,8 @@ public class GUIDriver extends Application {
                 if(!errorPresent) {
                     errorMsg.setText("");
                     sortedLibrary = sort(tmpLibrary, field, customFieldText, isAscending, isAlphabetical);            
+                    gameList.getChildren().clear(); //clear game list
                     if(sortedLibrary != null) {
-                        gameList.getChildren().clear(); //clear game list
                         for(Game game : sortedLibrary) { //populate game list
                             gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
                         }
