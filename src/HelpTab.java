@@ -1,3 +1,37 @@
+/**
+ * The HelpTab class represents a tab within the JavaFX application that provides users 
+ * with helpful resources and guidance for using the GameLoom application. This class manages 
+ * the UI for displaying information and linking to various support resources, including external 
+ * guides, frequently asked questions, support contact information, and recommended exporters.
+ * 
+ * The tab provides the following functionalities:
+ * - Displays a welcome message and a brief introduction to the help resources.
+ * - Provides clickable links to the user guide, FAQ, and support contact page.
+ * - Lists recommended exporters with descriptions and tutorial video links for each exporter.
+ * 
+ * The class is designed to assist users in accessing key resources to learn more about GameLoom 
+ * and how to use external tools for managing their game libraries.
+ * 
+ * Key components include:
+ * - Header text with a welcome message and introduction to available resources.
+ * - Clickable hyperlinks for the GameLoom User Guide, FAQ, and Contact Support.
+ * - Links to recommended exporters with descriptions for each (e.g., Steam, PlayStation).
+ * - Tutorial video links corresponding to each exporter to guide users in exporting their libraries.
+ * - A ScrollPane that contains all elements and dynamically adjusts to fit the window.
+ * 
+ * Helper methods overview:
+ * - setupHelpTab: Builds the layout and initializes all components for the help tab.
+ * - openLink: Opens a specified URL in the system's default web browser, supporting cross-platform compatibility.
+ * 
+ * Layout and Styling:
+ * - The content is center-aligned within a VBox and styled to match the application's theme.
+ * - Each exporter is displayed in two columns: one for the exporter link and another for the corresponding tutorial video.
+ * - The ScrollPane ensures the content is scrollable and fills the window area with a blue background.
+ * 
+ * @author CS321-004: Group 3
+ * @version 1.0
+ */
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
