@@ -832,9 +832,9 @@ public class GUIDriver extends Application {
                         errorMsg.setText("Please enter a keyword and a field");
                         errorPresent = true;
                     } else {
-                        List<Game> results = filter(tmpLibrary, "custom", customAttributeInput, keywordInput, null, false);
+                        ArrayList<Game> results = filter(tmpLibrary, "custom", customAttributeInput, keywordInput, null, false);
                         if(results != null) {
-                            tmpLibrary = new ArrayList<Game>(results);
+                            tmpLibrary = results;
                         }
                     }
                 } else {
@@ -851,9 +851,9 @@ public class GUIDriver extends Application {
                         errorMsg.setText("Please enter a platform");
                         errorPresent = true;
                     } else {
-                        List<Game> results = filter(tmpLibrary, "platform", "", text, null, false);
+                        ArrayList<Game> results = filter(tmpLibrary, "platform", "", text, null, false);
                         if(results != null) {
-                            tmpLibrary = new ArrayList<Game>(results);
+                            tmpLibrary = results;
                         }
                         // System.out.println("finished filter by platform, size = " + tmpLibrary.size());
                     }
@@ -892,9 +892,9 @@ public class GUIDriver extends Application {
                     double[] datesTuple = {startYear, endYear};
                     System.out.println("calling filterDate, size = " + tmpLibrary.size());
                     
-                    List<Game> results = filter(tmpLibrary, "release_date", "", "", datesTuple, true);
+                    ArrayList<Game> results = filter(tmpLibrary, "release_date", "", "", datesTuple, true);
                     if(results != null) {
-                        tmpLibrary = new ArrayList<Game>(results);
+                        tmpLibrary = results;
                     }
                 } else {
                     startDateTextField.clear();
@@ -923,9 +923,9 @@ public class GUIDriver extends Application {
                     }
 
                     double[] numbersTuple = {startNum, endNum};
-                    List<Game> results = filter(tmpLibrary, field, customFieldText, "", numbersTuple, false);
+                    ArrayList<Game> results = filter(tmpLibrary, field, customFieldText, "", numbersTuple, false);
                     if(results != null) {
-                        tmpLibrary = new ArrayList<Game>(results);
+                        tmpLibrary = results;
                     }
                 } else {
                     startNumberTextField.clear();
@@ -969,10 +969,10 @@ public class GUIDriver extends Application {
      * @param isDate boolean of whether phrase is a date
      * @return the game library entries filtered
      */
-    private List<Game> filter(ArrayList<Game> library, String field, String customField, String keyword, double[] numberRange, boolean isDate) {
+    private ArrayList<Game> filter(ArrayList<Game> library, String field, String customField, String keyword, double[] numberRange, boolean isDate) {
         ArrayList<Game> filteredLibraryTemp = null; 
         customField = Normalizer.normalizeKey(customField);
-        List<Game> filteredResults = new ArrayList<Game>();
+        ArrayList<Game> filteredResults = new ArrayList<Game>();
 
         
         if(numberRange == null && !(field.equals("platform"))) {
