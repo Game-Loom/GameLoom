@@ -1,0 +1,72 @@
+.root{
+    -fx-background-color: #121212;
+    -fx-text-fill: white;
+}
+
+.tab{
+    -fx-background-color: #525151;
+    -fx-text-fill: white;
+}
+
+.tab:selected{
+    -fx-background-color: #797777;
+    -fx-text-fill: white;
+}
+
+Label{
+    -fx-text-fill: white;
+}
+
+Button{
+    -fx-background-color: #363535;
+    -fx-text-fill: white;
+}
+
+ComboBox{
+    -fx-background-color: #363535;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: white
+}
+
+.combo-box .list-view .list-cell {
+    -fx-text-fill: black;
+  }
+
+VBox{
+    -fx-background-color: #121212;
+    -fx-text-fill: white;
+}
+
+HBox{
+    -fx-background-color: #121212;
+    -fx-text-fill: white;
+}
+
+BorderPane{
+    -fx-background-color: #121212;
+    -fx-text-fill: white;
+}
+
+CheckBox{
+    -fx-text-fill: white;
+}
+
+RadioButton{
+    -fx-text-fill: white;
+}
+
+.fancyBackground{
+    -fx-background-color: #121212;
+    -fx-text-fill: white;
+}
+
+.toTheTop{
+    -fx-background-color: #121212;
+    -fx-text-fill: white;
+}
+
+.transparent{
+    -fx-background-color: transparent;
+}

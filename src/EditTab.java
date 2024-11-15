@@ -92,6 +92,7 @@ public class EditTab {
      */
     private void setupEditTab() {
         formContainer.setPadding(new Insets(10));
+        formContainer.getStyleClass().add("fancyBackground");
         
         // Search bar for filtering games
         searchField = new TextField();
@@ -135,6 +136,7 @@ public class EditTab {
         HBox valueBox = new HBox(10, keySelector, valueField, saveButtonSpacer, saveButton);
         valueBox.setPadding(new Insets(10));
         valueBox.setAlignment(Pos.CENTER_LEFT); // Align to the left
+        valueBox.getStyleClass().add("transparent");
         
         // New text fields for custom key input
         customKeyField = new TextField();
@@ -170,7 +172,8 @@ public class EditTab {
         // Container for the delete safety check and tooltip icon
         HBox deleteSafetyBox = new HBox(5, deleteSafetyCheck, infoIcon);
         deleteSafetyBox.setAlignment(Pos.CENTER_RIGHT);
-        
+        deleteSafetyBox.getStyleClass().add("transparent");
+
         // Delete button setup
         deleteButton = new Button("Delete Game");
         deleteButton.setOnAction(e -> deleteGame());
@@ -183,6 +186,7 @@ public class EditTab {
         HBox customEntryBox = new HBox(10, customKeyField, customValueField, spacer, deleteSafetyBox, deleteButton);
         customEntryBox.setPadding(new Insets(10));
         customEntryBox.setAlignment(Pos.CENTER_LEFT); // Align contents to the left
+        customEntryBox.getStyleClass().add("transparent");
         
         formContainer.getChildren().addAll(searchField, gameListView, valueBox, customEntryBox);
         editTab.setContent(formContainer);

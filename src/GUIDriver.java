@@ -120,14 +120,23 @@ public class GUIDriver extends Application {
        // Initialize the shared global game list (VBox)
        gameList = new VBox(10); // VBox with 10px spacing between game items
        gameList.setPadding(new Insets(10)); // Adds padding INSIDE the VBox
-       gameList.getStyleClass().add("fancyBackground");
+       gameList.getStyleClass().add("toTheTop");
 
        //Sets up the various tabs and their content/actions
         setupTabs(primaryStage, tabPane);
 
        // **Set Scene and Show Stage**.
-       Scene scene = new Scene(tabPane, 954, 600); // Creates a scene with a width of 800 and height of 600
-       scene.getStylesheets().add(getClass().getResource("GUI.css").toExternalForm());
+       Scene scene = new Scene(tabPane, 1000, 700); // Creates a scene with a width of 1000 and height of 700
+       
+        /**Sets the style of the scene */
+        try{
+            File cssFile = new File("styles/Blue-Green(Default).css");
+            scene.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
        primaryStage.setScene(scene); // Sets the scene on the stage
        primaryStage.show(); // Displays the primary stage
     }
@@ -242,6 +251,46 @@ public class GUIDriver extends Application {
         }
     }
 
+    /**
+     * Sets up the various style buttons and their section
+     * @return an Hbox with the various buttons
+     */
+    private HBox setupStyleChoices(Stage primaryStage){
+        //Creates a dropdown menu with the various style/theme options
+        ComboBox<String> chooseStyle = new ComboBox<>();
+        chooseStyle.getItems().addAll("Blue-Green(Default)", "Dark-Mode", "Black-Red", "Peach-Pink");
+        chooseStyle.setPromptText("Choose library theme");
+        chooseStyle.setMaxWidth(200);
+
+        Button styleButton = new Button("Set Library Theme");
+        styleButton.setDisable(true);
+
+        //Button only works if a style has been chosen from the dropdown menu
+        chooseStyle.setOnAction(event -> {
+            styleButton.setDisable(chooseStyle.getValue() == null); 
+        });
+
+        //When clicked, the button changed the style of the library
+        styleButton.setOnAction(event -> {
+            String cssFilepath = "styles/" + chooseStyle.getValue() + ".css";
+
+            try{
+                File cssFile = new File(cssFilepath);
+                primaryStage.getScene().getStylesheets().removeFirst();
+                primaryStage.getScene().getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        });
+
+        HBox styleSection = new HBox(10);
+        styleSection.getChildren().addAll(chooseStyle, styleButton);
+
+        return styleSection;
+    }
+    
+    
 
     /**
      * Sets up the various tabs in the stage, besides the main library tab.
@@ -862,14 +911,17 @@ public class GUIDriver extends Application {
         HBox searchBox = setupSearchBar();  
 
         /// **Import Section**: Platform dropdown and import button
-        HBox importSection = setupImportSection(primaryStage); // Using helper method for modular import section setup   
+        HBox importSection = setupImportSection(primaryStage); // Using helper method for modular import section setup
+        
+        /// **Style Section**: Platform dropdown and style/theming button
+        HBox styleSection = setupStyleChoices(primaryStage);
 
         // **Bottom Layout**: Contains search box, dropdown, and buttons
         HBox bottomLayout = new HBox(10); // HBox with 10px spacing between components
         bottomLayout.setPadding(new Insets(10)); // Adds padding around the layout
         HBox.setHgrow(searchBox, Priority.ALWAYS); // Allows the search box to expand on window resize
         Button exportButton = setupExportButton(primaryStage); // Using helper method to modularize logic for export section
-        bottomLayout.getChildren().addAll(searchBox, importSection, exportButton); // Adds components to the bottom layout  
+        bottomLayout.getChildren().addAll(searchBox, styleSection, importSection, exportButton); // Adds components to the bottom layout  
 
         // Set components into the layout
         commonLayout.setCenter(scrollPane); // Places the scrollable game list in the center

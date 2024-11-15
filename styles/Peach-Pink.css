@@ -1,0 +1,72 @@
+.root{
+    -fx-background-color: linear-gradient(to right top, #F86594 0%, #FFCAA6 100%);
+    -fx-text-fill: black;
+}
+
+.tab{
+    -fx-background-color: #f97d98;
+    -fx-text-fill: black;
+}
+
+.tab:selected{
+    -fx-background-color: #fdb8a2;
+    -fx-text-fill: black;
+}
+
+Label{
+    -fx-text-fill: black;
+}
+
+Button{
+    -fx-background-color: #fb949c;
+    -fx-text-fill: black;
+}
+
+ComboBox{
+    -fx-background-color: #fb949c;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: black
+}
+
+.combo-box .list-view .list-cell {
+    -fx-text-fill: black;
+  }
+
+VBox{
+    -fx-background-color: #df5e87;
+    -fx-text-fill: black;
+}
+
+HBox{
+    -fx-background-color: #df5e87;
+    -fx-text-fill: black;
+}
+
+BorderPane{
+    -fx-background-color: #df5e87;
+    -fx-text-fill: black;
+}
+
+CheckBox{
+    -fx-text-fill: black;
+}
+
+RadioButton{
+    -fx-text-fill: black;
+}
+
+.fancyBackground{
+    -fx-background-color: linear-gradient(to right top, #F86594 0%, #FFCAA6 100%);
+    -fx-text-fill: black;
+}
+
+.toTheTop{
+    -fx-background-color: linear-gradient(to right top, #F86594 0%, #FFCAA6 100%);
+    -fx-text-fill: black;
+}
+
+.transparent{
+    -fx-background-color: transparent;
+}

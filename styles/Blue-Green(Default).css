@@ -19,10 +19,19 @@ Label{
 
 Button{
     -fx-background-color: #00bf72;
+    -fx-text-fill: black;
 }
 
 ComboBox{
     -fx-background-color: #00bf72;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: black
+}
+
+.combo-box .list-view .list-cell {
+    -fx-text-fill: black;
 }
 
 VBox{
@@ -50,6 +59,12 @@ RadioButton{
 
 .fancyBackground{
     -fx-background-color: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+    -fx-text-fill: black;
+}
+
+.toTheTop{
+    -fx-background-color: linear-gradient(to top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+    -fx-text-fill: black;
 }
 
 .transparent{
