@@ -70,3 +70,13 @@ RadioButton{
 .transparent{
     -fx-background-color: transparent;
 }
+
+/* Add Hyperlink styles at the end to customize link appearance */
+Hyperlink {
+    -fx-text-fill: #ffd9c0; /* Set a contrasting color for links */
+    -fx-underline: true; /* Ensure links are underlined */
+}
+
+Hyperlink:hover {
+    -fx-text-fill: #82e69b; /* Change color on hover for better visibility */
+}

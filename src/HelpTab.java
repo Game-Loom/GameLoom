@@ -59,7 +59,6 @@ public class HelpTab {
         VBox contentBox = new VBox(15); // Main container for the help tab content
         contentBox.setPadding(new Insets(20));
         contentBox.setAlignment(Pos.CENTER); // Center the content within contentBox
-        contentBox.setStyle("-fx-background-color: #005780;"); // Set blue background color to match the window
     
         // Header text
         Label header = new Label("Welcome to the GameLoom Help Page");
@@ -173,7 +172,6 @@ public class HelpTab {
         ScrollPane scrollPane = new ScrollPane(centeredContainer);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true); // Ensure the ScrollPane fills the height
-        scrollPane.setStyle("-fx-background-color: #005780;"); // Set blue background color for entire ScrollPane
     
         // Set the content of the help tab
         this.helpTab.setContent(scrollPane);
