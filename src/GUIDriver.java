@@ -1018,8 +1018,6 @@ public class GUIDriver extends Application {
             System.out.println("arr[ " + (j) + "]" + field + " = " + filteredLibraryTemp.get(j).getAttribute(field));
         }
 
-
-
         String fieldToFind = customField.equals("") ? field : customField;  //whether field is custom or not
         String attribute = "";
         // System.out.println("fieldToFind: " + fieldToFind); //print debugging line
