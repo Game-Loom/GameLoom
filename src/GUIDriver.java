@@ -735,10 +735,10 @@ public class GUIDriver extends Application {
         startNumberTextField.setPrefWidth(50); 
         endNumberTextField.setPrefWidth(50);   
         Label inLabel = new Label("in");
-        TextField customField = new TextField();
-        customField.setPromptText("e.g. hours played");
-        customField.setPrefWidth(70);   
-        HBox numberFilterHBox = new HBox(10, numberCheckBox, startNumberTextField, toNumLabel, endNumberTextField, inLabel, customField);
+        TextField customNumTextField = new TextField();
+        customNumTextField.setPromptText("e.g. hours played");
+        customNumTextField.setPrefWidth(70);   
+        HBox numberFilterHBox = new HBox(10, numberCheckBox, startNumberTextField, toNumLabel, endNumberTextField, inLabel, customNumTextField);
         numberFilterHBox.setAlignment(Pos.CENTER);
 
         platformFilterBox.getStyleClass().add("transparent");
@@ -959,6 +959,7 @@ public class GUIDriver extends Application {
                     String endNumText = endNumberTextField.getText().trim();
                     double startNum = -1;
                     double endNum = -1;
+                    String text = customNumTextField.getText().trim();
 
                     try {
                         startNum = Double.parseDouble(startNumText);
@@ -976,14 +977,14 @@ public class GUIDriver extends Application {
                     }
 
                     double[] numbersTuple = {startNum, endNum};
-                    ArrayList<Game> results = filter(tmpLibrary, field, customFieldText, "", numbersTuple, false);
+                    ArrayList<Game> results = filter(tmpLibrary, "custom", text, "", numbersTuple, false);
                     if(results != null) {
                         tmpLibrary = results;
                     }
                 } else {
                     startNumberTextField.clear();
                     endNumberTextField.clear();
-                    customField.clear();
+                    customNumTextField.clear();
                 }
                 
                 /** Sort Handling */
@@ -1048,12 +1049,19 @@ public class GUIDriver extends Application {
             return filteredResults;
         }
 
+        
+        String fieldToFind = customField.equals("") ? field : customField;  //whether field is custom or not
+        String attribute = "";
+        filteredLibraryTemp = library;
+        if(filteredLibraryTemp == null || filteredLibraryTemp.size() == 0) {
+            return null;
+        }
+        /* 
         //print debugging
         System.out.print("\n\n\nfilter time:");
         System.out.print("attributes list is:");
         String strArr = String.join(" , ", attributes);
         // System.out.println(strArr);
-        filteredLibraryTemp = library;
 
         if(filteredLibraryTemp == null || filteredLibraryTemp.size() == 0) {
             System.out.println("Error, its null");
@@ -1061,20 +1069,17 @@ public class GUIDriver extends Application {
         } else {
             System.out.println(" size of library = " + filteredLibraryTemp.size());
         }
-
         int size= filteredLibraryTemp.size();
         for(int i = 0; i < 5; i++) {
-            System.out.println("value of arr[" + i + "]'s " + field + " = " + filteredLibraryTemp.get(i).getAttribute(field));
+            System.out.println("value of arr[" + i + "]'s " + fieldToFind + " = " + filteredLibraryTemp.get(i).getAttribute(fieldToFind));
         }
         System.out.println("...\n");
         for(int j = size - 5; j < size-1; j++) {
-            System.out.println("arr[ " + (j) + "]" + field + " = " + filteredLibraryTemp.get(j).getAttribute(field));
+            System.out.println("arr[ " + (j) + "]" + fieldToFind + " = " + filteredLibraryTemp.get(j).getAttribute(fieldToFind));
         }
-
-        String fieldToFind = customField.equals("") ? field : customField;  //whether field is custom or not
-        String attribute = "";
         // System.out.println("fieldToFind: " + fieldToFind); //print debugging line
- 
+        */
+
         if(numberRange == null) { //is a word, not custom field
             for(Game game : filteredLibraryTemp) { //only accepts keyword matching custom fields
                 attribute = game.getAttribute(fieldToFind);
