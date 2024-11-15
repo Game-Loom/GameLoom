@@ -126,7 +126,7 @@ public class GUIDriver extends Application {
         setupTabs(primaryStage, tabPane);
 
        // **Set Scene and Show Stage**.
-       Scene scene = new Scene(tabPane, 800, 600); // Creates a scene with a width of 800 and height of 600
+       Scene scene = new Scene(tabPane, 954, 600); // Creates a scene with a width of 800 and height of 600
        scene.getStylesheets().add(getClass().getResource("GUI.css").toExternalForm());
        primaryStage.setScene(scene); // Sets the scene on the stage
        primaryStage.show(); // Displays the primary stage
@@ -289,8 +289,12 @@ public class GUIDriver extends Application {
        EditTab editEntryTab = new EditTab(library, gameList);
        Tab editTab = editEntryTab.getTab();
 
+       // **Help Tab**: Provides useful resources and links -- separate creation logic in different file
+       HelpTab helpTab = new HelpTab();
+       Tab helpTabInstance = helpTab.getTab(); // Adds a tab for the help page
+
        // Add all tabs to the TabPane.
-       tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab, editTab); // Adds all tabs to the TabPane
+       tabPane.getTabs().addAll(libraryTab, tab1, tab2, tab3, tab4, tab5, tab6, tab7, manualTab, editTab,helpTabInstance); // Adds all tabs to the TabPane
 
     }
 
