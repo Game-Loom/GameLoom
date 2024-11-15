@@ -3,6 +3,10 @@
     -fx-text-fill: white;
 }
 
+.tab-pane {
+    -fx-background-color: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+}
+
 .tab{
     -fx-background-color: #004d7a;
     -fx-text-fill: white;

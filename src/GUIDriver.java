@@ -105,42 +105,71 @@ public class GUIDriver extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        //Sets up a safety net for when the user closes the window
+        // Sets up a safety net for when the user closes the window
         setupSafetyNet(primaryStage);
-
+    
         // Sets up auto-save functionality based on a hash of full library
         setupAutoSave();
-
+    
         // Sets the title of the primary stage (main application window)
-       primaryStage.setTitle("My Game Library");
-
-       // **Top Tabs**: TabPane to hold all the sections of the application
-       TabPane tabPane = new TabPane(); // Holds all the tabs
-       tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE); // Prevents tabs from being closed by the user
-
-       // Initialize the shared global game list (VBox)
-       gameList = new VBox(10); // VBox with 10px spacing between game items
-       gameList.setPadding(new Insets(10)); // Adds padding INSIDE the VBox
-       gameList.getStyleClass().add("toTheTop");
-
-       //Sets up the various tabs and their content/actions
+        primaryStage.setTitle("My Game Library");
+    
+        // **Top Layout**: Contains style section, import section, and export button
+        HBox topLayout = new HBox(10); // HBox with 10px spacing between components
+        topLayout.setPadding(new Insets(10)); // Adds padding around the layout
+        topLayout.getStyleClass().add("transparent");
+    
+        // **Import Section**: Center the import section
+        HBox importWrapper = new HBox(); // Wrapper to center the import section
+        importWrapper.getChildren().add(setupImportSection(primaryStage));
+        importWrapper.getStyleClass().add("transparent");
+        HBox.setHgrow(importWrapper, Priority.ALWAYS); // Allows import section to center
+    
+        // **Style Section**: Platform dropdown and style/theming button
+        HBox styleSection = setupStyleChoices(primaryStage);
+        styleSection.getStyleClass().add("transparent");
+    
+        // **Export Button**: Export button aligned to the right
+        Button exportButton = setupExportButton(primaryStage);
+        HBox.setHgrow(exportButton, Priority.NEVER); // Export button stays on the right
+    
+        // Add all elements to the top layout
+        topLayout.getChildren().addAll(styleSection, importWrapper, exportButton);
+        topLayout.setAlignment(Pos.CENTER); // Centers the top layout contents
+    
+        // **Tab Pane**: TabPane to hold all the sections of the application
+        TabPane tabPane = new TabPane(); // Holds all the tabs
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE); // Prevents tabs from being closed by the user
+    
+        // Initialize the shared global game list (VBox)
+        gameList = new VBox(10); // VBox with 10px spacing between game items
+        gameList.setPadding(new Insets(10)); // Adds padding INSIDE the VBox
+        gameList.getStyleClass().add("toTheTop");
+    
+        // Sets up the various tabs and their content/actions
         setupTabs(primaryStage, tabPane);
-
-       // **Set Scene and Show Stage**.
-       Scene scene = new Scene(tabPane, 1000, 700); // Creates a scene with a width of 1000 and height of 700
-       
-        /**Sets the style of the scene */
-        try{
+    
+        // **Main Layout**: Create a VBox to hold the top layout and the TabPane
+        VBox mainLayout = new VBox(10);
+        mainLayout.getChildren().addAll(topLayout, tabPane);
+        VBox.setVgrow(tabPane, Priority.ALWAYS); // Allow the TabPane to grow and fill remaining space
+    
+        // Set the scene with the main layout
+        Scene scene = new Scene(mainLayout, 958, 700); // Creates a scene with a width of 1000 and height of 700
+    
+        // Sets the style of the scene
+        try {
             File cssFile = new File("styles/Blue-Green(Default).css");
             scene.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-       primaryStage.setScene(scene); // Sets the scene on the stage
-       primaryStage.show(); // Displays the primary stage
+    
+        primaryStage.setScene(scene); // Sets the scene on the stage
+        primaryStage.show(); // Displays the primary stage
     }
+    
+    
 
     /**
      * Sets up the auto-save mechanism.
@@ -502,6 +531,7 @@ public class GUIDriver extends Application {
         // **Import Button**: Initially disabled until a platform is selected
         Button importButton = new Button("Import Games from CSV");
         importButton.setDisable(true); // Disables the button until a platform is selected
+        
 
         // Enable the import button only when a platform is selected
         platformDropdown.setOnAction(event -> {
@@ -532,6 +562,7 @@ public class GUIDriver extends Application {
         // Return an HBox containing both the platform dropdown and the import button
         HBox importSection = new HBox(10); // HBox with 10px spacing between elements
         importSection.getChildren().addAll(platformDropdown, importButton); // Add dropdown and button to HBox
+        importSection.getStyleClass().add("transparent");
 
         return importSection; // Return the HBox to be used in the main layout
     }
@@ -584,6 +615,10 @@ public class GUIDriver extends Application {
         searchBox.setPadding(new Insets(10)); // Adds padding around the search box
         TextField searchField = new TextField(); // Creates a search input field
         searchField.setPromptText("e.g. Name Platform Year"); // Default text to let user know it takes multiple keywords at once
+
+        // Set the search field to grow and take up available horizontal space
+        HBox.setHgrow(searchField, Priority.ALWAYS);
+        
         Button searchButton = new Button("Search"); // Creates the search button
 
         // Define the action when the search button is clicked
@@ -670,14 +705,24 @@ public class GUIDriver extends Application {
         Label sortFilterLabel = new Label("Sort and Filter"); 
         sortFilterLabel.setStyle("-fx-font-weight: bold");
 
+        // Wrap the label in an HBox for centering
+        HBox labelBox = new HBox(sortFilterLabel);
+        labelBox.setAlignment(Pos.CENTER); // Center the label in the HBox
+        labelBox.getStyleClass().add("transparent");  
+
         // Button for triggering sort/filter functionality
+        Button resetButton = new Button("Reset");
         Button sortButton = new Button("Sort and Filter");  
-        Button resetButton = new Button("Reset");  
+
+        // Wrap buttons in an HBox with Reset first
+        HBox buttonBox = new HBox(10, resetButton, sortButton); // HBox with 10px spacing between buttons
+        buttonBox.setAlignment(Pos.CENTER); // Align buttons to the left     
+        buttonBox.getStyleClass().add("transparent");  
 
         // Default Settings For Specific Options
         resetButton.setOnAction(event -> {
             gameList.getChildren().clear(); // Clear the current game list in the UI    
-            for(Game game : library) {
+            for (Game game : library) {
                 gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
             }
         });
@@ -697,7 +742,7 @@ public class GUIDriver extends Application {
         CheckBox platformCheckBox = new CheckBox("Platform: ");
         TextField platformTextField = new TextField("");
         platformTextField.setPromptText("e.g. Steam");
-        platformTextField.setPrefWidth(70); 
+        platformTextField.setPrefWidth(100); 
         HBox platformFilterBox = new HBox(10, platformCheckBox, platformTextField);
         platformFilterBox.setAlignment(Pos.CENTER_LEFT);
 
@@ -709,8 +754,8 @@ public class GUIDriver extends Application {
         TextField endDateTextField = new TextField();
         endDateTextField.setPromptText("e.g. 2024");
         Label toLabel = new Label("to");
-        startDateTextField.setPrefWidth(63); 
-        endDateTextField.setPrefWidth(63);   
+        startDateTextField.setPrefWidth(80); 
+        endDateTextField.setPrefWidth(80);   
         HBox dateFilterBox = new HBox(10, dateCheckBox, startDateTextField, toLabel, endDateTextField);
         dateFilterBox.setAlignment(Pos.CENTER_LEFT);
 
@@ -723,12 +768,12 @@ public class GUIDriver extends Application {
         Label fieldPromptLabel = new Label("in");
         TextField attributeTextField = new TextField();
         attributeTextField.setPromptText("e.g. languages");
-        attributeTextField.setPrefWidth(90); 
+        attributeTextField.setPrefWidth(110); 
         HBox keywordFilterHBox = new HBox(10, filterKeywordCheckBox, keywordTextField, fieldPromptLabel, attributeTextField);
         keywordFilterHBox.setAlignment(Pos.CENTER_LEFT);
 
         /** Filter Option 4: By Custom Field (Numbers Ranging From) */
-        CheckBox numberCheckBox = new CheckBox("Numbers ranging from: ");
+        CheckBox numberCheckBox = new CheckBox("Numbers ranging from:");
         TextField startNumberTextField = new TextField();
         TextField endNumberTextField = new TextField();
         Label toNumLabel = new Label("to");
@@ -737,18 +782,33 @@ public class GUIDriver extends Application {
         Label inLabel = new Label("in");
         TextField customNumTextField = new TextField();
         customNumTextField.setPromptText("e.g. hours played");
-        customNumTextField.setPrefWidth(70);   
-        HBox numberFilterHBox = new HBox(10, numberCheckBox, startNumberTextField, toNumLabel, endNumberTextField, inLabel, customNumTextField);
-        numberFilterHBox.setAlignment(Pos.CENTER);
+        customNumTextField.setPrefWidth(120);        
+
+        // Create HBox for the "x to x in x" components
+        HBox rangeFieldsBox = new HBox(10, startNumberTextField, toNumLabel, endNumberTextField, inLabel, customNumTextField);
+        rangeFieldsBox.setAlignment(Pos.CENTER_RIGHT);       
+
+        // Create VBox to stack the checkbox and range fields
+        VBox numberFilterVBox = new VBox(5, numberCheckBox, rangeFieldsBox);
+        numberFilterVBox.setAlignment(Pos.CENTER_LEFT);
+        numberFilterVBox.getStyleClass().add("transparent");
 
         platformFilterBox.getStyleClass().add("transparent");
         keywordFilterHBox.getStyleClass().add("transparent");
         dateFilterBox.getStyleClass().add("transparent");
-        numberFilterHBox.getStyleClass().add("transparent");
+        rangeFieldsBox.getStyleClass().add("transparent");
+        numberFilterVBox.getStyleClass().add("transparent");
+
+        // Add a transparent buffer zone above "Sort By:"
+        Pane bufferZone = new Pane();
+        bufferZone.setPrefHeight(50); // Adjust height as needed for spacing       
+
+        //sortFilterBox.getChildren().add(bufferZone); // Adds the buffer between filter
 
         /************ SORTING FEATURE */
         Label sortLabel = new Label("Sort By:");   
-        VBox sortOptions = new VBox(5); // VBox with 5px spacing between options
+        VBox sortVBox = new VBox(5); // VBox with 5px spacing between options
+        sortVBox.setAlignment(Pos.CENTER); // Center the Sort By label, dropdown, and custom field
 
         //Sort Options Dropdown
         ComboBox<String> sortDropDown = new ComboBox<>(); // Dropdown for selecting a platform for game imports
@@ -762,30 +822,34 @@ public class GUIDriver extends Application {
         textField.setPromptText("e.g. hours played");
         customFieldLabel.setVisible(false);
         textField.setVisible(false);
-        HBox hb = new HBox();
-        hb.getChildren().addAll(textField);
-        hb.getStyleClass().add("transparent");
+        // Add Sort By components to the VBox
+        sortVBox.getChildren().addAll(sortLabel, sortDropDown, customFieldLabel, textField);
+        sortVBox.getStyleClass().add("transparent");
 
         /** Declared Label for error messages */
         final Label errorMsg = new Label();
         GridPane.setConstraints(errorMsg, 0, 1);
         GridPane.setColumnSpan(errorMsg, 1);
 
-        /** Line Break to separate Alphabetical & Ascending */
-        Label lineBreak = new Label("-------------------------------");   
-        
-        /** Types of Option Formatting **/
-        //Button Declaration (Ascending, Descending, Alphabetical, Numerical)
-        ToggleGroup ascendGroup = new ToggleGroup();
+        // Line break and radio buttons
         RadioButton ascendButton = new RadioButton("Ascending");
         RadioButton descendButton = new RadioButton("Descending");
-        ascendButton.setToggleGroup(ascendGroup);
-        descendButton.setToggleGroup(ascendGroup);
-        ToggleGroup alphaGroup = new ToggleGroup();
+        Label lineBreak = new Label("-------------------------------");
         RadioButton alphaButton = new RadioButton("Alphabetical");
         RadioButton numButton = new RadioButton("Numerical");
+
+        ToggleGroup ascendGroup = new ToggleGroup();
+        ascendButton.setToggleGroup(ascendGroup);
+        descendButton.setToggleGroup(ascendGroup);
+
+        ToggleGroup alphaGroup = new ToggleGroup();
         alphaButton.setToggleGroup(alphaGroup);
         numButton.setToggleGroup(alphaGroup);
+
+        // Arrange radio buttons under Sort dropdown
+        VBox sortRadioOptions = new VBox(5, ascendButton, descendButton, lineBreak, alphaButton, numButton);
+        sortRadioOptions.setAlignment(Pos.CENTER); // Adjust alignment if necessary
+        sortRadioOptions.getStyleClass().add("transparent");
         
         //Default Options Selected upon Launch (alphabetical & ascending)
         sortDropDown.getSelectionModel().selectFirst();
@@ -1003,10 +1067,9 @@ public class GUIDriver extends Application {
         
         // Add the components to the VBox
         sortFilterBox.getChildren().addAll(
-        sortFilterLabel, sortButton, resetButton, errorMsg, //Main features: title, button, error message
-        filterLabel, filterOptions, platformFilterBox, dateFilterBox, keywordFilterHBox, numberFilterHBox,  //filter options 
-        sortLabel, sortDropDown, customFieldLabel, hb, sortOptions, ascendButton,  //sorting options
-        descendButton, lineBreak, alphaButton, numButton);  
+        labelBox, buttonBox, errorMsg, //Main features: title, button, error message
+        filterLabel, filterOptions, platformFilterBox, dateFilterBox, keywordFilterHBox, numberFilterVBox,  //filter options 
+        bufferZone, sortVBox, sortRadioOptions);  //sorting options
 
         return sortFilterBox; // Return the fully assembled VBox
     }
@@ -1171,41 +1234,31 @@ public class GUIDriver extends Application {
     private BorderPane createCommonTabLayout(Stage primaryStage) {
         // **Library Layout**: Organizes the main content in the tab
         BorderPane commonLayout = new BorderPane(); // Uses BorderPane to arrange components    
-
+    
         // Makes the shared game list scrollable
         ScrollPane scrollPane = new ScrollPane(gameList); // Uses the shared gameList for all tabs
-        //scrollPane.setFitToWidth(true); // Ensures content fits the width   // REMOVED ON 10/26 TO ALLOW FOR HORIZONTAL SCROLLING
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Enable horizontal scrolling as needed
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Enable vertical scrolling as needed
     
         // **Sort and Filter Panel**: Extracted to a helper method
         VBox sortFilterBox = setupSortFilterPanel();    
-
+    
         // **Search Bar**: Uses helper method for modular search bar setup
         HBox searchBox = setupSearchBar();  
-
-        /// **Import Section**: Platform dropdown and import button
-        HBox importSection = setupImportSection(primaryStage); // Using helper method for modular import section setup
-        
-        /// **Style Section**: Platform dropdown and style/theming button
-        HBox styleSection = setupStyleChoices(primaryStage);
-
-        // **Bottom Layout**: Contains search box, dropdown, and buttons
-        HBox bottomLayout = new HBox(10); // HBox with 10px spacing between components
-        bottomLayout.setPadding(new Insets(10)); // Adds padding around the layout
-        HBox.setHgrow(searchBox, Priority.ALWAYS); // Allows the search box to expand on window resize
-        Button exportButton = setupExportButton(primaryStage); // Using helper method to modularize logic for export section
-        bottomLayout.getChildren().addAll(searchBox, styleSection, importSection, exportButton); // Adds components to the bottom layout  
-
+        searchBox.getStyleClass().add("transparent");
+    
         // Set components into the layout
+        commonLayout.setTop(searchBox); // Places the search box at the top of the layout
         commonLayout.setCenter(scrollPane); // Places the scrollable game list in the center
         commonLayout.setRight(sortFilterBox); // Places the sort/filter options on the right side
-        commonLayout.setBottom(bottomLayout); // Places the search and buttons at the bottom
+    
+        // Apply styles to the layout
         commonLayout.getStyleClass().add("fancyBackground");
         sortFilterBox.getStyleClass().add("fancyBackground");
-
+    
         return commonLayout; // Return the fully assembled layout for each tab
     }
+    
 
 
     public static void main(String[] args) {
