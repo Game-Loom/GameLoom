@@ -133,7 +133,7 @@ public class HelpTab {
         Label playstationVideoText = new Label("Learn how to export your Playstation library.");
     
         Hyperlink itchIoVideoLink = new Hyperlink("Itch.io Exporter Tutorial Video");
-        itchIoVideoLink.setOnAction(e -> openLink("https://example.com/itchio-tutorial"));
+        itchIoVideoLink.setOnAction(e -> openLink("https://youtu.be/_Sj7nsSJG0A"));
         Label itchIoVideoText = new Label("Learn how to export your itch.io library.");
     
         Hyperlink nintendoVideoLink = new Hyperlink("Nintendo Exporter Tutorial Video");
