@@ -656,6 +656,7 @@ public class GUIDriver extends Application {
         ArrayList<Game> gameSearchResults = new ArrayList<Game>();
 
         // Split searchText by space to handle multiple keywords
+        searchText = searchText.toLowerCase();
         String[] searchTerms = searchText.split("\\s");    
 
         // If searchText is empty, display all games when search is clicked
@@ -719,18 +720,11 @@ public class GUIDriver extends Application {
         buttonBox.setAlignment(Pos.CENTER); // Align buttons to the left     
         buttonBox.getStyleClass().add("transparent");  
 
-        // Default Settings For Specific Options
-        resetButton.setOnAction(event -> {
-            gameList.getChildren().clear(); // Clear the current game list in the UI    
-            for (Game game : library) {
-                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
-            }
-        });
-
+        
         /** FILTERING FEATURE */    
         VBox filterOptions = new VBox(5); // VBox with 5px spacing between options
         /* 
-            int numberOfOptions = 3;
+        int numberOfOptions = 3;
             for (int i = 0; i < 3; i++) {
                 CheckBox option = new CheckBox(filterNames[i] + (i + 1)); // Creates placeholder filter options
                 filterOptions.getChildren().add(option); // Adds each option to the VBox
@@ -771,7 +765,7 @@ public class GUIDriver extends Application {
         attributeTextField.setPrefWidth(110); 
         HBox keywordFilterHBox = new HBox(10, filterKeywordCheckBox, keywordTextField, fieldPromptLabel, attributeTextField);
         keywordFilterHBox.setAlignment(Pos.CENTER_LEFT);
-
+        
         /** Filter Option 4: By Custom Field (Numbers Ranging From) */
         CheckBox numberCheckBox = new CheckBox("Numbers ranging from:");
         TextField startNumberTextField = new TextField();
@@ -787,23 +781,24 @@ public class GUIDriver extends Application {
         // Create HBox for the "x to x in x" components
         HBox rangeFieldsBox = new HBox(10, startNumberTextField, toNumLabel, endNumberTextField, inLabel, customNumTextField);
         rangeFieldsBox.setAlignment(Pos.CENTER_RIGHT);       
-
+        
         // Create VBox to stack the checkbox and range fields
         VBox numberFilterVBox = new VBox(5, numberCheckBox, rangeFieldsBox);
         numberFilterVBox.setAlignment(Pos.CENTER_LEFT);
         numberFilterVBox.getStyleClass().add("transparent");
-
+        
         platformFilterBox.getStyleClass().add("transparent");
         keywordFilterHBox.getStyleClass().add("transparent");
         dateFilterBox.getStyleClass().add("transparent");
         rangeFieldsBox.getStyleClass().add("transparent");
         numberFilterVBox.getStyleClass().add("transparent");
-
+        
         // Add a transparent buffer zone above "Sort By:"
         Pane bufferZone = new Pane();
         bufferZone.setPrefHeight(50); // Adjust height as needed for spacing       
-
+        
         //sortFilterBox.getChildren().add(bufferZone); // Adds the buffer between filter
+        
 
         /************ SORTING FEATURE */
         Label sortLabel = new Label("Sort By:");   
@@ -885,6 +880,28 @@ public class GUIDriver extends Application {
                 customFieldLabel.setVisible(false);
                 textField.setVisible(false);
             }
+        });
+
+
+        // Default Settings For Specific Options
+        resetButton.setOnAction(event -> {
+            gameList.getChildren().clear(); // Clear the current game list in the UI    
+            for (Game game : library) {
+                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+            }
+            textField.clear();
+            keywordTextField.clear();
+            attributeTextField.clear();
+            platformTextField.clear();
+            startDateTextField.clear();
+            endDateTextField.clear();
+            startNumberTextField.clear();
+            endNumberTextField.clear();
+            customNumTextField.clear();
+            platformCheckBox.setSelected(false);
+            dateCheckBox.setSelected(false);
+            filterKeywordCheckBox.setSelected(false);
+            numberCheckBox.setSelected(false);
         });
 
 
@@ -1007,7 +1024,7 @@ public class GUIDriver extends Application {
                     }
 
                     double[] datesTuple = {startYear, endYear};
-                    System.out.println("calling filterDate, size = " + tmpLibrary.size());
+                    // System.out.println("calling filterDate, size = " + tmpLibrary.size());
                     
                     ArrayList<Game> results = filter(tmpLibrary, "release_date", "", "", datesTuple, true);
                     if(results != null) {
