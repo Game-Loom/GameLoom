@@ -63,7 +63,7 @@ RadioButton{
 }
 
 .toTheTop{
-    -fx-background-color: linear-gradient(to right top, #1b0a07 0%, #49040c 27%, #750012 62%, #bd0722 99%);
+    -fx-background-color: linear-gradient(to top, #1b0a07 0%, #49040c 27%, #750012 62%, #bd0722 99%);
     -fx-text-fill: white;
 }
 
