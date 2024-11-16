@@ -117,17 +117,17 @@ public class GUIDriver extends Application {
         // **Top Layout**: Contains style section, import section, and export button
         HBox topLayout = new HBox(10); // HBox with 10px spacing between components
         topLayout.setPadding(new Insets(10)); // Adds padding around the layout
-        topLayout.getStyleClass().add("transparent");
+        //topLayout.getStyleClass().add("transparent");
     
         // **Import Section**: Center the import section
         HBox importWrapper = new HBox(); // Wrapper to center the import section
         importWrapper.getChildren().add(setupImportSection(primaryStage));
-        importWrapper.getStyleClass().add("transparent");
+        //importWrapper.getStyleClass().add("transparent");
         HBox.setHgrow(importWrapper, Priority.ALWAYS); // Allows import section to center
     
         // **Style Section**: Platform dropdown and style/theming button
         HBox styleSection = setupStyleChoices(primaryStage);
-        styleSection.getStyleClass().add("transparent");
+        //styleSection.getStyleClass().add("transparent");
     
         // **Export Button**: Export button aligned to the right
         Button exportButton = setupExportButton(primaryStage);
@@ -562,7 +562,7 @@ public class GUIDriver extends Application {
         // Return an HBox containing both the platform dropdown and the import button
         HBox importSection = new HBox(10); // HBox with 10px spacing between elements
         importSection.getChildren().addAll(platformDropdown, importButton); // Add dropdown and button to HBox
-        importSection.getStyleClass().add("transparent");
+        //importSection.getStyleClass().add("transparent");
 
         return importSection; // Return the HBox to be used in the main layout
     }
@@ -1245,7 +1245,7 @@ public class GUIDriver extends Application {
     
         // **Search Bar**: Uses helper method for modular search bar setup
         HBox searchBox = setupSearchBar();  
-        searchBox.getStyleClass().add("transparent");
+        //searchBox.getStyleClass().add("transparent");
     
         // Set components into the layout
         commonLayout.setTop(searchBox); // Places the search box at the top of the layout
