@@ -116,7 +116,7 @@ public class HelpTab {
         Label playstationExporterText = new Label("Export your Playstation Network library to a CSV file for easy automated import.");
         
         Hyperlink itchIoExporterLink = new Hyperlink("Itch.io Exporter");
-        itchIoExporterLink.setOnAction(e -> openLink("https://gist.github.com/abraxas86/ad72ba46b6cdd86dc63058bba0c629c2#file-itchiocollectiontocsv-user-js"));
+        itchIoExporterLink.setOnAction(e -> openLink("https://gist.github.com/abraxas86/ad72ba46b6cdd86dc63058bba0c629c2"));
         Label itchIoExporterText = new Label("Export your itch.io library to a CSV file for easy automated import.");
         
         Hyperlink NintendoExporterLink = new Hyperlink("Nintendo Switch Exporter");
@@ -129,7 +129,7 @@ public class HelpTab {
         Label steamVideoText = new Label("Learn how to export your Steam library.");
     
         Hyperlink playstationVideoLink = new Hyperlink("Playstation Exporter Tutorial Video");
-        playstationVideoLink.setOnAction(e -> openLink("https://example.com/playstation-tutorial"));
+        playstationVideoLink.setOnAction(e -> openLink("https://youtu.be/CNgB_lgKCtw"));
         Label playstationVideoText = new Label("Learn how to export your Playstation library.");
     
         Hyperlink itchIoVideoLink = new Hyperlink("Itch.io Exporter Tutorial Video");
