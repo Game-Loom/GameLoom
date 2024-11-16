@@ -1092,7 +1092,7 @@ public class GUIDriver extends Application {
         ArrayList<Game> filteredResults = new ArrayList<Game>();
 
         
-        if(numberRange == null && !(field.equals("platform"))) {
+        if(numberRange == null && !(field.toLowerCase().trim().equals("platform"))) {
             filteredLibraryTemp = filterGameList(keyword); //calls filter implementation for search to get list with custom fields
             for(Game game : filteredLibraryTemp) { //only accepts keyword matching custom fields
                 String myAttribute = game.getAttribute(customField);
@@ -1142,7 +1142,6 @@ public class GUIDriver extends Application {
         }
         // System.out.println("fieldToFind: " + fieldToFind); //print debugging line
         */
-
         if(numberRange == null) { //is a word, not custom field
             for(Game game : filteredLibraryTemp) { //only accepts keyword matching custom fields
                 attribute = game.getAttribute(fieldToFind);
