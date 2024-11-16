@@ -125,7 +125,7 @@ public class HelpTab {
         
         // Tutorial video links and descriptions
         Hyperlink steamVideoLink = new Hyperlink("Steam Exporter Tutorial Video");
-        steamVideoLink.setOnAction(e -> openLink("https://example.com/steam-tutorial"));
+        steamVideoLink.setOnAction(e -> openLink("https://youtu.be/WLLxdTEdJNc"));
         Label steamVideoText = new Label("Learn how to export your Steam library.");
     
         Hyperlink playstationVideoLink = new Hyperlink("Playstation Exporter Tutorial Video");
