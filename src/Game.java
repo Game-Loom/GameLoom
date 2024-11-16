@@ -151,7 +151,7 @@ public class Game {
      * @param key The original key string.
      * @return A formatted string with capitalized words and spaces instead of underscores.
      */
-    private String capitalizeAndFormatKey(String key) {
+    protected String capitalizeAndFormatKey(String key) {
         String[] words = key.split("_");
         StringBuilder formattedKey = new StringBuilder();
 
@@ -207,19 +207,20 @@ public class Game {
     }
 
     /******** SORTING IMPLEMENTATION **************/
-    /*
-      * Example of how a game's attributes may look:
- *     Map<String, String> attributes = new HashMap<>();
- *     attributes.put("platform", "Steam");
- *     attributes.put("hours", "12.5");
- *     attributes.put("metascore", "85");
- *     attributes.put("release_date", "2021-05-20"); 
- *     Game game = new Game(attributes);
+
+    /**
+     * This method gets the title value of the game to make the title comparator associated with a method.
+     * @return String representing the title of the game
      */
     public String getTitle() {
         return getAttribute("game");
     }
-    
+
+    /**
+     * This defines a comparator to sort Game objects by their date.
+     * @param isAscending specifies if the order of sorting is ascending or not (descending)
+     * @return comparator that compares Game objects by their date
+     */
     public static final Comparator<Game> byDate (boolean isAscending) {
         return new Comparator<Game>() {
         // YYYY-MM-DATE  ex: attributes.put("release_date", "2021-05-20"); 
@@ -228,8 +229,6 @@ public class Game {
 
                 String date1 = game1.getAttribute("release_date");
                 String date2 = game2.getAttribute("release_date");
-                System.out.println(date1);
-
                 boolean date1NotValid = (date1.equals("N/A") || date1.length() != 10);
                 boolean date2NotValid = (date2.equals("N/A") || date2.length() != 10);
 
@@ -264,6 +263,11 @@ public class Game {
         };
     }
 
+    /**
+     * This defines a comparator to sort Game objects by a custom field that is a string/word
+     * @param isAscending specifies if the order of sorting is ascending or not (descending)
+     * @return comparator that compares Game objects by a custom field
+     */
     public static final Comparator<Game> byFieldString (boolean isAscending, String fieldName) {
         return new Comparator<Game>() {
             @Override
@@ -292,6 +296,11 @@ public class Game {
         };
     }
 
+    /**
+     * This method attempts to parse the double.
+     * @param number representing double we want to parse.
+     * @return double representing if it parsed. Returns negative infinity upon error.
+     */
     public static double parseDouble(String number) {
         try {
             return Double.parseDouble(number);
@@ -299,7 +308,12 @@ public class Game {
             return Double.NEGATIVE_INFINITY;
         }
     }
-        
+
+    /**
+     * This defines a comparator to sort Game objects by a custom field that is a number
+     * @param isAscending specifies if the order of sorting is ascending or not (descending)
+     * @return comparator that compares Game objects by the custom field
+     */
     public static final Comparator<Game> byFieldDouble (boolean isAscending, String fieldName) {
         return new Comparator<Game>() {
             @Override
@@ -310,6 +324,8 @@ public class Game {
 
                 //if double could not be parsed (returns negative infinity)
                 //field will be moved to the end
+            
+                // System.out.print(fieldName + " of game1= " + field1 + "vs game2= " + field2);
                 if(field1 == negInf || field2 == negInf) {
                     if(field1 == negInf && field2 == negInf) {
                         return 0;
@@ -318,9 +334,11 @@ public class Game {
                         return isAscending ? 1 : -1; 
                         //if ascending, all invalid date goes to end
                         //if descending, all invalid dates go to start 
-                        // due to nature of Collections.reversed() 
+                        // so when Collections.reversed() is called for descending, the invalid dates
+                        // end up at the end 
                     }
                     else {
+                        // System.out.println( "will return (true = -1)" + isAscending);
                         return isAscending ? -1 : 1;
                     }
                 }
@@ -329,7 +347,14 @@ public class Game {
         };
     }
 
+    /**
+     * This defines a comparator to sort Game objects by their title
+     */
     public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitle);
+    
+    /**
+     * This defines a comparator to sort Game objects by their platform name
+     */
     public static final Comparator<Game> byPlatform = Comparator.comparing(Game::getPlatform);
 
 }
