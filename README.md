@@ -22,7 +22,7 @@ I can also record a quick video of how to use the itch.io scraper and put a link
 
 For Steam we recommend: https://www.lorenzostanco.com/lab/steam/
 
-For Nintendo (Switch) we recommend: https://www.gamebrew.org/wiki/Switch_Library_Manager
+For Nintendo (Switch) we recommend: https://github.com/redphx/eshop-purchase-history
 
 
 **10/18**
