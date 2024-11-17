@@ -120,7 +120,7 @@ public class HelpTab {
         Label itchIoExporterText = new Label("Export your itch.io library to a CSV file for easy automated import.");
         
         Hyperlink NintendoExporterLink = new Hyperlink("Nintendo Switch Exporter");
-        NintendoExporterLink.setOnAction(e -> openLink("https://www.gamebrew.org/wiki/Switch_Library_Manager"));
+        NintendoExporterLink.setOnAction(e -> openLink("https://github.com/redphx/eshop-purchase-history"));
         Label NintendoExporterText = new Label("Export your Nintendo Switch online library to a CSV file for easy automated import.");
         
         // Tutorial video links and descriptions
@@ -137,7 +137,7 @@ public class HelpTab {
         Label itchIoVideoText = new Label("Learn how to export your itch.io library.");
     
         Hyperlink nintendoVideoLink = new Hyperlink("Nintendo Exporter Tutorial Video");
-        nintendoVideoLink.setOnAction(e -> openLink("https://example.com/nintendo-tutorial"));
+        nintendoVideoLink.setOnAction(e -> openLink("https://youtu.be/MLr4Wfojuyo"));
         Label nintendoVideoText = new Label("Learn how to export your Nintendo library.");
     
         // Left column with exporter links and descriptions
