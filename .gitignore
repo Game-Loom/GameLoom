@@ -11,4 +11,4 @@ bin/
 *.class
 
 #Ignores the images folder, since that is just for tab setup
-imgs/
+#imgs/
