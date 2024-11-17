@@ -546,7 +546,7 @@ public class GUIDriver extends Application {
 
             if (selectedFile != null) { // If a file is selected
                 String selectedPlatform = platformDropdown.getValue(); // Gets the selected platform from the dropdown
-                List<Game> importedGames = GLImporter.importGamesFromCSV(selectedFile.getPath()); // Imports games from the selected CSV file
+                List<Game> importedGames = GLImporter.importGamesFromCSV(selectedFile.getPath(),selectedPlatform); // Imports games from the selected CSV file
 
                 // Only assign the platform if the selected option is not "GameLoom Library" (import an existing library from our program)
                 if (!"GameLoom Library".equals(selectedPlatform)) {
