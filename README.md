@@ -14,7 +14,6 @@ Features:
 Requirements:
     Java 11 or later
     JavaFX 11 or later
-    Recommended CSV exporters for supported platforms (see Exporters section).
 
 Setup:
     To Run From Source:
@@ -30,6 +29,7 @@ Setup:
             Ensure the JavaFX --module-path argument is configured correctly for your environment (especially if using VSCode).
     
     To Run from .jar File:
+        Still need to work this out.
 
 Usage:
     Importing Game Libraries:
