@@ -105,6 +105,7 @@ public class GUIDriver extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        setApplicationIcon(primaryStage, "imgs/GameLoomIcon.png"); // Sets Icon
         // Sets up a safety net for when the user closes the window
         setupSafetyNet(primaryStage);
     
@@ -407,6 +408,24 @@ public class GUIDriver extends Application {
             tab.setGraphic(logo);
         }
         catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Sets the application icon for the primary stage.
+     * This method attempts to load the specified icon file and sets it as the icon for the given stage.
+     * If the file is not found or an error occurs while loading the image, it logs an error message
+     * and ensures the application continues running without the icon.
+     * 
+     * @param stage The primary stage of the JavaFX application to set the icon for.
+     * @param iconPath The relative path to the icon file (e.g., "imgs/GameLoomIcon.png").
+     */
+    private void setApplicationIcon(Stage stage, String iconPath) {
+        try {
+            stage.getIcons().add(new Image(new FileInputStream(iconPath)));
+        } catch (Exception e) {
+            System.err.println("Error: Unable to load application icon from path: " + iconPath);
             e.printStackTrace();
         }
     }
