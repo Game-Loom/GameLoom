@@ -763,9 +763,9 @@ public class GUIDriver extends Application {
         /** Filter Option 2: Boxes for dates _____ to ______ */
         CheckBox dateCheckBox = new CheckBox("Year from: ");
         TextField startDateTextField = new TextField();
-        startDateTextField.setPromptText("e.g. 1999");
+        startDateTextField.setPromptText("e.g. 2000");
         TextField endDateTextField = new TextField();
-        endDateTextField.setPromptText("e.g. 2024");
+        endDateTextField.setPromptText("e.g. 2012");
         Label toLabel = new Label("to");
         startDateTextField.setPrefWidth(80); 
         endDateTextField.setPrefWidth(80);   
