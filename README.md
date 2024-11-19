@@ -74,7 +74,7 @@ GameLoom supports exporting your unified game library to a CSV file for external
 
 ## Known Limitations:
 - itch.io Exporter: Limited testing due to small dataset availability.
-- PSDLE (PlayStation): EPSDLE xport functionality for PS3, PSP, and PS Vita is not currently working as of October 2024.
+- PSDLE (PlayStation): EPSDLE export functionality for PS3, PSP, and PS Vita is not currently working as of October 2024.
 
 ## Contributing:
 We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an issue or pull request to the repository.
