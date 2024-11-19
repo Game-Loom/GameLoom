@@ -53,7 +53,7 @@ or
   - **PlayStation**: Use PSDLE for exporting your PS4/PS5 library.
      - Note: Exported CSV files include an extra header row at the bottom, which is automatically ignored during import.
   - **itch.io**: Use the Itch.io Library to CSV Scraper.
-     - Requires Tampermonkey to run the userscript. [Links below](#tampermonkey-extension-links).
+     - Requires Tampermonkey to run the userscript. See below.
      - Learn More.
 
 ### Exporting Game Libraries:
@@ -79,11 +79,11 @@ Below are the recommended tools for exporting game libraries from various platfo
    
 - **Nintendo**: [eshop-purchase-history](https://github.com/redphx/eshop-purchase-history)
    - Automatically ignores the last 5 rows during import that include summary data.
-   - Requires Tampermonkey browser extension. [Links below](#tampermonkey-extension-links)
+   - Requires Tampermonkey browser extension. See below.
    - [Additional Information](https://www.reddit.com/r/nintendo/comments/8w1s65/i_made_a_script_to_export_your_purchase_history/)
      
 - **itch.io**: [Itch.io Library to CSV Scraper](https://gist.github.com/abraxas86/ad72ba46b6cdd86dc63058bba0c629c2#file-itchiocollectiontocsv-user-js)
-   - Requires Tampermonkey browser extension. [Links below](#tampermonkey-extension-links)
+   - Requires Tampermonkey browser extension. See below.
    - [Additional Information](https://itch.io/blog/572343/big-improvements-to-library-to-csv-scraper)
 
 ### Tampermonkey Extension Links
@@ -92,10 +92,10 @@ Below are the recommended tools for exporting game libraries from various platfo
 
 ## Tutorial Videos:
 To make the setup and usage process easier, we’ve created tutorial videos for the recommended exporters:
-  [Using Steam Exporter](https://youtu.be/WLLxdTEdJNc)
-  [Using PSDLE for PlayStation](https://youtu.be/CNgB_lgKCtw)
-  [Using itch.io Exporter](https://youtu.be/_Sj7nsSJG0A)
-  [Using Nintendo Switch Exporter](https://youtu.be/MLr4Wfojuyo)
+- [Using Steam Exporter](https://youtu.be/WLLxdTEdJNc)
+- [Using PSDLE for PlayStation](https://youtu.be/CNgB_lgKCtw)
+- [Using itch.io Exporter](https://youtu.be/_Sj7nsSJG0A)
+- [Using Nintendo Switch Exporter](https://youtu.be/MLr4Wfojuyo)
 
 ### License:
 GameLoom is licensed under MIT License. See the LICENSE file for more details.
