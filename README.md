@@ -15,9 +15,12 @@
 
 ---
 
-## Requirements
-- Java 11 or later
-- JavaFX 11 or later
+## Requirements for Run From Source
+- Java 22 or later
+- JavaFX 22 or later
+
+## Requirements for Run from .jar File
+- Java 22 or later
 
 ---
 
@@ -29,8 +32,8 @@
    git clone https://github.com/your-repository/GameLoom.git
    ```
    2. Install JavaFX:
-      - Download JavaFX SDK from JavaFX Downloads.
-      - Set up the JavaFX module path in your IDE or use the provided launch.json file for VSCode.
+      - Download JavaFX 22.0.2 SDK from [JavaFX Downloads](https://jdk.java.net/javafx22/).
+      - Set up the JavaFX module path in your IDE.
 
    3. Run the Program:
       - Compile and run GUIDriver.java using your preferred IDE or build tool.
