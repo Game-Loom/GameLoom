@@ -1,36 +1,28 @@
-# GameLoom 🎮
+GameLoom
 
-**GameLoom** is a personal game library manager that acts as a unified catalog for tracking physical and digital game collections across multiple platforms.
+GameLoom is a personal game library manager that acts as a unified catalog for tracking physical and digital game collections across multiple platforms. It supports CSV imports from various game platform exporters and includes features such as auto-save, advanced filtering, and customizable themes.
 
----
+Features:
+    Unified Game Library Management: Combine physical and digital game libraries into a single repository.
+    CSV Import Compatibility: Import game data directly from platforms like Steam, Nintendo eShop, itch.io, and PlayStation.
+    Cross-Platform Support: Handles a variety of CSV delimiters (commas, semicolons, and tabs) and normalizes data for consistency.
+    Auto-Save Functionality: Automatically backs up the library every 3 minutes, with up to 20 backup versions retained.
+    Advanced Filtering & Sorting: Search and filter your library by platform, year, custom attributes, and more.
+    Customizable Themes: Select different UI themes to personalize your experience.
+    Offline Privacy: All data is managed locally with no network dependencies or cloud synchronization.
 
-## Features
-- **Unified Game Library Management**: Combine physical and digital game libraries into a single repository.
-- **CSV Import Compatibility**: Import game data directly from platforms like Steam, Nintendo eShop, itch.io, and PlayStation.
-- **Cross-Platform Support**: Handles a variety of CSV delimiters (commas, semicolons, and tabs) and normalizes data for consistency.
-- **Auto-Save Functionality**: Automatically backs up the library every 3 minutes, with up to 20 backup versions retained.
-- **Advanced Filtering & Sorting**: Search and filter your library by platform, year, custom attributes, and more.
-- **Customizable Themes**: Select different UI themes to personalize your experience.
-- **Offline Privacy**: All data is managed locally with no network dependencies or cloud synchronization.
+Requirements:
+    Java 22 or later
+    JavaFX 22 or later
 
----
+Setup:
+    To Run From Source:
+        Clone the Repository:
+            git clone https://github.com/your-repository/GameLoom.git
 
-## Requirements
-- Java 11 or later
-- JavaFX 11 or later
-
----
-
-## Setup
-
-### **Run From Source**
-   1. Clone the Repository:
-   ```bash
-   git clone https://github.com/your-repository/GameLoom.git
-   ```
-   2. Install JavaFX:
-      - Download JavaFX SDK from JavaFX Downloads.
-      - Set up the JavaFX module path in your IDE or use the provided launch.json file for VSCode.
+        Install JavaFX:
+            Download JavaFX SDK from JavaFX Downloads.
+            Set up the JavaFX module path in your IDE or use the provided launch.json file for VSCode.
 
    3. Run the Program:
       - Compile and run GUIDriver.java using your preferred IDE or build tool.
@@ -50,61 +42,58 @@ or
 
         Mac Command:
             java --module-path <insert_path_to_extracted_folder>/GameLoom//lib/mac/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
-         ```
-## Usage:
-### Importing Game Libraries:
-  - **Steam**: Use Lorenzo Stanco's Steam Library Exporter.
-  - **Nintendo (Switch)**: Use Nintendo eShop Purchase History Exporter.
-      - *Note*: Exported CSV files include an extra 5 rows at the bottom of the file to create space betweeen a total calculation, which is automatically ignored during import.
-  - **PlayStation**: Use PSDLE for exporting your PS4/PS5 library.
-     - Note: Exported CSV files include an extra header row at the bottom, which is automatically ignored during import.
-  - **itch.io**: Use the Itch.io Library to CSV Scraper.
-     - Requires Tampermonkey to run the userscript. See below.
-     - Learn More.
 
-### Exporting Game Libraries:
-GameLoom supports exporting your unified game library to a CSV file for external use or sharing.
+Usage:
+    Importing Game Libraries:
+        Steam: Use Lorenzo Stanco's Steam Library Exporter.
+        Nintendo (Switch): Use Nintendo eShop Purchase History Exporter.
+            Note: Exported CSV files include an extra 5 rows at the bottom of the file to create space betweeen a total calculation, which is automatically ignored during import.
+        PlayStation: Use PSDLE for exporting your PS4/PS5 library.
+            Note: Exported CSV files include an extra header row at the bottom, which is automatically ignored during import.
+        itch.io: Use the Itch.io Library to CSV Scraper.
+            Requires Tampermonkey to run the userscript.
+            Learn More.
 
-### Auto-Save:
-- Auto-save is enabled by default, backing up your library every 3 minutes to your home/GameLoom Exports folder.
-- A maximum of 20 auto-save files are retained in the GameLoom Exports folder located in your home directory.
+Exporting Game Libraries:
+    GameLoom supports exporting your unified game library to a CSV file for external use or sharing.
 
-## Known Limitations:
-- itch.io Exporter: Limited testing due to small dataset availability.
-- PSDLE (PlayStation): EPSDLE xport functionality for PS3, PSP, and PS Vita is not currently working as of October 2024.
+Auto-Save:
+    Auto-save is enabled by default, backing up your library every 3 minutes to your home/GameLoom Exports folder.
+    A maximum of 20 auto-save files are retained in the GameLoom Exports folder located in your home directory.
 
-## Contributing:
+Known Limitations:
+    itch.io Exporter: Limited testing due to small dataset availability.
+    PSDLE (PlayStation): EPSDLE xport functionality for PS3, PSP, and PS Vita is not currently working as of October 2024.
+
+Contributing:
 We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an issue or pull request to the repository.
 
-## Exporters:
+Exporters:
 Below are the recommended tools for exporting game libraries from various platforms:
+Steam:Lorenzo Stanco's Steam Library Exporter - [https://www.lorenzostanco.com/lab/steam/]
+PlayStation	PSDLE: [https://repod.github.io/psdle/] - The last row (database headers) is ignored during import by default.
+Nintendo: 	[https://github.com/redphx/eshop-purchase-history] - Automatically ignores the last 5 rows during import that include summary data. Requires Tampermonkey browser extension.
+    Additional Information" [https://www.reddit.com/r/nintendo/comments/8w1s65/i_made_a_script_to_export_your_purchase_history/]
+itch.io: [https://gist.github.com/abraxas86/ad72ba46b6cdd86dc63058bba0c629c2#file-itchiocollectiontocsv-user-js] - Itch.io Library to CSV Scraper. Requires Tampermonkey browser extension.
+    Additional Information: [https://itch.io/blog/572343/big-improvements-to-library-to-csv-scraper]
 
-- **Steam**: [Lorenzo Stanco's Steam Library Exporter](https://www.lorenzostanco.com/lab/steam/)
-- **PlayStation**: [PSDLE](https://repod.github.io/psdle/)
-   - The last row (database headers) is ignored during import by default.
-   
-- **Nintendo**: [eshop-purchase-history](https://github.com/redphx/eshop-purchase-history)
-   - Automatically ignores the last 5 rows during import that include summary data.
-   - Requires Tampermonkey browser extension. See below.
-   - [Additional Information](https://www.reddit.com/r/nintendo/comments/8w1s65/i_made_a_script_to_export_your_purchase_history/)
-     
-- **itch.io**: [Itch.io Library to CSV Scraper](https://gist.github.com/abraxas86/ad72ba46b6cdd86dc63058bba0c629c2#file-itchiocollectiontocsv-user-js)
-   - Requires Tampermonkey browser extension. See below.
-   - [Additional Information](https://itch.io/blog/572343/big-improvements-to-library-to-csv-scraper)
+Tampermonkey Extension Links:
+Firefox Tampermonkey Extension:
+    [https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/]
+Chrome Tampermonkey Extension:
+    [https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo]
 
-### Tampermonkey Extension Links
-- [Firefox Tampermonkey Extension](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
-- [Chrome Tampermonkey Extension](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+Tutorial Videos:
+    To make the setup and usage process easier, we’ve created tutorial videos for the recommended exporters:
+        Using Steam Exporter: [https://youtu.be/WLLxdTEdJNc]
+        Using PSDLE for PlayStation: [https://youtu.be/CNgB_lgKCtw]
+        Using itch.io Exporter: [https://youtu.be/_Sj7nsSJG0A]
+        Using Nintendo Switch Exporter: [https://youtu.be/MLr4Wfojuyo]
 
-## Tutorial Videos:
-To make the setup and usage process easier, we’ve created tutorial videos for the recommended exporters:
-- [Using Steam Exporter](https://youtu.be/WLLxdTEdJNc)
-- [Using PSDLE for PlayStation](https://youtu.be/CNgB_lgKCtw)
-- [Using itch.io Exporter](https://youtu.be/_Sj7nsSJG0A)
-- [Using Nintendo Switch Exporter](https://youtu.be/MLr4Wfojuyo)
+License:
+    GameLoom is licensed under MIT License. See the LICENSE file for more details.
 
-### License:
-GameLoom is licensed under MIT License. See the LICENSE file for more details.
-
+Contact:
+    For support or inquiries, please contact us via [GameLoomHelp@gmail.com].
 ### Contact:
 For support or inquiries, please contact us via [GameLoomHelp@gmail.com].
