@@ -91,3 +91,5 @@ License:
 
 Contact:
     For support or inquiries, please contact us via [GameLoomHelp@gmail.com].
+### Contact:
+For support or inquiries, please contact us via [GameLoomHelp@gmail.com].
