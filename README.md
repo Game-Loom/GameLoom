@@ -49,10 +49,10 @@ or
             java --module-path <insert_path_to_extracted_folder>\GameLoom\lib\windows\javafx-sdk-22.0.2\lib\ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
 
         Linux Command:
-            java --module-path <insert_path_to_extracted_folder>/GameLoom//lib/linux/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            java --module-path <insert_path_to_extracted_folder>/GameLoom/lib/linux/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
 
         Mac Command:
-            java --module-path <insert_path_to_extracted_folder>/GameLoom//lib/mac/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            java --module-path <insert_path_to_extracted_folder>/GameLoom/lib/mac/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
          ```
 ## Usage:
 ### Importing Game Libraries:
