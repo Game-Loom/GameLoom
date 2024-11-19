@@ -1,24 +1,33 @@
-GameLoom
+# GameLoom
 
-GameLoom is a personal game library manager that acts as a unified catalog for tracking physical and digital game collections across multiple platforms. It supports CSV imports from various game platform exporters and includes features such as auto-save, advanced filtering, and customizable themes.
+**GameLoom** is a personal game library manager that acts as a unified catalog for tracking physical and digital game collections across multiple platforms.
 
-Features:
-    Unified Game Library Management: Combine physical and digital game libraries into a single repository.
-    CSV Import Compatibility: Import game data directly from platforms like Steam, Nintendo eShop, itch.io, and PlayStation.
-    Cross-Platform Support: Handles a variety of CSV delimiters (commas, semicolons, and tabs) and normalizes data for consistency.
-    Auto-Save Functionality: Automatically backs up the library every 3 minutes, with up to 20 backup versions retained.
-    Advanced Filtering & Sorting: Search and filter your library by platform, year, custom attributes, and more.
-    Customizable Themes: Select different UI themes to personalize your experience.
-    Offline Privacy: All data is managed locally with no network dependencies or cloud synchronization.
+---
 
-Requirements:
-    Java 11 or later
-    JavaFX 11 or later
+## Features
+- **Unified Game Library Management**: Combine physical and digital game libraries into a single repository.
+- **CSV Import Compatibility**: Import game data directly from platforms like Steam, Nintendo eShop, itch.io, and PlayStation.
+- **Cross-Platform Support**: Handles a variety of CSV delimiters (commas, semicolons, and tabs) and normalizes data for consistency.
+- **Auto-Save Functionality**: Automatically backs up the library every 3 minutes, with up to 20 backup versions retained.
+- **Advanced Filtering & Sorting**: Search and filter your library by platform, year, custom attributes, and more.
+- **Customizable Themes**: Select different UI themes to personalize your experience.
+- **Offline Privacy**: All data is managed locally with no network dependencies or cloud synchronization.
 
-Setup:
-    To Run From Source:
-        Clone the Repository:
-            git clone https://github.com/your-repository/GameLoom.git
+---
+
+## Requirements
+- Java 11 or later
+- JavaFX 11 or later
+
+---
+
+## Setup
+
+### To Run From Source
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-repository/GameLoom.git
+
 
         Install JavaFX:
             Download JavaFX SDK from JavaFX Downloads.
