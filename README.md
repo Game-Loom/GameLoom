@@ -12,8 +12,8 @@ Features:
     Offline Privacy: All data is managed locally with no network dependencies or cloud synchronization.
 
 Requirements:
-    Java 11 or later
-    JavaFX 11 or later
+    Java 22 or later
+    JavaFX 22 or later
 
 Setup:
     To Run From Source:
@@ -30,8 +30,14 @@ Setup:
     
     Run from .jar File:
         Extract the .zip wherever you would like, navigate a terminal window to that directory location.
-        System Universal Command:
-            java --module-path <insert_path_to_extracted_folder>/GameLoom/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+        Windows Command:
+            java --module-path <insert_path_to_extracted_folder>/GameLoom/lib/windows/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+
+        Linux Command:
+            java --module-path <insert_path_to_extracted_folder>/GameLoom//lib/linux/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+
+        Mac Command:
+            java --module-path <insert_path_to_extracted_folder>/GameLoom//lib/mac/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
 
 Usage:
     Importing Game Libraries:
