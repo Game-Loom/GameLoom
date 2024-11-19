@@ -28,8 +28,10 @@ Setup:
             Compile and run GUIDriver.java using your preferred IDE or build tool.
             Ensure the JavaFX --module-path argument is configured correctly for your environment (especially if using VSCode).
     
-    To Run from .jar File:
-        Still need to work this out.
+    Run from .jar File:
+        Extract the .zip wherever you would like, navigate a terminal window to that directory location.
+        System Universal Command:
+            java --module-path <insert_path_to_extracted_folder>/GameLoom/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
 
 Usage:
     Importing Game Libraries:
