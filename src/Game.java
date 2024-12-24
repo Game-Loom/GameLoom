@@ -213,7 +213,13 @@ public class Game {
      * @return String representing the title of the game
      */
     public String getTitle() {
-        return getAttribute("game");
+        String title = getAttribute("game");
+        int startIndex = -1;
+        int endIndex = -1;
+        if(title.charAt(0) == '"' || title.charAt(0) == '\'') {
+            title = title.substring(1);
+        } 
+        return title;
     }
 
     /**
