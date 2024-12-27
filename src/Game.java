@@ -216,7 +216,7 @@ public class Game {
         String title = getAttribute("game");
         int startIndex = -1;
         int endIndex = -1;
-        if(title.charAt(0) == '"' || title.charAt(0) == '\'') {
+        if(title.charAt(0) == '"' || title.charAt(0) == '\'') { // ignores quote if its the first character
             title = title.substring(1);
         } 
         return title;
