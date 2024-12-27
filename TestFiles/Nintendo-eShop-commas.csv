@@ -1,0 +1,8 @@
+transaction_type,transaction_id,title,device_type,content_type,date,currency,raw_value,formatted_value
+PURCHASE,51508858989,"Blasphemous",HAC,title,2024-11-16T19:11:05-08:00,USD,6.24,$6.24
+PURCHASE,51508856842,"SEGA AGES Phantasy Star",HAC,title,2024-11-16T19:09:15-08:00,USD,7.99,$7.99
+
+
+
+currency,games,total
+USD,2,14.23

@@ -22,7 +22,7 @@
  * ensuring robust import processing for non-quoted values.
  * 
  * @author CS321-004: Group 3
- * @version 1.4
+ * @version 1.5
  */
 
 
@@ -33,17 +33,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class GameCSVImporter {
+public class GLImporter {
 
     /**
      * Imports games from a CSV file and returns a list of Game objects. The method automatically 
      * detects the delimiter used in the file (comma, semicolon, or tab) and handles rows where 
-     * values may contain delimiters but are not enclosed in quotes (particularly usefule with commas).
+     * values may contain delimiters but are not enclosed in quotes (particularly useful with commas).
      * 
      * @param csvFilePath The file path of the CSV to import.
+     * @param platform The platform selected (e.g., "Nintendo").
      * @return A List of Game objects populated from the CSV file.
      */
-    public static List<Game> importGamesFromCSV(String csvFilePath) {
+    public static List<Game> importGamesFromCSV(String csvFilePath, String platform) {
 
         List<Game> games = new ArrayList<>(); // List to store Game objects
         Path pathToFile = Paths.get(csvFilePath); // Converts file path to a Path object
@@ -53,6 +54,7 @@ public class GameCSVImporter {
             String[] headers = null; // Array to store headers (first row)
             String delimiter = null; // Variable to hold the determined delimiter
             boolean isFirstLine = true; // Track if we are reading the first line (headers)
+            List<String> lines = new ArrayList<>(); // Temporarily store all rows
 
             // Reads the CSV file line by line
             while ((line = br.readLine()) != null) {
@@ -63,7 +65,7 @@ public class GameCSVImporter {
 
                     // Clean headers by trimming spaces and removing BOM (Byte Order Mark) if present
                     for (int i = 0; i < headers.length; i++) {
-                        headers[i] = headers[i].trim();
+                        headers[i] = headers[i].trim().toLowerCase();
                     }
 
                     // Remove BOM (Byte Order Mark) if present in the first header
@@ -75,23 +77,42 @@ public class GameCSVImporter {
                     continue;
                 }
 
-                // Handle the data rows, using custom split logic for supported delimiters
+                lines.add(line); // Add the line to the temporary list
+            }
+
+            // Adjust the number of rows to process if the platform is "Nintendo"
+            int rowsToProcess = lines.size();
+            if ("Nintendo".equalsIgnoreCase(platform)) {
+                rowsToProcess = Math.max(0, rowsToProcess - 5); // Ignore the last 5 rows - NIntendo exporter appends 3 blank lines and then 2 rows showing total # games, and cost, etc.
+            } else if ("Playstation".equalsIgnoreCase(platform)) {
+                rowsToProcess = Math.max(0, rowsToProcess - 1); // Ignore the last 1 row for Playstation - PSDLE appends the internal Sony database names at the end
+            }
+
+            // Process the appropriate rows
+            for (int i = 0; i < rowsToProcess; i++) {
                 String[] values;
                 if ("\t".equals(delimiter) || ",".equals(delimiter) || ";".equals(delimiter)) {
-                    values = customSplitWithoutQuotes(line, delimiter); // Custom splitting for multiple delimiters
+                    values = customSplitWithoutQuotes(lines.get(i), delimiter); // Custom splitting for multiple delimiters
                 } else {
-                    values = line.split(delimiter); // Use normal splitting for other delimiters
+                    values = lines.get(i).split(delimiter); // Use normal splitting for other delimiters
                 }
 
                 // Create a LinkedHashMap to store key-value pairs (header-value)
                 Map<String, String> attributes = new LinkedHashMap<>();
-                for (int i = 0; i < values.length; i++) {
-                    if (i < headers.length) {
-                        attributes.put(headers[i], values[i].trim()); // Trim values and associate them with headers
+                for (int j = 0; j < values.length; j++) {
+                    if (j < headers.length) {
+                        attributes.put(headers[j], values[j].trim()); // Trim values and associate them with headers
                     }
                 }
+                // Normalize attributes before checking for popular app
+                attributes = Normalizer.normalize(attributes);
+                // Check if the game name is in the popular apps list; skip if it is
+                String gameName = attributes.get("game");
+                if (gameName != null && Arrays.asList(Normalizer.popularApps).contains(gameName)) {
+                    continue; // Skip this entry if it matches a popular app
+                }
 
-                // Create a new Game object and add it to the list
+                // Add the game to the library
                 Game game = new Game(attributes);
                 games.add(game);
             }

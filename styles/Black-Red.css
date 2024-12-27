@@ -1,0 +1,82 @@
+.root{
+    -fx-background-color: linear-gradient(to right top, #1b0a07 0%, #49040c 27%, #750012 62%, #bd0722 99%);
+    -fx-text-fill: white;
+}
+
+.tab{
+    -fx-background-color: #6d0313;
+    -fx-text-fill: white;
+}
+
+.tab:selected{
+    -fx-background-color: #af2439;
+    -fx-text-fill: white;
+}
+
+Label{
+    -fx-text-fill: white;
+}
+
+Button{
+    -fx-background-color: #a3192e;
+    -fx-text-fill: white;
+}
+
+ComboBox{
+    -fx-background-color: #a3192e;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: white
+}
+
+.combo-box .list-view .list-cell {
+    -fx-text-fill: black;
+  }
+
+VBox{
+    -fx-background-color: #5e0303;
+    -fx-text-fill: white;
+}
+
+HBox{
+    -fx-background-color: #5e0303;
+    -fx-text-fill: white;
+}
+
+BorderPane{
+    -fx-background-color: #5e0303;
+    -fx-text-fill: white;
+}
+
+CheckBox{
+    -fx-text-fill: white;
+}
+
+RadioButton{
+    -fx-text-fill: white;
+}
+
+.fancyBackground{
+    -fx-background-color: linear-gradient(to right top, #1b0a07 0%, #49040c 27%, #750012 62%, #bd0722 99%);
+    -fx-text-fill: white;
+}
+
+.toTheTop{
+    -fx-background-color: linear-gradient(to top, #1b0a07 0%, #49040c 27%, #750012 62%, #bd0722 99%);
+    -fx-text-fill: white;
+}
+
+.transparent{
+    -fx-background-color: transparent;
+}
+
+/* Add Hyperlink styles at the end to customize link appearance */
+Hyperlink {
+    -fx-text-fill: #59c3f5; /* Set a contrasting color for links */
+    -fx-underline: true; /* Ensure links are underlined */
+}
+
+Hyperlink:hover {
+    -fx-text-fill: #ffffff; /* Change color on hover for better visibility */
+}

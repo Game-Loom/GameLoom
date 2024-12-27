@@ -9,3 +9,6 @@ bin/
 
 #Safety net ignore all .class files
 *.class
+
+#Ignores the images folder, since that is just for tab setup
+imgs/
