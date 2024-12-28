@@ -42,8 +42,9 @@
 or
 
 ### **Run from .jar File**:
-   1. Extract the .zip wherever you would like, navigate a terminal window to that directory location.
-   2. System Universal Command:
+   1. Download the Zip file that contains the .jar and dependencies from:[Our Google Drive](https://drive.google.com/file/d/14TGFB9H8WT0ZoXnprNtzXFrvdM4getuD/view?usp=sharing)
+   2. Extract the .zip wherever you would like, navigate a terminal window to that directory location.
+   3. System Universal Command:
       ```bash
         Windows Command:
             java --module-path <insert_path_to_extracted_folder>\GameLoom\lib\windows\javafx-sdk-22.0.2\lib\ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
