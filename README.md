@@ -42,7 +42,7 @@
 or
 
 ### **Run from .jar File**:
-   1. Download the Zip file that contains the .jar and dependencies directly above in the file listings or from: [Our Google Drive](https://drive.google.com/file/d/14TGFB9H8WT0ZoXnprNtzXFrvdM4getuD/view?usp=sharing)
+   1. Download the Zip file that contains the .jar and dependencies directly above in the repository's file listings.
    2. Extract the .zip wherever you would like, navigate a terminal window to that directory location.
    3. System Universal Command:
       ```bash
@@ -111,4 +111,4 @@ To make the setup and usage process easier, we’ve created tutorial videos for 
 GameLoom is licensed under MIT License. See the LICENSE file for more details.
 
 ### Contact:
-For support or inquiries, please contact us via [GameLoomHelp@gmail.com].
+For support or inquiries, please contact us via [our Support Email](GameLoomHelp@gmail.com).
