@@ -1,5 +1,4 @@
- 
-# FREQUENTLY ASKED QUESTIONS
+# FREQUENTLY ASKED QUESTIONS (FAQ)
 
 ## What is GameLoom?
 
@@ -78,7 +77,7 @@
 
 ## How do I update GameLoom?
 
-    Since GameLoom is a fully network free experience, it does not yet support automatic updates. To update, download the latest version from the official source and replace your current version. We may work out a way to dispense updates however at the moment users will just need to visit the GitHub page and
+    Since GameLoom is a fully network free experience, it does not yet support automatic updates. To update, download the latest version from the official source and replace your current version. We may work out a way to dispense updates however at the moment users will just need to visit the GitHub page and get the updated file versions manually.
 
 
 ## How do I contact GameLoom support if I need some help?
