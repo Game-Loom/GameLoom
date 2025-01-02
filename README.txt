@@ -47,12 +47,18 @@ or
 
         Windows Command:
             java --module-path <insert_path_to_extracted_folder>\GameLoom\lib\windows\javafx-sdk-22.0.2\lib\ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            --
+               (e.x) java --module-path C:\Users\Chris\Downloads\GameLoom\lib\windows\javafx-sdk-22.0.2\lib\ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
 
         Linux Command:
             java --module-path <insert_path_to_extracted_folder>/GameLoom/lib/linux/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            --
+               (e.x) java --module-path /home/chris/Downloads/GameLoom/lib/linux/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
 
         Mac Command:
             java --module-path <insert_path_to_extracted_folder>/GameLoom/lib/mac/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            --
+               (e.x) java --module-path /home/chris/Downloads/GameLoom/lib/linux/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
 
 ## Usage:
 ### Importing Game Libraries:
@@ -89,11 +95,11 @@ Below are the recommended tools for exporting game libraries from various platfo
 - **Nintendo**: https://github.com/redphx/eshop-purchase-history
    - Automatically ignores the last 5 rows during import that include summary data.
    - Requires Tampermonkey browser extension. See below.
-   - Additional Information: https://www.reddit.com/r/nintendo/comments/8w1s65/i_made_a_script_to_export_your_purchase_history/
+      - Additional Information: https://www.reddit.com/r/nintendo/comments/8w1s65/i_made_a_script_to_export_your_purchase_history/
      
 - **itch.io**: https://gist.github.com/abraxas86/ad72ba46b6cdd86dc63058bba0c629c2#file-itchiocollectiontocsv-user-js
    - Requires Tampermonkey browser extension. See below.
-   - [Additional Information: https://itch.io/blog/572343/big-improvements-to-library-to-csv-scraper
+      - Additional Information: https://itch.io/blog/572343/big-improvements-to-library-to-csv-scraper
 
 ### Tampermonkey Extension Links
 - Firefox Tampermonkey Extension: https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/
@@ -110,4 +116,4 @@ To make the setup and usage process easier, we’ve created tutorial videos for 
 GameLoom is licensed under MIT License. See the LICENSE file for more details.
 
 ### Contact:
-For support or inquiries, please contact us via our support email GameLoomHelp@gmail.com
+For support or inquiries, please contact us via our support email: GameLoomHelp@gmail.com
