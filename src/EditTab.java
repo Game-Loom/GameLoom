@@ -32,7 +32,7 @@
  * - Pressing the 'Enter' key within the value input field triggers the save action.
  * - Pressing the 'Enter' key in the custom value input field triggers the save action if the custom key field is populated.
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.0
  */
 

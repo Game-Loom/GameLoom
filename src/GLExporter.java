@@ -20,7 +20,7 @@
  * Note: The getGameValues method provides logic for formatting each game as a CSV row, ensuring data integrity and proper 
  * structure of the output.
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.0
  */
 

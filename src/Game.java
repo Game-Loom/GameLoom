@@ -23,7 +23,7 @@
  *     attributes.put("release_date", "2021-05-20");
  *     Game game = new Game(attributes);
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.4
  */
 import java.util.HashMap;

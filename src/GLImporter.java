@@ -21,7 +21,7 @@
  * Note: The method customSplitWithoutQuotes provides custom logic for handling rows with values containing delimiters, 
  * ensuring robust import processing for non-quoted values.
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.5
  */
 
@@ -119,7 +119,7 @@ public class GLImporter {
                         attributes.put("game", gameName); // Update the attributes map with the quoted value
                     }
                 }
-                
+
                 // Add the game to the library
                 Game game = new Game(attributes);
                 games.add(game);

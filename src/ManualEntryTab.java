@@ -34,7 +34,7 @@
  *       Nested class:
  *       - CustomField: Represents a custom field in the game entry form
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.0
  */
 

@@ -28,7 +28,7 @@
  * - Each exporter is displayed in two columns: one for the exporter link and another for the corresponding tutorial video.
  * - The ScrollPane ensures the content is scrollable and fills the window area with a blue background.
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.0
  */
 
