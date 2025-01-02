@@ -103,7 +103,21 @@ public class EditTab {
         gameListView = new ListView<>();
         gameListView.getItems().addAll(library);
         gameListView.setOnMouseClicked(e -> loadGameAttributes(gameListView.getSelectionModel().getSelectedItem()));
-        
+        // Set a custom cell factory to display the `toDisplayString` output
+        gameListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Game game, boolean empty) {
+                super.updateItem(game, empty);
+                if (empty || game == null) {
+                    setText(null);
+                } else {
+                    setText(game.toDisplayString()); // Use the custom display method
+                }
+            }
+        }); 
+
+        gameListView.setOnMouseClicked(e -> loadGameAttributes(gameListView.getSelectionModel().getSelectedItem()));    
+
         // Dropdown for selecting keys
         keySelector = new ComboBox<>();
         keySelector.setPromptText("Select Field");
@@ -203,18 +217,19 @@ public class EditTab {
     * @param query The search string entered by the user to filter the game list
     */
     private void filterGames(String query) {
-        gameListView.getItems().clear();// Clear the current items in the game list view
-        if (query.isEmpty()) {// If empty, add all games from the library to the game list view
+        gameListView.getItems().clear(); // Clear the current items in the game list view
+    
+        if (query.isEmpty()) { // If empty, add all games from the library to the game list view
             gameListView.getItems().addAll(library);
-        } else {// If not empty, iterate through the library and check each game
+        } else { // If not empty, iterate through the library and check each game
             for (Game game : library) {
-                if (game.getTitle().toLowerCase().contains(query.toLowerCase()) ||// Convert both the game title and the query to lowercase for a case-insensitive match
-                    game.toString().toLowerCase().contains(query.toLowerCase())) {
-                    gameListView.getItems().add(game);// Add the matching game to the game list view
+                if (game.toDisplayString().toLowerCase().contains(query.toLowerCase())) {
+                    gameListView.getItems().add(game);
                 }
             }
         }
     }
+    
 
     /**
      * Loads the attributes of the selected game into the UI components for editing.
@@ -225,18 +240,19 @@ public class EditTab {
      * @param selectedGame The game selected from the ListView for editing
      */
     private void loadGameAttributes(Game selectedGame) {
-        if (selectedGame != null) {// Check if a game is selected in the ListView
-            keySelector.getSelectionModel().clearSelection();// Clear the current selection in the keySelector ComboBox
-            valueField.clear();// Clear the text in the valueField to prepare for new input
-            
+        if (selectedGame != null) { // Check if a game is selected in the ListView
+            keySelector.getSelectionModel().clearSelection(); // Clear the current selection in the keySelector ComboBox
+            valueField.clear(); // Clear the text in the valueField to prepare for new input
+    
             keySelector.setOnAction(e -> {
-                String selectedKey = keySelector.getValue();// Get the selected key from the keySelector
-                if (selectedKey != null) {// If a key is selected, populate the valueField with the corresponding attribute value from the game
+                String selectedKey = keySelector.getValue(); // Get the selected key from the keySelector
+                if (selectedKey != null) { // If a key is selected, populate the valueField with the corresponding attribute value from the game
                     valueField.setText(selectedGame.getAttribute(selectedKey));
                 }
             });
         }
     }
+    
 
     /**
      * Updates the attributes of the currently selected game in the ListView.
@@ -333,7 +349,7 @@ public class EditTab {
         // Iterate through each game in the library and add it to the game list
         for (Game game : library) {
             // Create a new game item and add it to the game list VBox
-            gameList.getChildren().add(GUIDriver.createGameItem(game.getTitle(), game.toString()));
+            gameList.getChildren().add(GUIDriver.createGameItem(game.getTitle(), game.toDisplayString()));
         }
     }
 
