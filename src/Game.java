@@ -144,6 +144,19 @@ public class Game {
         return result.toString();
     }
 
+    /**
+     * Returns a string representation of the game for display purposes in the Edit Tab.
+     * Prepends the 'game' attribute value to the standard toString() output.
+     *
+     * @return A formatted string for displaying the game.
+     */
+    public String toDisplayString() {
+        String gameName = attributes.get("game");
+        if (gameName == null || gameName.isEmpty()) {
+            gameName = "Unknown Game";
+        }
+        return "Game: "+ gameName + " | " + this.toString();
+    }
 
     /**
      * Helper method to capitalize the first letter of the key and replace underscores with spaces.
