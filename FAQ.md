@@ -52,6 +52,7 @@
 
 ## What happens if my library contains duplicate entries?
 
+
     GameLoom automatically identifies and prevents duplicate entries during import to maintain a clean library.
     This is not done based on the title and is rather based on the entire dataset for the game entry,
     for example you might own a game on Steam and also own it on Nintendo Switch, if the platform field and/or playtime is different but everything else about the game data is the same
@@ -101,7 +102,6 @@
     Since GameLoom is a fully network free experience, it does not yet support automatic updates.
     To update, download the latest version from the official repository and replace your current version.
     Official Repository: https://github.com/Game-Loom/GameLoom
-
 
 
 ## How do I contact GameLoom support if I need some help?

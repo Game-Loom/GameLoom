@@ -107,4 +107,3 @@
 
     You can contact support via email at GameLoomHelp@gmail.com.
     Clicking the "Contact Support" link within the application's help tab will open your default email client and pre-populate the recipient field to our support email address.
-
