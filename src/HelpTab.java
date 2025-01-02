@@ -125,19 +125,19 @@ public class HelpTab {
         
         // Tutorial video links and descriptions
         Hyperlink steamVideoLink = new Hyperlink("Steam Exporter Tutorial Video");
-        steamVideoLink.setOnAction(e -> openLink("https://youtu.be/WLLxdTEdJNc"));
+        steamVideoLink.setOnAction(e -> openLink("https://youtu.be/OeS60dwbXBQ"));
         Label steamVideoText = new Label("Learn how to export your Steam library.");
     
         Hyperlink playstationVideoLink = new Hyperlink("Playstation Exporter Tutorial Video");
-        playstationVideoLink.setOnAction(e -> openLink("https://youtu.be/CNgB_lgKCtw"));
+        playstationVideoLink.setOnAction(e -> openLink("https://youtu.be/vphXnajoUPY"));
         Label playstationVideoText = new Label("Learn how to export your Playstation library.");
     
         Hyperlink itchIoVideoLink = new Hyperlink("Itch.io Exporter Tutorial Video");
-        itchIoVideoLink.setOnAction(e -> openLink("https://youtu.be/_Sj7nsSJG0A"));
+        itchIoVideoLink.setOnAction(e -> openLink("https://youtu.be/0QkQZILQ5zk"));
         Label itchIoVideoText = new Label("Learn how to export your itch.io library.");
     
         Hyperlink nintendoVideoLink = new Hyperlink("Nintendo Exporter Tutorial Video");
-        nintendoVideoLink.setOnAction(e -> openLink("https://youtu.be/MLr4Wfojuyo"));
+        nintendoVideoLink.setOnAction(e -> openLink("https://youtu.be/hGhZ3xFpy00"));
         Label nintendoVideoText = new Label("Learn how to export your Nintendo library.");
     
         // Left column with exporter links and descriptions
