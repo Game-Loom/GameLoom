@@ -99,7 +99,7 @@ public class GUIDriver extends Application {
     private int lastLibraryHash; // Used to detect any changes to the library and trigger auto-saving when necessary
     
     // Quick-Edit "Control" Variables
-    private static final long AUTO_SAVE_INTERVAL = 10000; // 180000 = 3 minutes in milliseconds -- was modifiying to 10000 = 10 seconds for testing
+    private static final long AUTO_SAVE_INTERVAL = 180000; // 180000 = 3 minutes in milliseconds -- was modifiying to 10000 = 10 seconds for testing
     private static final int MAX_AUTO_SAVE_FILES = 20; // Limit the number of auto-save files (20 * 3 min = version control for your last hour of work if you mess something up)
 
 

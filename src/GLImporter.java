@@ -112,6 +112,14 @@ public class GLImporter {
                     continue; // Skip this entry if it matches a popular app
                 }
 
+                // Ensure ALL game names are enclosed in quotes
+                if (gameName != null) {
+                    if (!gameName.startsWith("\"") && !gameName.endsWith("\"")) {
+                        gameName = "\"" + gameName + "\"";
+                        attributes.put("game", gameName); // Update the attributes map with the quoted value
+                    }
+                }
+                
                 // Add the game to the library
                 Game game = new Game(attributes);
                 games.add(game);

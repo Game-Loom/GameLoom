@@ -252,8 +252,13 @@ public class EditTab {
             // Retrieve the selected key from the keySelector and the new value from the valueField
             String selectedKey = keySelector.getValue();
             String newValue = valueField.getText().trim();
-            // If a key is selected and a new value is provided, update the game attribute
-            if (selectedKey != null && !newValue.isEmpty()) {
+            // Check if the key is "game" and ensure the value is enclosed in quotes
+            if ("game".equalsIgnoreCase(selectedKey) && !newValue.isEmpty()) {
+                if (!newValue.startsWith("\"") && !newValue.endsWith("\"")) {
+                    newValue = "\"" + newValue + "\"";
+                }
+                selectedGame.updateAttribute(selectedKey, newValue);
+            } else if (selectedKey != null && !newValue.isEmpty()) { // For other keys, update the attribute as-is
                 selectedGame.updateAttribute(selectedKey, newValue);
             }
             // Retrieve custom key and value input from the respective fields
