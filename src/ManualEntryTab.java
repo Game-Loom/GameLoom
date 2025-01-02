@@ -34,7 +34,7 @@
  *       Nested class:
  *       - CustomField: Represents a custom field in the game entry form
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.0
  */
 
@@ -281,6 +281,12 @@ public class ManualEntryTab {
             for (Map.Entry<String, TextField> entry : defaultFields.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue().getText().trim(); // Get and trim the text input
+                // Ensure the game name field is enclosed in quotes
+                if ("game".equalsIgnoreCase(key)) {
+                    if (!value.startsWith("\"") && !value.endsWith("\"")) {
+                        value = "\"" + value + "\"";
+                    }
+                }
                 attributes.put(key, value); // Add the key-value pair to the map
             }
 

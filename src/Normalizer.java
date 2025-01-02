@@ -30,7 +30,8 @@
  * 
  * @see GraphicalUserInterface
  * @see GameCSVImporter
- * @author CS321-004: Group 3
+ * 
+ * @author GameLoom Team
  * @version 1.6
  */
 
