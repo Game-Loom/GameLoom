@@ -149,12 +149,23 @@ public class GUIDriver extends Application {
     
         // Sets up the various tabs and their content/actions
         setupTabs(primaryStage, tabPane);
-    
+        
+        // Create a notification area at the bottom
+        HBox notificationArea = new HBox();
+        notificationArea.setPadding(new Insets(5));
+        notificationArea.setAlignment(Pos.CENTER);
+        notificationArea.setStyle("-fx-background-color: lightgray;");
+        notificationArea.setMinHeight(30); // Set a consistent height
+        notificationArea.setVisible(false); // Initially hidden
+
         // **Main Layout**: Create a VBox to hold the top layout and the TabPane
         VBox mainLayout = new VBox(10);
-        mainLayout.getChildren().addAll(topLayout, tabPane);
+        mainLayout.getChildren().addAll(topLayout, tabPane, notificationArea);
         VBox.setVgrow(tabPane, Priority.ALWAYS); // Allow the TabPane to grow and fill remaining space
-    
+        
+        // Initialize the NotificationManager with the notification area
+        NotificationManager.initialize(notificationArea);
+
         // Set the scene with the main layout
         Scene scene = new Scene(mainLayout, 958, 700); // Creates a scene with a width of 1000 and height of 700
     
