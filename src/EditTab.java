@@ -60,6 +60,18 @@ public class EditTab {
     private CheckBox deleteSafetyCheck;
     private ArrayList<Game> library;
     private VBox gameList;
+    private static final Map<String, String> keyDisplayMap = new LinkedHashMap<>() {{
+        put("title", "Game Title");
+        put("platform", "Platform");
+        put("console", "Console");
+        put("hours_played", "Hours Played");
+        put("last_played", "Last Played");
+        put("release_date", "Release Date");
+        put("singleplayer", "Singleplayer");
+        put("multiplayer", "Multiplayer");
+        put("languages", "Languages");
+    }};
+    
 
     public EditTab(ArrayList<Game> library, VBox gameList) {
         this.library = library;
@@ -123,8 +135,9 @@ public class EditTab {
         keySelector.setPromptText("Select Field");
         keySelector.setPrefWidth(150); // Set to match customKeyField width
         
-        // Populate the key selector with normalized keys
-        keySelector.getItems().addAll("game", "hours_played", "last_played", "release_date", "captions", "multiplayer", "singleplayer", "languages");
+        // Populate the key selector with display names
+        keySelector.getItems().addAll(keyDisplayMap.values());
+
         
         // Text field for editing the value of the selected key
         valueField = new TextField();
@@ -245,13 +258,24 @@ public class EditTab {
             valueField.clear(); // Clear the text in the valueField to prepare for new input
     
             keySelector.setOnAction(e -> {
-                String selectedKey = keySelector.getValue(); // Get the selected key from the keySelector
-                if (selectedKey != null) { // If a key is selected, populate the valueField with the corresponding attribute value from the game
+                String selectedDisplayName = keySelector.getValue(); // Get selected key from the keySelector
+                String selectedKey = null;
+    
+                // Map the display name back to the normalized key
+                for (Map.Entry<String, String> entry : keyDisplayMap.entrySet()) {
+                    if (entry.getValue().equals(selectedDisplayName)) {
+                        selectedKey = entry.getKey();
+                        break;
+                    }
+                }
+                // If a key is selected, populate the valueField with the corresponding attribute value from the game
+                if (selectedKey != null) { 
                     valueField.setText(selectedGame.getAttribute(selectedKey));
                 }
             });
         }
     }
+    
     
 
     /**
@@ -262,35 +286,45 @@ public class EditTab {
      * After updating, the method clears the input fields and refreshes the game list.
      */
     private void updateGame() {
-        // Get the currently selected game from the ListView
         Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
         if (selectedGame != null) {
-            // Retrieve the selected key from the keySelector and the new value from the valueField
-            String selectedKey = keySelector.getValue();
-            String newValue = valueField.getText().trim();
-            // Check if the key is "game" and ensure the value is enclosed in quotes
-            if ("game".equalsIgnoreCase(selectedKey) && !newValue.isEmpty()) {
-                if (!newValue.startsWith("\"") && !newValue.endsWith("\"")) {
-                    newValue = "\"" + newValue + "\"";
+            // Retrieve selected key from the dropdown
+            String selectedDisplayName = keySelector.getValue();
+            String selectedKey = null;
+    
+            // Map display name back to normalized key
+            if (selectedDisplayName != null) {
+                for (Map.Entry<String, String> entry : keyDisplayMap.entrySet()) {
+                    if (entry.getValue().equals(selectedDisplayName)) {
+                        selectedKey = entry.getKey();
+                        break;
+                    }
                 }
-                selectedGame.updateAttribute(selectedKey, newValue);
-            } else if (selectedKey != null && !newValue.isEmpty()) { // For other keys, update the attribute as-is
-                selectedGame.updateAttribute(selectedKey, newValue);
             }
-            // Retrieve custom key and value input from the respective fields
+    
+            // Update the value for the dropdown field if applicable
+            if (selectedKey != null) {
+                String newValue = valueField.getText().trim();
+                if (!newValue.isEmpty()) {
+                    selectedGame.updateAttribute(selectedKey, newValue);
+                }
+            }
+    
+            // Process custom key-value fields independently
             String customKey = customKeyField.getText().trim();
             String customValue = customValueField.getText().trim();
-            // Check if both custom key and custom value are provided
             if (!customKey.isEmpty() && !customValue.isEmpty()) {
-                // Update the selected game's attribute with the custom key and value
                 selectedGame.updateAttribute(customKey, customValue);
-                // Clear the custom key and value fields to indicate changes were saved
                 customKeyField.clear();
                 customValueField.clear();
             }
-            refreshGameList();// Refresh the displayed game list to reflect the changes
+            
+            // Refresh the displayed game list to reflect changes
+            refreshGameList();
         }
     }
+    
+    
 
     /**
      * Deletes the currently selected game from the library and updates the UI.

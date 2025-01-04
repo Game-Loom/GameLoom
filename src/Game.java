@@ -99,7 +99,7 @@ public class Game {
 
 
     /**
-     * Provides a string representation of the game, summarizing all attributes except for those marked "N/A" or with the key "game".
+     * Provides a string representation of the game, summarizing all attributes except for those marked "N/A" or with the key "title".
      * 
      * @return A formatted string summarizing the game's attributes.
      */
@@ -127,8 +127,8 @@ public class Game {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            // Skip attributes with key "game", any "N/A" or empty values, or keys already processed
-            if (key.equalsIgnoreCase("game") || value.equals("N/A") || value.isEmpty() || containsKey(preferredKeys, key)) {
+            // Skip attributes with key "title", any "N/A" or empty values, or keys already processed
+            if (key.equalsIgnoreCase("title") || value.equals("N/A") || value.isEmpty() || containsKey(preferredKeys, key)) {
                 continue;
             }
 
@@ -151,11 +151,11 @@ public class Game {
      * @return A formatted string for displaying the game.
      */
     public String toDisplayString() {
-        String gameName = attributes.get("game");
+        String gameName = attributes.get("title");
         if (gameName == null || gameName.isEmpty()) {
             gameName = "Unknown Game";
         }
-        return "Game: "+ gameName + " | " + this.toString();
+        return "Title: "+ gameName + " | " + this.toString();
     }
 
     /**
@@ -226,7 +226,7 @@ public class Game {
      * @return String representing the title of the game
      */
     public String getTitle() {
-        return getAttribute("game");
+        return getAttribute("title");
     }
 
     /**

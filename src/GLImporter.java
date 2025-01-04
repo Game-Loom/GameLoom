@@ -107,7 +107,7 @@ public class GLImporter {
                 // Normalize attributes before checking for popular app
                 attributes = Normalizer.normalize(attributes);
                 // Check if the game name is in the popular apps list; skip if it is
-                String gameName = attributes.get("game");
+                String gameName = attributes.get("title");
                 if (gameName != null && Arrays.asList(Normalizer.popularApps).contains(gameName)) {
                     continue; // Skip this entry if it matches a popular app
                 }
@@ -116,7 +116,7 @@ public class GLImporter {
                 if (gameName != null) {
                     if (!gameName.startsWith("\"") && !gameName.endsWith("\"")) {
                         gameName = "\"" + gameName + "\"";
-                        attributes.put("game", gameName); // Update the attributes map with the quoted value
+                        attributes.put("title", gameName); // Update the attributes map with the quoted value
                     }
                 }
 
