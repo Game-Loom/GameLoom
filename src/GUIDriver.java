@@ -518,7 +518,7 @@ public class GUIDriver extends Application {
     private void populateGameList(List<Game> games) {
         // Add imported games to the VBox and library, avoiding duplicates
         for (Game game : games) {
-            String gameName = game.getAttribute("game"); // Retrieves game name
+            String gameName = game.getAttribute("title"); // Retrieves game name
             String description = game.toString(); // Retrieves game details
             if (!library.contains(game)) { // Avoid adding the same game twice
                 library.add(game); // Add game to the library
@@ -681,12 +681,12 @@ public class GUIDriver extends Application {
         // If searchText is empty, display all games when search is clicked
         if (searchText.isEmpty()) {
             for (Game game : library) {
-                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
             }
         } else {
             // Filter the games based on the search keyword (searching both game name and description)
             for (Game game : library) {
-                String gameName = game.getAttribute("game").toLowerCase(); // Normalize game name to lowercase
+                String gameName = game.getAttribute("title").toLowerCase(); // Normalize game name to lowercase
                 String description = game.toString().toLowerCase(); // Normalize game description to lowercase
                 boolean matchFound = true;// Initialize the match flag
 
@@ -700,7 +700,7 @@ public class GUIDriver extends Application {
 
                 // If all terms match, add the game to the displayed game list and the results
                 if (matchFound) {
-                    gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                    gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                     gameSearchResults.add(game); 
                 }
             }
@@ -906,7 +906,7 @@ public class GUIDriver extends Application {
         resetButton.setOnAction(event -> {
             gameList.getChildren().clear(); // Clear the current game list in the UI    
             for (Game game : library) {
-                gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
             }
             textField.clear();
             keywordTextField.clear();
@@ -1094,7 +1094,7 @@ public class GUIDriver extends Application {
                     gameList.getChildren().clear(); //clear game list
                     if(sortedLibrary != null) {
                         for(Game game : sortedLibrary) { //populate game list
-                            gameList.getChildren().add(createGameItem(game.getAttribute("game"), game.toString()));
+                            gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                         }
                     }
                 }
