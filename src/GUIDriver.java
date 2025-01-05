@@ -94,7 +94,9 @@ public class GUIDriver extends Application {
     // Data Structure Variables
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
-    protected static ArrayList<Game> results = new ArrayList<>(); //Holds results shared between search & sort
+    protected static ArrayList<Game> globalSearchResults = null; //search results to share with filter/sort 
+    protected static ArrayList<Game> globalFilterResults = null;  //filter/sort results to share with search results
+    protected static String globalFilterString = ""; //holds global filter parameters (e.g. Steam for steam tab)
     protected static ArrayList<String> attributes = new ArrayList<>(); // Stores the list of game attribute names used for display and export
     private Timer autoSaveTimer; // Schedules periodic auto-save tasks for the game library
     private int lastLibraryHash; // Used to detect any changes to the library and trigger auto-saving when necessary
@@ -390,7 +392,8 @@ public class GUIDriver extends Application {
     private void setupTabActions(Tab tab, String filter, Stage primaryStage){
         tab.setOnSelectionChanged(event->{
             if(tab.isSelected()){
-                filterGameList(filter); //Filters the library by the given platform
+                globalFilterResults = filterGameList(filter); //Filters the library by the given platform
+                globalFilterString = filter;
                 tab.setContent(createCommonTabLayout(primaryStage)); //Sets the tab layout
             }
         });
@@ -669,6 +672,7 @@ public class GUIDriver extends Application {
      * case-insensitive and supports multi-keyword searches.
      * 
      * @param searchText The search query entered by the user. Multiple keywords should be separated by spaces.
+     * @return list of games that matches the search, or null if the list is empty
      */
     private ArrayList<Game> filterGameList(String searchText) {
         gameList.getChildren().clear(); // Clear the current game list in the UI    
@@ -679,8 +683,8 @@ public class GUIDriver extends Application {
         String[] searchTerms = searchText.split("\\s"); 
         
         ArrayList<Game> myLibrary;
-        if(results != null && !results.isEmpty()) {
-            myLibrary = results;
+        if(globalFilterResults != null) {
+            myLibrary = globalFilterResults;
         } else {
             myLibrary = library;
         }
@@ -690,6 +694,7 @@ public class GUIDriver extends Application {
             for (Game game : myLibrary) {
                 gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
             }
+            globalSearchResults = null;
         } else {
             // Filter the games based on the search keyword (searching both game name and description)
             for (Game game : myLibrary) {
@@ -705,13 +710,14 @@ public class GUIDriver extends Application {
                     } 
                 }
                 // If all terms match, add the game to the displayed game list and the results
+                //if filter results show no match, do not populate the list as both criteria aren't met
                 if (matchFound) {
                     gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                     gameSearchResults.add(game); 
                 }
             }
         }
-        results = gameSearchResults;
+        globalSearchResults = gameSearchResults;
         return gameSearchResults;
     }
 
@@ -929,8 +935,12 @@ public class GUIDriver extends Application {
 
         //Resets everything to default sort & filter settings
         resetButton.setOnAction(event -> {
-            gameList.getChildren().clear(); // Clear the current game list in the UI    
-            for (Game game : library) {
+            gameList.getChildren().clear(); // Clear the current game list in the UI  
+
+            globalFilterResults = filterGameList(globalFilterString);
+            ArrayList<Game> myLibrary = globalFilterResults;
+
+            for (Game game : myLibrary) {
                 gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
             }
 
@@ -961,13 +971,12 @@ public class GUIDriver extends Application {
             String field = sortDropDown.getValue();     
             ArrayList<Game> tmpLibrary = library;
             ArrayList<Game> sortedLibrary  = null; //sortedLibrary results
-            boolean errorPresent = false; //if true, does not sort or filter library
             boolean isAscending = false;
             boolean isAlphabetical = false;
             String customFieldText = "";
 
-            if(results != null && !results.isEmpty()) {
-                tmpLibrary = results;
+            if(globalSearchResults != null) {
+                tmpLibrary = globalSearchResults;
             } else {
                 tmpLibrary = library;
             }
@@ -1155,7 +1164,9 @@ public class GUIDriver extends Application {
                 
                 /** Sort Handling */
                 errorMsg.setText("");
+                globalFilterResults = tmpLibrary;
                 if(tmpLibrary == null || tmpLibrary.size() == 0) { //if filter returned no results
+                    gameList.getChildren().clear();
                     errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                     errorMsg.setText("Error: No results found for filter criteria");
                     return;
@@ -1163,7 +1174,9 @@ public class GUIDriver extends Application {
 
                 if(!field.equals("Default")) { //sort if sort is chosen, and populate game list with "sorted results"
                     sortedLibrary = sort(tmpLibrary, field, customFieldText, isAscending, isAlphabetical);    
-                    gameList.getChildren().clear(); //clear game list        
+                    globalFilterResults = sortedLibrary;
+                    gameList.getChildren().clear(); //clear game list   
+                     //search return nothing, don't populate as both criteria isn't met
                     if(sortedLibrary != null) {
                         for(Game game : sortedLibrary) { //populate game list with results
                             gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
@@ -1173,12 +1186,13 @@ public class GUIDriver extends Application {
                         errorMsg.setText("Error sorting library");
                         return;
                     }
+
                 } else {//if sort is not chosen, just populate game list with "filtered results"
                     gameList.getChildren().clear(); //clear game list
                     for(Game game : tmpLibrary) { //populate game list with results
                         gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                     }
-                    results = tmpLibrary;
+                    globalFilterResults = tmpLibrary;
                 }
             }
         });
