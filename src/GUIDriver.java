@@ -392,8 +392,10 @@ public class GUIDriver extends Application {
     private void setupTabActions(Tab tab, String filter, Stage primaryStage){
         tab.setOnSelectionChanged(event->{
             if(tab.isSelected()){
-                globalFilterResults = filterGameList(filter); //Filters the library by the given platform
                 globalFilterString = filter;
+                if(filter.length() != 0) {
+                    globalFilterResults = filterGameList(filter); //Filters the library by the given platform
+                }
                 tab.setContent(createCommonTabLayout(primaryStage)); //Sets the tab layout
             }
         });
@@ -646,13 +648,25 @@ public class GUIDriver extends Application {
 
         // Define the action when the search button is clicked
         searchButton.setOnAction(event -> {
+            if(globalFilterString.length() != 0) {
+                globalFilterResults = filterGameList(globalFilterString); //Filters the library by the given platform
+            }
             String searchQuery = searchField.getText().toLowerCase().trim(); // Normalize input (lowercase + trim spaces)
             filterGameList(searchQuery); // Call helper method to filter the game list based on the search query
         });
-
+        
         //Search bar also searches when enter is pressed in the search box
         searchBox.setOnKeyPressed(event -> {
             if( event.getCode() == KeyCode.ENTER ){
+                System.out.println("globalFilterString = [" + globalFilterString + "]");
+                if(globalFilterString.length() != 0) {
+                    globalFilterResults = filterGameList(globalFilterString); //Filters the library by the given platform
+                }
+                for(Game game : globalFilterResults) {
+                    System.out.println(game.getTitle());
+                }
+
+
                 String searchQuery = searchField.getText().toLowerCase().trim();
                 filterGameList(searchQuery);
             }
@@ -687,8 +701,8 @@ public class GUIDriver extends Application {
             myLibrary = globalFilterResults;
         } else {
             myLibrary = library;
+            System.out.println("globalFilterResults is not null");
         }
-
         // If searchText is empty, display all games when search is clicked
         if (searchText.isEmpty()) {
             for (Game game : myLibrary) {
@@ -709,8 +723,8 @@ public class GUIDriver extends Application {
                         break; // Exit the loop early since this game doesn't match
                     } 
                 }
+
                 // If all terms match, add the game to the displayed game list and the results
-                //if filter results show no match, do not populate the list as both criteria aren't met
                 if (matchFound) {
                     gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                     gameSearchResults.add(game); 
@@ -981,7 +995,6 @@ public class GUIDriver extends Application {
                 tmpLibrary = library;
             }
 
-
             //Error Handling 1: Empty Library
             if((tmpLibrary == null || tmpLibrary.isEmpty())) {
                 errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
@@ -1192,7 +1205,6 @@ public class GUIDriver extends Application {
                     for(Game game : tmpLibrary) { //populate game list with results
                         gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                     }
-                    globalFilterResults = tmpLibrary;
                 }
             }
         });
