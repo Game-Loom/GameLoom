@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
+import java.lang.*;
 
 public class Game {
     // Attributes map that stores game data as key-value pairs
@@ -223,10 +224,20 @@ public class Game {
 
     /**
      * This method gets the title value of the game to make the title comparator associated with a method.
+     * ONLY USE THIS WITH THE COMPARATOR -- this is due to is getting a substring without quotes
      * @return String representing the title of the game
      */
     public String getTitle() {
-        return getAttribute("title");
+        String title = getAttribute("title");
+        int startIndex = 0;
+        for(int i = 0; i < title.length(); i++) {
+            char c = title.charAt(i);
+            if(Character.isLetterOrDigit(c)) {
+                startIndex = i;
+                break;
+            }
+        }
+        return title.substring(startIndex);
     }
 
     /**
