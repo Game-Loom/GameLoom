@@ -248,8 +248,6 @@ public class Game {
         return title.substring(startIndex);
     }
 
-    public 
-
     /**
      * This defines a comparator to sort Game objects by their date.
      * @param isAscending specifies if the order of sorting is ascending or not (descending)
