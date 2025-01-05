@@ -23,7 +23,7 @@
  *     attributes.put("release_date", "2021-05-20");
  *     Game game = new Game(attributes);
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.4
  */
 import java.util.HashMap;
@@ -99,7 +99,7 @@ public class Game {
 
 
     /**
-     * Provides a string representation of the game, summarizing all attributes except for those marked "N/A" or with the key "game".
+     * Provides a string representation of the game, summarizing all attributes except for those marked "N/A" or with the key "title".
      * 
      * @return A formatted string summarizing the game's attributes.
      */
@@ -127,8 +127,8 @@ public class Game {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            // Skip attributes with key "game", any "N/A" or empty values, or keys already processed
-            if (key.equalsIgnoreCase("game") || value.equals("N/A") || value.isEmpty() || containsKey(preferredKeys, key)) {
+            // Skip attributes with key "title", any "N/A" or empty values, or keys already processed
+            if (key.equalsIgnoreCase("title") || value.equals("N/A") || value.isEmpty() || containsKey(preferredKeys, key)) {
                 continue;
             }
 
@@ -144,6 +144,19 @@ public class Game {
         return result.toString();
     }
 
+    /**
+     * Returns a string representation of the game for display purposes in the Edit Tab.
+     * Prepends the 'game' attribute value to the standard toString() output.
+     *
+     * @return A formatted string for displaying the game.
+     */
+    public String toDisplayString() {
+        String gameName = attributes.get("title");
+        if (gameName == null || gameName.isEmpty()) {
+            gameName = "Unknown Game";
+        }
+        return "Title: "+ gameName + " | " + this.toString();
+    }
 
     /**
      * Helper method to capitalize the first letter of the key and replace underscores with spaces.
@@ -213,13 +226,7 @@ public class Game {
      * @return String representing the title of the game
      */
     public String getTitle() {
-        String title = getAttribute("game");
-        int startIndex = -1;
-        int endIndex = -1;
-        if(title.charAt(0) == '"' || title.charAt(0) == '\'') { // ignores quote if its the first character
-            title = title.substring(1);
-        } 
-        return title;
+        return getAttribute("title");
     }
 
     /**

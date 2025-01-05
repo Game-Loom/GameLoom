@@ -21,7 +21,7 @@
  * Note: The method customSplitWithoutQuotes provides custom logic for handling rows with values containing delimiters, 
  * ensuring robust import processing for non-quoted values.
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.5
  */
 
@@ -107,9 +107,17 @@ public class GLImporter {
                 // Normalize attributes before checking for popular app
                 attributes = Normalizer.normalize(attributes);
                 // Check if the game name is in the popular apps list; skip if it is
-                String gameName = attributes.get("game");
+                String gameName = attributes.get("title");
                 if (gameName != null && Arrays.asList(Normalizer.popularApps).contains(gameName)) {
                     continue; // Skip this entry if it matches a popular app
+                }
+
+                // Ensure ALL game names are enclosed in quotes
+                if (gameName != null) {
+                    if (!gameName.startsWith("\"") && !gameName.endsWith("\"")) {
+                        gameName = "\"" + gameName + "\"";
+                        attributes.put("title", gameName); // Update the attributes map with the quoted value
+                    }
                 }
 
                 // Add the game to the library

@@ -32,7 +32,7 @@
  * - Pressing the 'Enter' key within the value input field triggers the save action.
  * - Pressing the 'Enter' key in the custom value input field triggers the save action if the custom key field is populated.
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.0
  */
 
@@ -60,6 +60,18 @@ public class EditTab {
     private CheckBox deleteSafetyCheck;
     private ArrayList<Game> library;
     private VBox gameList;
+    private static final Map<String, String> keyDisplayMap = new LinkedHashMap<>() {{
+        put("title", "Game Title");
+        put("platform", "Platform");
+        put("console", "Console");
+        put("hours_played", "Hours Played");
+        put("last_played", "Last Played");
+        put("release_date", "Release Date");
+        put("singleplayer", "Singleplayer");
+        put("multiplayer", "Multiplayer");
+        put("languages", "Languages");
+    }};
+    
 
     public EditTab(ArrayList<Game> library, VBox gameList) {
         this.library = library;
@@ -103,14 +115,29 @@ public class EditTab {
         gameListView = new ListView<>();
         gameListView.getItems().addAll(library);
         gameListView.setOnMouseClicked(e -> loadGameAttributes(gameListView.getSelectionModel().getSelectedItem()));
-        
+        // Set a custom cell factory to display the `toDisplayString` output
+        gameListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Game game, boolean empty) {
+                super.updateItem(game, empty);
+                if (empty || game == null) {
+                    setText(null);
+                } else {
+                    setText(game.toDisplayString()); // Use the custom display method
+                }
+            }
+        }); 
+
+        gameListView.setOnMouseClicked(e -> loadGameAttributes(gameListView.getSelectionModel().getSelectedItem()));    
+
         // Dropdown for selecting keys
         keySelector = new ComboBox<>();
         keySelector.setPromptText("Select Field");
         keySelector.setPrefWidth(150); // Set to match customKeyField width
         
-        // Populate the key selector with normalized keys
-        keySelector.getItems().addAll("game", "hours_played", "last_played", "release_date", "captions", "multiplayer", "singleplayer", "languages");
+        // Populate the key selector with display names
+        keySelector.getItems().addAll(keyDisplayMap.values());
+
         
         // Text field for editing the value of the selected key
         valueField = new TextField();
@@ -203,18 +230,19 @@ public class EditTab {
     * @param query The search string entered by the user to filter the game list
     */
     private void filterGames(String query) {
-        gameListView.getItems().clear();// Clear the current items in the game list view
-        if (query.isEmpty()) {// If empty, add all games from the library to the game list view
+        gameListView.getItems().clear(); // Clear the current items in the game list view
+    
+        if (query.isEmpty()) { // If empty, add all games from the library to the game list view
             gameListView.getItems().addAll(library);
-        } else {// If not empty, iterate through the library and check each game
+        } else { // If not empty, iterate through the library and check each game
             for (Game game : library) {
-                if (game.getTitle().toLowerCase().contains(query.toLowerCase()) ||// Convert both the game title and the query to lowercase for a case-insensitive match
-                    game.toString().toLowerCase().contains(query.toLowerCase())) {
-                    gameListView.getItems().add(game);// Add the matching game to the game list view
+                if (game.toDisplayString().toLowerCase().contains(query.toLowerCase())) {
+                    gameListView.getItems().add(game);
                 }
             }
         }
     }
+    
 
     /**
      * Loads the attributes of the selected game into the UI components for editing.
@@ -225,18 +253,30 @@ public class EditTab {
      * @param selectedGame The game selected from the ListView for editing
      */
     private void loadGameAttributes(Game selectedGame) {
-        if (selectedGame != null) {// Check if a game is selected in the ListView
-            keySelector.getSelectionModel().clearSelection();// Clear the current selection in the keySelector ComboBox
-            valueField.clear();// Clear the text in the valueField to prepare for new input
-            
+        if (selectedGame != null) { // Check if a game is selected in the ListView
+            keySelector.getSelectionModel().clearSelection(); // Clear the current selection in the keySelector ComboBox
+            valueField.clear(); // Clear the text in the valueField to prepare for new input
+    
             keySelector.setOnAction(e -> {
-                String selectedKey = keySelector.getValue();// Get the selected key from the keySelector
-                if (selectedKey != null) {// If a key is selected, populate the valueField with the corresponding attribute value from the game
+                String selectedDisplayName = keySelector.getValue(); // Get selected key from the keySelector
+                String selectedKey = null;
+    
+                // Map the display name back to the normalized key
+                for (Map.Entry<String, String> entry : keyDisplayMap.entrySet()) {
+                    if (entry.getValue().equals(selectedDisplayName)) {
+                        selectedKey = entry.getKey();
+                        break;
+                    }
+                }
+                // If a key is selected, populate the valueField with the corresponding attribute value from the game
+                if (selectedKey != null) { 
                     valueField.setText(selectedGame.getAttribute(selectedKey));
                 }
             });
         }
     }
+    
+    
 
     /**
      * Updates the attributes of the currently selected game in the ListView.
@@ -246,30 +286,45 @@ public class EditTab {
      * After updating, the method clears the input fields and refreshes the game list.
      */
     private void updateGame() {
-        // Get the currently selected game from the ListView
         Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
         if (selectedGame != null) {
-            // Retrieve the selected key from the keySelector and the new value from the valueField
-            String selectedKey = keySelector.getValue();
-            String newValue = valueField.getText().trim();
-            // If a key is selected and a new value is provided, update the game attribute
-            if (selectedKey != null && !newValue.isEmpty()) {
-                selectedGame.updateAttribute(selectedKey, newValue);
+            // Retrieve selected key from the dropdown
+            String selectedDisplayName = keySelector.getValue();
+            String selectedKey = null;
+    
+            // Map display name back to normalized key
+            if (selectedDisplayName != null) {
+                for (Map.Entry<String, String> entry : keyDisplayMap.entrySet()) {
+                    if (entry.getValue().equals(selectedDisplayName)) {
+                        selectedKey = entry.getKey();
+                        break;
+                    }
+                }
             }
-            // Retrieve custom key and value input from the respective fields
+    
+            // Update the value for the dropdown field if applicable
+            if (selectedKey != null) {
+                String newValue = valueField.getText().trim();
+                if (!newValue.isEmpty()) {
+                    selectedGame.updateAttribute(selectedKey, newValue);
+                }
+            }
+    
+            // Process custom key-value fields independently
             String customKey = customKeyField.getText().trim();
             String customValue = customValueField.getText().trim();
-            // Check if both custom key and custom value are provided
             if (!customKey.isEmpty() && !customValue.isEmpty()) {
-                // Update the selected game's attribute with the custom key and value
                 selectedGame.updateAttribute(customKey, customValue);
-                // Clear the custom key and value fields to indicate changes were saved
                 customKeyField.clear();
                 customValueField.clear();
             }
-            refreshGameList();// Refresh the displayed game list to reflect the changes
+            
+            // Refresh the displayed game list to reflect changes
+            refreshGameList();
         }
     }
+    
+    
 
     /**
      * Deletes the currently selected game from the library and updates the UI.
@@ -328,7 +383,7 @@ public class EditTab {
         // Iterate through each game in the library and add it to the game list
         for (Game game : library) {
             // Create a new game item and add it to the game list VBox
-            gameList.getChildren().add(GUIDriver.createGameItem(game.getTitle(), game.toString()));
+            gameList.getChildren().add(GUIDriver.createGameItem(game.getTitle(), game.toDisplayString()));
         }
     }
 

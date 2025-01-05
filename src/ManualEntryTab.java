@@ -34,7 +34,7 @@
  *       Nested class:
  *       - CustomField: Represents a custom field in the game entry form
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.0
  */
 
@@ -137,7 +137,7 @@ public class ManualEntryTab {
         Map<String, String> attributes = gameEntry.collectData();
         Game game = new Game(attributes);
         library.add(game);
-        gameList.getChildren().add(GUIDriver.createGameItem(game.getAttribute("game"), game.toString()));
+        gameList.getChildren().add(GUIDriver.createGameItem(game.getAttribute("title"), game.toString()));
     }
 
     // Clear the entries after submission
@@ -197,10 +197,10 @@ public class ManualEntryTab {
             defaultFieldsGrid.setVgap(5); // Vertical gap between grid cells
 
             // Create labels and text fields for default fields
-            Label nameLabel = new Label("Game Name:");
+            Label nameLabel = new Label("Title:");
             TextField nameField = new TextField();
-            nameField.setPromptText("Game Name"); // Placeholder text for the name field
-            defaultFields.put("game", nameField); // Add the field to the defaultFields map
+            nameField.setPromptText("Example Title"); // Placeholder text for the name field
+            defaultFields.put("title", nameField); // Add the field to the defaultFields map
 
             // Create labels and text fields for platform field
             Label platformLabel = new Label("Platform:");
@@ -281,6 +281,12 @@ public class ManualEntryTab {
             for (Map.Entry<String, TextField> entry : defaultFields.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue().getText().trim(); // Get and trim the text input
+                // Ensure the game name field is enclosed in quotes
+                if ("title".equalsIgnoreCase(key)) {
+                    if (!value.startsWith("\"") && !value.endsWith("\"")) {
+                        value = "\"" + value + "\"";
+                    }
+                }
                 attributes.put(key, value); // Add the key-value pair to the map
             }
 
