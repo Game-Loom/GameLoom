@@ -223,11 +223,19 @@ public class Game {
     /******** SORTING IMPLEMENTATION **************/
 
     /**
-     * This method gets the title value of the game to make the title comparator associated with a method.
-     * ONLY USE THIS WITH THE COMPARATOR -- this is due to is getting a substring without quotes
+     * This method gets the title value of the game
      * @return String representing the title of the game
      */
     public String getTitle() {
+        return getAttribute("title");
+    }
+
+    /**
+     * This method gets the title value of the game without quotes or extra punctuation at the beginning
+     * ONLY USE THIS WITH THE COMPARATOR
+     * @return String representing the title of the game without other characters
+     */
+    public String getTitleWithoutQuote() {
         String title = getAttribute("title");
         int startIndex = 0;
         for(int i = 0; i < title.length(); i++) {
@@ -239,6 +247,8 @@ public class Game {
         }
         return title.substring(startIndex);
     }
+
+    public 
 
     /**
      * This defines a comparator to sort Game objects by their date.
@@ -374,7 +384,7 @@ public class Game {
     /**
      * This defines a comparator to sort Game objects by their title
      */
-    public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitle);
+    public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitleWithoutQuote);
     
     /**
      * This defines a comparator to sort Game objects by their platform name
