@@ -94,6 +94,7 @@ public class GUIDriver extends Application {
     // Data Structure Variables
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
+    protected static ArrayList<Game> results = new ArrayList<>(); //Holds results shared between search & sort
     protected static ArrayList<String> attributes = new ArrayList<>(); // Stores the list of game attribute names used for display and export
     private Timer autoSaveTimer; // Schedules periodic auto-save tasks for the game library
     private int lastLibraryHash; // Used to detect any changes to the library and trigger auto-saving when necessary
@@ -664,7 +665,6 @@ public class GUIDriver extends Application {
      * Filters the game list based on a search query entered by the user. 
      * The search query is split into individual keywords, and the method checks whether each game's 
      * name or description contains all the keywords. 
-     * 
      * If no search query is provided, the method will display all the games. The filtering is 
      * case-insensitive and supports multi-keyword searches.
      * 
@@ -676,18 +676,25 @@ public class GUIDriver extends Application {
 
         // Split searchText by space to handle multiple keywords
         searchText = searchText.toLowerCase();
-        String[] searchTerms = searchText.split("\\s");    
+        String[] searchTerms = searchText.split("\\s"); 
+        
+        ArrayList<Game> myLibrary;
+        if(results != null && !results.isEmpty()) {
+            myLibrary = results;
+        } else {
+            myLibrary = library;
+        }
 
         // If searchText is empty, display all games when search is clicked
         if (searchText.isEmpty()) {
-            for (Game game : library) {
+            for (Game game : myLibrary) {
                 gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
             }
         } else {
             // Filter the games based on the search keyword (searching both game name and description)
-            for (Game game : library) {
-                String gameName = game.getAttribute("title").toLowerCase(); // Normalize game name to lowercase
-                String description = game.toString().toLowerCase(); // Normalize game description to lowercase
+            for (Game game : myLibrary) {
+                String gameName = game.getAttribute("title").toLowerCase().trim(); // Normalize game name to lowercase
+                String description = game.toString().toLowerCase().trim(); // Normalize game description to lowercase
                 boolean matchFound = true;// Initialize the match flag
 
                 // Check if all search terms are found in the game name or description
@@ -697,7 +704,6 @@ public class GUIDriver extends Application {
                         break; // Exit the loop early since this game doesn't match
                     } 
                 }
-
                 // If all terms match, add the game to the displayed game list and the results
                 if (matchFound) {
                     gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
@@ -705,6 +711,7 @@ public class GUIDriver extends Application {
                 }
             }
         }
+        results = gameSearchResults;
         return gameSearchResults;
     }
 
@@ -959,10 +966,11 @@ public class GUIDriver extends Application {
             boolean isAlphabetical = false;
             String customFieldText = "";
 
-            //TODO: Add search depedencies
-            // for(Node myNode : gameList.getChildren()) { //populate game list with results
-            //     gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
-            // }
+            if(results != null && !results.isEmpty()) {
+                tmpLibrary = results;
+            } else {
+                tmpLibrary = library;
+            }
 
 
             //Error Handling 1: Empty Library
@@ -984,7 +992,7 @@ public class GUIDriver extends Application {
                     } else {
                         isAscending = tempButton.getText().equals("Ascending"); 
                     }
-                    
+
                     //marks if alphabetical or not and stores within boolean
                     tempButton = (RadioButton)alphaGroup.getSelectedToggle();
                     if(tempButton == null) {
@@ -1163,14 +1171,15 @@ public class GUIDriver extends Application {
                     } else {
                         errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                         errorMsg.setText("Error sorting library");
+                        return;
                     }
                 } else {//if sort is not chosen, just populate game list with "filtered results"
                     gameList.getChildren().clear(); //clear game list
                     for(Game game : tmpLibrary) { //populate game list with results
                         gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                     }
+                    results = tmpLibrary;
                 }
-
             }
         });
         
@@ -1309,7 +1318,6 @@ public class GUIDriver extends Application {
         return commonLayout; // Return the fully assembled layout for each tab
     }
     
-
 
     public static void main(String[] args) {
         launch(args); // Launch the JavaFX application.
