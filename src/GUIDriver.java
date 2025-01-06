@@ -586,6 +586,7 @@ public class GUIDriver extends Application {
                 }
 
                 populateGameList(importedGames); // Adds games to the game list in the UI
+                NotificationManager.showNotification("CSV successfully imported!", "success");
             }
         });
 
@@ -622,6 +623,7 @@ public class GUIDriver extends Application {
                 File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
                 if (newFile != null) {
                     GLExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                    NotificationManager.showNotification("Library successfully exported!", "success");
                 }
             }
         }); 
@@ -655,6 +657,7 @@ public class GUIDriver extends Application {
         searchButton.setOnAction(event -> {
             String searchQuery = searchField.getText().toLowerCase().trim(); // Normalize input (lowercase + trim spaces)
             filterGameList(searchQuery); // Call helper method to filter the game list based on the search query
+            NotificationManager.showNotification("Search keywords successfully submitted!", "success");
         });
 
         //Search bar also searches when enter is pressed in the search box
@@ -662,6 +665,7 @@ public class GUIDriver extends Application {
             if( event.getCode() == KeyCode.ENTER ){
                 String searchQuery = searchField.getText().toLowerCase().trim();
                 filterGameList(searchQuery);
+                NotificationManager.showNotification("Search keywords successfully submitted!", "success");
             }
         });
 
@@ -932,6 +936,7 @@ public class GUIDriver extends Application {
             dateCheckBox.setSelected(false);
             filterKeywordCheckBox.setSelected(false);
             numberCheckBox.setSelected(false);
+            NotificationManager.showNotification("Sort & Filter selections have been successfully reset!", "success");
         });
 
 
@@ -1107,6 +1112,7 @@ public class GUIDriver extends Application {
                         for(Game game : sortedLibrary) { //populate game list
                             gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                         }
+                        NotificationManager.showNotification("Sort & Filter selections have been successfully applied!", "success");
                     }
                 }
             }
