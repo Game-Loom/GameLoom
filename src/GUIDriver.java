@@ -392,7 +392,7 @@ public class GUIDriver extends Application {
                 if(!filter.isBlank() && !library.isEmpty()){ //If the library isn't empty and sorting by a platform
                     gameList.getChildren().clear();
                     for(Game game:library){
-                        if(game.getPlatform().equalsIgnoreCase(filter)){
+                        if(game.getPlatform().toLowerCase().contains(filter.toLowerCase())){
                             gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                         }
                     }
