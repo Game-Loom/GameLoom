@@ -155,18 +155,22 @@ public class GUIDriver extends Application {
         mainLayout.getChildren().addAll(topLayout, tabPane);
         VBox.setVgrow(tabPane, Priority.ALWAYS); // Allow the TabPane to grow and fill remaining space
     
-        // Set the scene with the main layout
-        Scene scene = new Scene(mainLayout, 958, 700); // Creates a scene with a width of 1000 and height of 700
-    
-        // Sets the style of the scene
+        // Set the scene with the main layout for the library
+        Scene scene = new Scene(mainLayout, 958, 700); // Creates a scene with a width of 958 and height of 700
+        
+        //Creates the scene for the main landing page
+        Scene menuScene = LandingPage.createLandingPage(primaryStage, scene, tabPane);
+
+        // Sets the style of the scenes
         try {
             File cssFile = new File("styles/Blue-Green(Default).css");
             scene.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
+            menuScene.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
         } catch (Exception e) {
             e.printStackTrace();
         }
     
-        primaryStage.setScene(scene); // Sets the scene on the stage
+        primaryStage.setScene(menuScene); // Sets the scene on the stage
         primaryStage.show(); // Displays the primary stage
     }
     
@@ -515,7 +519,7 @@ public class GUIDriver extends Application {
      *
      * @param games A list of Game objects imported from a CSV file
      */
-    private void populateGameList(List<Game> games) {
+    protected static void populateGameList(List<Game> games) {
         // Add imported games to the VBox and library, avoiding duplicates
         for (Game game : games) {
             String gameName = game.getAttribute("game"); // Retrieves game name
