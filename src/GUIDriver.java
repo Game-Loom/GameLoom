@@ -400,7 +400,19 @@ public class GUIDriver extends Application {
     private void setupTabActions(Tab tab, String filter, Stage primaryStage){
         tab.setOnSelectionChanged(event->{
             if(tab.isSelected()){
-                filterGameList(filter); //Filters the library by the given platform
+                if(!filter.isBlank() && !library.isEmpty()){ //If the library isn't empty and sorting by a platform
+                    gameList.getChildren().clear();
+                    for(Game game:library){
+                        if(game.getPlatform().toLowerCase().contains(filter.toLowerCase())){
+                            gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
+                        }
+                    }
+                }
+                else{
+                    for(Game game:library){
+                        gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
+                    }
+                }
                 tab.setContent(createCommonTabLayout(primaryStage)); //Sets the tab layout
             }
         });
