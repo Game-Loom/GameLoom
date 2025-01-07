@@ -128,22 +128,56 @@ public class ManualEntryTab {
 
 
     /**
-     * Submits all game entries by collecting data from each entry, creating Game objects,
-     * and adding them to the library and the game list displayed in the GUI.
+     * Submits all game entries by collecting data from each entry, validating required fields,
+     * and adding valid entries to the library and the displayed game list.
+     * Displays appropriate notifications for success or validation errors.
      */
     private void submitEntries() {
-    // Collect and add the manually entered games
-    for (GameEntry gameEntry : gameEntries) {
-        Map<String, String> attributes = gameEntry.collectData();
-        Game game = new Game(attributes);
-        library.add(game);
-        gameList.getChildren().add(GUIDriver.createGameItem(game.getAttribute("title"), game.toString()));
-    }
+        if (gameEntries.isEmpty()) {
+            NotificationManager.showNotification("No entries to submit.", "info");
+            return;
+        }   
 
-    // Clear the entries after submission
-    entriesBox.getChildren().clear();
-    gameEntries.clear();
-    addGameEntry(); // Add a new empty game entry
+        boolean hasError = false; // Tracks if any errors are found
+        int submittedCount = 0;  // Tracks the number of successfully submitted entries 
+
+        for (GameEntry gameEntry : gameEntries) {
+            Map<String, String> attributes = gameEntry.collectData();   
+
+            // Ensure all required fields are not empty
+            String title = attributes.getOrDefault("title", "").replace("\"", "").trim();
+            String platform = attributes.getOrDefault("platform", "").trim();
+            String releaseDate = attributes.getOrDefault("release_date", "").trim();    
+
+            if (title.isEmpty() || platform.isEmpty() || releaseDate.isEmpty()) {
+                hasError = true;
+                NotificationManager.showNotification(
+                    "All required fields (Title, Platform, Release Date) must be filled for each entry.",
+                    "error"
+                );
+                continue; // Skip invalid entry and continue with the next one
+            }   
+
+            // If valid, add the entry to the library and display
+            Game game = new Game(attributes);
+            library.add(game);
+            gameList.getChildren().add(GUIDriver.createGameItem(game.getAttribute("title"), game.toString()));
+            submittedCount++;
+        }   
+
+        // If no valid entries were submitted, notify the user
+        if (submittedCount == 0) {
+            NotificationManager.showNotification("No valid entries were submitted.", "error");
+            return;
+        }   
+
+        // Clear the entries and reset the form
+        entriesBox.getChildren().clear();
+        gameEntries.clear();
+        addGameEntry(); 
+
+        // Show success notification
+        NotificationManager.showNotification(submittedCount + " game(s) successfully submitted!", "success");
     }
 
 
@@ -190,7 +224,7 @@ public class ManualEntryTab {
             gameEntryBox.setPadding(new Insets(10)); // Adds padding around the game entry box
             gameEntryBox.setStyle("-fx-border-color: gray; -fx-border-width: 1;"); // Adds a border to each game entry
 
-            Label defaultFieldsLabel = new Label("Default Fields:"); // Label for default fields section
+            Label defaultFieldsLabel = new Label("Required Fields:"); // Label for default fields section
             // GridPane to layout the default fields in a grid format
             GridPane defaultFieldsGrid = new GridPane();
             defaultFieldsGrid.setHgap(10); // Horizontal gap between grid cells
@@ -205,7 +239,7 @@ public class ManualEntryTab {
             // Create labels and text fields for platform field
             Label platformLabel = new Label("Platform:");
             TextField platformField = new TextField();
-            platformField.setPromptText("Playstation 3"); // Example platform placeholder
+            platformField.setPromptText("Playstation"); // Example platform placeholder
             defaultFields.put("platform", platformField); // Add the field to the defaultFields map
 
             // Create labels and text fields for release date field
@@ -220,7 +254,7 @@ public class ManualEntryTab {
             defaultFieldsGrid.addRow(0, releaseDateLabel, releaseDateField);
 
             // Custom fields section
-            Label customFieldsLabel = new Label("Custom Fields:");
+            Label customFieldsLabel = new Label("\nCustom Fields:");
             customFieldsBox = new VBox(5); // VBox to hold custom fields (with 5px spacing)
 
             // Add Custom Field button
@@ -270,36 +304,46 @@ public class ManualEntryTab {
 
         /**
          * Collects data from the game entry form, including both default and custom fields,
-         * and returns it as a map of key-value pairs representing game attributes.
+         * and validates required fields. Highlights empty required fields.
          * 
          * @return A Map containing the key-value pairs of game attributes from the entry form.
          */
         public Map<String, String> collectData() {
-            Map<String, String> attributes = new HashMap<>();
+            Map<String, String> attributes = new HashMap<>();       
 
-            // Collect data from default fields (e.g., game name, platform)
+            // Collect data from default fields (e.g., title, platform, release date)
             for (Map.Entry<String, TextField> entry : defaultFields.entrySet()) {
                 String key = entry.getKey();
-                String value = entry.getValue().getText().trim(); // Get and trim the text input
-                // Ensure the game name field is enclosed in quotes
-                if ("title".equalsIgnoreCase(key)) {
+                TextField field = entry.getValue();
+                String value = field.getText().trim();      
+
+                // Highlight empty required fields
+                if (("title".equals(key) || "platform".equals(key) || "release_date".equals(key)) && value.isEmpty()) {
+                    field.setStyle("-fx-border-color: red;"); // Add red border for missing fields
+                } else {
+                    field.setStyle(null); // Reset border style for valid fields
+                }       
+
+                // Ensure the title is enclosed in quotes
+                if ("title".equalsIgnoreCase(key) && !value.isEmpty()) {
                     if (!value.startsWith("\"") && !value.endsWith("\"")) {
                         value = "\"" + value + "\"";
                     }
-                }
-                attributes.put(key, value); // Add the key-value pair to the map
-            }
+                }       
+
+                attributes.put(key, value); // Add the field to the map
+            }       
 
             // Collect data from custom fields (key-value pairs entered by the user)
             for (CustomField customField : customFields) {
-                String key = customField.getKeyField().getText().trim(); // Custom field key
-                String value = customField.getValueField().getText().trim(); // Custom field value
-                if (!key.isEmpty()) { // Only add the field if the key is not empty
-                    attributes.put(key, value); // Add the key-value pair to the map
+                String key = customField.getKeyField().getText().trim();
+                String value = customField.getValueField().getText().trim();
+                if (!key.isEmpty()) {
+                    attributes.put(key, value); // Add custom fields to the map
                 }
-            }
+            }       
 
-            return attributes; // Complete map of attributes for this game entry
+            return attributes;
         }
 
 

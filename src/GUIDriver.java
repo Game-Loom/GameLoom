@@ -152,12 +152,23 @@ public class GUIDriver extends Application {
     
         // Sets up the various tabs and their content/actions
         setupTabs(primaryStage, tabPane);
-    
+        
+        // Create a notification area at the bottom
+        HBox notificationArea = new HBox();
+        notificationArea.setPadding(new Insets(5));
+        notificationArea.setAlignment(Pos.CENTER);
+        notificationArea.setStyle("-fx-background-color: lightgray;");
+        notificationArea.setMinHeight(30); // Set a consistent height
+        notificationArea.setVisible(false); // Initially hidden
+
         // **Main Layout**: Create a VBox to hold the top layout and the TabPane
         VBox mainLayout = new VBox(10);
-        mainLayout.getChildren().addAll(topLayout, tabPane);
+        mainLayout.getChildren().addAll(topLayout, tabPane, notificationArea);
         VBox.setVgrow(tabPane, Priority.ALWAYS); // Allow the TabPane to grow and fill remaining space
-    
+        
+        // Initialize the NotificationManager with the notification area
+        NotificationManager.initialize(notificationArea);
+
         // Set the scene with the main layout
         Scene scene = new Scene(mainLayout, 958, 700); // Creates a scene with a width of 1000 and height of 700
     
@@ -590,6 +601,7 @@ public class GUIDriver extends Application {
                 }
 
                 populateGameList(importedGames); // Adds games to the game list in the UI
+                NotificationManager.showNotification("CSV successfully imported!", "success");
             }
         });
 
@@ -626,6 +638,7 @@ public class GUIDriver extends Application {
                 File newFile = fileChooser.showSaveDialog(primaryStage); // Shows the save file dialog
                 if (newFile != null) {
                     GLExporter.exportGamesToCSV(library, newFile); // Exports the library to a CSV file
+                    NotificationManager.showNotification("Library successfully exported!", "success");
                 }
             }
         }); 
@@ -662,6 +675,7 @@ public class GUIDriver extends Application {
             }
             String searchQuery = searchField.getText().toLowerCase().trim(); // Normalize input (lowercase + trim spaces)
             filterGameList(searchQuery); // Call helper method to filter the game list based on the search query
+            NotificationManager.showNotification("Search keywords successfully submitted!", "success");
         });
         
         //Search bar also searches when enter is pressed in the search box
@@ -678,6 +692,7 @@ public class GUIDriver extends Application {
 
                 String searchQuery = searchField.getText().toLowerCase().trim();
                 filterGameList(searchQuery);
+                NotificationManager.showNotification("Search keywords successfully submitted!", "success");
             }
         });
 
@@ -987,6 +1002,7 @@ public class GUIDriver extends Application {
             dateCheckBox.setSelected(false);
             filterKeywordCheckBox.setSelected(false);
             numberCheckBox.setSelected(false);
+            NotificationManager.showNotification("Sort & Filter selections have been successfully reset!", "success");
         });
 
 
@@ -1203,6 +1219,7 @@ public class GUIDriver extends Application {
                         for(Game game : sortedLibrary) { //populate game list with results
                             gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                         }
+                        NotificationManager.showNotification("Sort & Filter selections have been successfully applied!", "success");
                     } else {
                         errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                         errorMsg.setText("Error sorting library");
