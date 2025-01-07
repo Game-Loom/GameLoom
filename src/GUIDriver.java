@@ -868,7 +868,7 @@ public class GUIDriver extends Application {
         
         // Add a transparent buffer zone above "Sort By:"
         Pane bufferZone = new Pane();
-        bufferZone.setPrefHeight(50); // Adjust height as needed for spacing       
+        bufferZone.setPrefHeight(25); // Adjust height as needed for spacing       
         
         //sortFilterBox.getChildren().add(bufferZone); // Adds the buffer between filter
         
