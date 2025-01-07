@@ -405,16 +405,20 @@ public class GUIDriver extends Application {
      * @param primaryStage - the stage everything is set on
      */
     private void setupTabActions(Tab tab, String filter, Stage primaryStage){
+        ArrayList<Game> listOfGamesForTab = new ArrayList<Game>(); //holds list of games for within tab search
         tab.setOnSelectionChanged(event->{
             if(tab.isSelected()){
                 if(!filter.isBlank() && !library.isEmpty()){ //If the library isn't empty and sorting by a platform
+                    globalFilterString = filter;
                     gameList.getChildren().clear();
                     for(Game game:library){
                         if(filter.equalsIgnoreCase("physical") && !game.getAttribute(filter).equals("N/A")){
                             gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
+                            listOfGamesForTab.add(game);
                         }
                         else if(game.getPlatform().toLowerCase().contains(filter.toLowerCase())){
                             gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
+                            listOfGamesForTab.add(game);
                         }
                     }
                 }
@@ -424,6 +428,9 @@ public class GUIDriver extends Application {
                     }
                 }
                 tab.setContent(createCommonTabLayout(primaryStage)); //Sets the tab layout
+            }
+            if(!listOfGamesForTab.isEmpty()) {
+                globalFilterResults = listOfGamesForTab;
             }
         });
     }
@@ -669,18 +676,14 @@ public class GUIDriver extends Application {
         searchBox.setPadding(new Insets(10)); // Adds padding around the search box
         TextField searchField = new TextField(); // Creates a search input field
         searchField.setPromptText("e.g. Name Platform Year"); // Default text to let user know it takes multiple keywords at once
+        String searchQuery = searchField.getText().toLowerCase().trim(); 
 
         // Set the search field to grow and take up available horizontal space
         HBox.setHgrow(searchField, Priority.ALWAYS);
-        
         Button searchButton = new Button("Search"); // Creates the search button
 
         // Define the action when the search button is clicked
         searchButton.setOnAction(event -> {
-            if(globalFilterString.length() != 0) {
-                globalFilterResults = filterGameList(globalFilterString); //Filters the library by the given platform
-            }
-            String searchQuery = searchField.getText().toLowerCase().trim(); // Normalize input (lowercase + trim spaces)
             filterGameList(searchQuery); // Call helper method to filter the game list based on the search query
             NotificationManager.showNotification("Search keywords successfully submitted!", "success");
         });
@@ -689,15 +692,9 @@ public class GUIDriver extends Application {
         searchBox.setOnKeyPressed(event -> {
             if( event.getCode() == KeyCode.ENTER ){
                 System.out.println("globalFilterString = [" + globalFilterString + "]");
-                if(globalFilterString.length() != 0) {
-                    globalFilterResults = filterGameList(globalFilterString); //Filters the library by the given platform
-                }
                 for(Game game : globalFilterResults) {
-                    System.out.println(game.getTitle());
+                    System.out.println(game.getAttribute("platform"));
                 }
-
-
-                String searchQuery = searchField.getText().toLowerCase().trim();
                 filterGameList(searchQuery);
                 NotificationManager.showNotification("Search keywords successfully submitted!", "success");
             }
@@ -728,12 +725,16 @@ public class GUIDriver extends Application {
         String[] searchTerms = searchText.split("\\s"); 
         
         ArrayList<Game> myLibrary;
-        if(globalFilterResults != null) {
+        // Controls what list is being searched within (full library, tab, etc)
+        // 
+        if(globalFilterResults != null && !globalFilterString.isEmpty()) { //if tab is "full library"
             myLibrary = globalFilterResults;
+        } else if(globalFilterResults.isEmpty() && globalFilterString.isEmpty()){ //if tab is "full library" tab
+            myLibrary = library;
         } else {
             myLibrary = library;
-            System.out.println("globalFilterResults is not null");
         }
+
         // If searchText is empty, display all games when search is clicked
         if (searchText.isEmpty()) {
             for (Game game : myLibrary) {
