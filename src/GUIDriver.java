@@ -94,6 +94,9 @@ public class GUIDriver extends Application {
     // Data Structure Variables
     protected static VBox gameList; // VBox to store the list of game items (games displayed vertically)
     protected static ArrayList<Game> library = new ArrayList<>(); // Game library
+    protected static ArrayList<Game> globalSearchResults = null; //search results to share with filter/sort 
+    protected static ArrayList<Game> globalFilterResults = null;  //filter/sort results to share with search results
+    protected static String globalFilterString = ""; //holds global filter parameters (e.g. Steam for steam tab)
     protected static ArrayList<String> attributes = new ArrayList<>(); // Stores the list of game attribute names used for display and export
     private Timer autoSaveTimer; // Schedules periodic auto-save tasks for the game library
     private int lastLibraryHash; // Used to detect any changes to the library and trigger auto-saving when necessary
