@@ -1226,6 +1226,7 @@ public class GUIDriver extends Application {
                     } else {
                         errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                         errorMsg.setText("Error sorting library");
+                        NotificationManager.showNotification("Sort & Filter selections have not been applied!", "failure");
                         return;
                     }
 
@@ -1234,6 +1235,7 @@ public class GUIDriver extends Application {
                     for(Game game : tmpLibrary) { //populate game list with results
                         gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                     }
+                    NotificationManager.showNotification("Filter selections have been successfully applied!", "success");
                 }
             }
         });
