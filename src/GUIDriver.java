@@ -168,13 +168,13 @@ public class GUIDriver extends Application {
         
         // Initialize the NotificationManager with the notification area
         NotificationManager.initialize(notificationArea);
-        
-        //Creates the scene for the main landing page
-        Scene menuScene = LandingPage.createLandingPage(primaryStage, scene, tabPane);
       
         // Set the scene with the main layout
         Scene scene = new Scene(mainLayout, 958, 700); // Creates a scene with a width of 1000 and height of 700
-    
+
+        //Creates the scene for the main landing page
+        Scene menuScene = LandingPage.createLandingPage(primaryStage, scene, tabPane);
+        
         // Sets the style of the scene
         try {
             File cssFile = new File("styles/Blue-Green(Default).css");
