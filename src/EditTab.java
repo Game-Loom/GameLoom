@@ -291,7 +291,7 @@ public class EditTab {
             // Retrieve selected key from the dropdown
             String selectedDisplayName = keySelector.getValue();
             String selectedKey = null;
-    
+            
             // Map display name back to normalized key
             if (selectedDisplayName != null) {
                 for (Map.Entry<String, String> entry : keyDisplayMap.entrySet()) {
@@ -301,15 +301,15 @@ public class EditTab {
                     }
                 }
             }
-    
             // Update the value for the dropdown field if applicable
             if (selectedKey != null) {
                 String newValue = valueField.getText().trim();
                 if (!newValue.isEmpty()) {
                     selectedGame.updateAttribute(selectedKey, newValue);
+                    NotificationManager.showNotification("Field updated successfully! Please click off of the selection to view changes.", "success");
                 }
             }
-    
+            
             // Process custom key-value fields independently
             String customKey = customKeyField.getText().trim();
             String customValue = customValueField.getText().trim();
@@ -317,12 +317,15 @@ public class EditTab {
                 selectedGame.updateAttribute(customKey, customValue);
                 customKeyField.clear();
                 customValueField.clear();
+                NotificationManager.showNotification("Custom field updated successfully! Please click off of the selection to view changes.", "success");
             }
-            
             // Refresh the displayed game list to reflect changes
             refreshGameList();
+        } else {
+            NotificationManager.showNotification("No game selected for updating!", "error");
         }
     }
+    
     
     
 
@@ -361,13 +364,19 @@ public class EditTab {
                     library.remove(selectedGame);
                     gameList.getChildren().removeIf(node -> ((Label) ((VBox) ((HBox) node).getChildren().get(1)).getChildren().get(0)).getText().equals(selectedGame.getTitle()));
                     gameListView.getItems().remove(selectedGame);
+                    refreshGameList();
+                    NotificationManager.showNotification("Game deleted successfully!", "success");
                 }
             } else {
                 // Delete the game directly without showing a confirmation dialog
                 library.remove(selectedGame);
                 gameList.getChildren().removeIf(node -> ((Label) ((VBox) ((HBox) node).getChildren().get(1)).getChildren().get(0)).getText().equals(selectedGame.getTitle()));
                 gameListView.getItems().remove(selectedGame);
+                refreshGameList();
+                NotificationManager.showNotification("Game deleted without confirmation.", "info");
             }
+        } else {
+            NotificationManager.showNotification("No game selected for deletion!", "error");
         }
     }
 
