@@ -982,25 +982,8 @@ public class GUIDriver extends Application {
             globalFilterResults = null;
 
             //Resets it to the tab selected
-            ArrayList<Game> listOfGamesForTab = new ArrayList<Game>();
-            if(!globalTabName.isBlank() && !library.isEmpty()){ //If the library isn't empty and sorting by a platform
-                gameList.getChildren().clear();
-                for(Game game:library){
-                    if(globalTabName.equalsIgnoreCase("physical") && !game.getAttribute(globalTabName).equals("N/A")){
-                        gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
-                        listOfGamesForTab.add(game);
-                    }
-                    else if(game.getPlatform().toLowerCase().contains(globalTabName.toLowerCase())){
-                        gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
-                        listOfGamesForTab.add(game);
-                    }
-                }
-            }
-            else{
-                for(Game game:library){
-                    gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
-                    listOfGamesForTab.add(game);
-                }
+            for(Game game : listOfGamesWithinTab) {
+                gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
             }
 
             if(!globalSearchQuery.isEmpty()) {
