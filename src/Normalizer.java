@@ -30,7 +30,8 @@
  * 
  * @see GraphicalUserInterface
  * @see GameCSVImporter
- * @author CS321-004: Group 3
+ * 
+ * @author GameLoom Team
  * @version 1.6
  */
 
@@ -40,7 +41,7 @@ import java.util.*;
 public class Normalizer {
     /*Lists of all the different versions of a normalized attribute*/
     //Since these lists won't change once we make them I just made them all constant String arrays, feel free to change if there's a more efficient way
-    private static final String game[] = {"game", "name", "title"};
+    private static final String title[] = {"game", "name", "title"};
     private static final String hours_played[] = {"hours"};
     private static final String last_played[] = {"last played", "last-played", "last_played"};
     private static final String release_date[] = {"release"};
@@ -80,9 +81,9 @@ public class Normalizer {
             String value = attributes.get(key);
 
             //Normalizes attributes that are for the game's name. The condition for the attribute not containing id is to prevent the program from considering "game id"
-            //The last condition is to make sure that once we've found the game's title, no other attributes with the word "game" in it will be considered
-            if(contains(key, game) && !key.contains("id") && !normAttributes.containsKey("game")){ 
-                normAttributes = populateNorm(normAttributes, "game", key, value);
+            //The last condition is to make sure that once we've found the game's title, no other attributes with the word "title" in it will be considered
+            if(contains(key, title) && !key.contains("id") && !normAttributes.containsKey("title")){ 
+                normAttributes = populateNorm(normAttributes, "title", key, value);
             }
             else if(contains(key, hours_played)){
                 normAttributes = populateNorm(normAttributes, "hours_played", key, value);
@@ -125,7 +126,7 @@ public class Normalizer {
      * @return Whether or not the attribute contains one of the words in the given array
      */
     private static boolean contains(String attribute, String[] normalized){
-        //I chose to use contains for the attribute names because it prevents us from having to consider all the versions of "game", "game-name", "game name", "game_name", etc.
+        //I chose to use contains for the attribute names because it prevents us from having to consider all the versions of "title", "game-name", "game name", "game_name", etc.
         //Might cause its own problems though
         for(String word: normalized){
             if(attribute.contains(word)){

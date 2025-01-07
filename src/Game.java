@@ -23,7 +23,7 @@
  *     attributes.put("release_date", "2021-05-20");
  *     Game game = new Game(attributes);
  * 
- * @author CS321-004: Group 3
+ * @author GameLoom Team
  * @version 1.4
  */
 import java.util.HashMap;
@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
+import java.lang.*;
 
 public class Game {
     // Attributes map that stores game data as key-value pairs
@@ -99,7 +100,7 @@ public class Game {
 
 
     /**
-     * Provides a string representation of the game, summarizing all attributes except for those marked "N/A" or with the key "game".
+     * Provides a string representation of the game, summarizing all attributes except for those marked "N/A" or with the key "title".
      * 
      * @return A formatted string summarizing the game's attributes.
      */
@@ -127,8 +128,8 @@ public class Game {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            // Skip attributes with key "game", any "N/A" or empty values, or keys already processed
-            if (key.equalsIgnoreCase("game") || value.equals("N/A") || value.isEmpty() || containsKey(preferredKeys, key)) {
+            // Skip attributes with key "title", any "N/A" or empty values, or keys already processed
+            if (key.equalsIgnoreCase("title") || value.equals("N/A") || value.isEmpty() || containsKey(preferredKeys, key)) {
                 continue;
             }
 
@@ -144,6 +145,19 @@ public class Game {
         return result.toString();
     }
 
+    /**
+     * Returns a string representation of the game for display purposes in the Edit Tab.
+     * Prepends the 'game' attribute value to the standard toString() output.
+     *
+     * @return A formatted string for displaying the game.
+     */
+    public String toDisplayString() {
+        String gameName = attributes.get("title");
+        if (gameName == null || gameName.isEmpty()) {
+            gameName = "Unknown Game";
+        }
+        return "Title: "+ gameName + " | " + this.toString();
+    }
 
     /**
      * Helper method to capitalize the first letter of the key and replace underscores with spaces.
@@ -209,11 +223,29 @@ public class Game {
     /******** SORTING IMPLEMENTATION **************/
 
     /**
-     * This method gets the title value of the game to make the title comparator associated with a method.
+     * This method gets the title value of the game
      * @return String representing the title of the game
      */
     public String getTitle() {
-        return getAttribute("game");
+        return getAttribute("title");
+    }
+
+    /**
+     * This method gets the title value of the game without quotes or extra punctuation at the beginning
+     * ONLY USE THIS WITH THE COMPARATOR
+     * @return String representing the title of the game without other characters
+     */
+    public String getTitleWithoutQuote() {
+        String title = getAttribute("title");
+        int startIndex = 0;
+        for(int i = 0; i < title.length(); i++) {
+            char c = title.charAt(i);
+            if(Character.isLetterOrDigit(c)) {
+                startIndex = i;
+                break;
+            }
+        }
+        return title.substring(startIndex);
     }
 
     /**
@@ -350,7 +382,7 @@ public class Game {
     /**
      * This defines a comparator to sort Game objects by their title
      */
-    public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitle);
+    public static final Comparator<Game> byTitle = Comparator.comparing(Game::getTitleWithoutQuote);
     
     /**
      * This defines a comparator to sort Game objects by their platform name
