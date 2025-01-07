@@ -307,8 +307,11 @@ public class Game {
                 String field1 = game1.getAttribute(fieldName);
                 String field2 = game2.getAttribute(fieldName);
                 
-                boolean field1NotValid = (field1.equals("N/A") || field1.equals("") || field1.length() == 0);
-                boolean field2NotValid = (field2.equals("N/A") || field2.equals("") || field2.length() == 0);
+                boolean field1NotValid = (field1.equals("N/A") || field1.isEmpty());
+                boolean field2NotValid = (field2.equals("N/A") || field2.isEmpty());
+
+                System.out.println("field1 is " + field1);
+                System.out.println("field2 is " + field2);
 
                 if(field1NotValid || field2NotValid) {
                     if(field1NotValid && field2NotValid) {
@@ -316,12 +319,14 @@ public class Game {
                     }
                     else if(field1NotValid) {
                         return isAscending ? 1 : -1; 
-                        //if ascending, all invalid date goes to end
-                        //if descending, all invalid dates go to start 
+                        //invalid & valid --> valid & invalid
+                        //if ascending, invalid date moved to end (positive value) 
+                        //if descending, invalid dates moved to start (negative value)
                         // due to nature of Collections.reversed()          
+                    }  else { //field2Not valid
+                        return isAscending ? -1 : 1;                        
+                        //valid & invalid --> valid & invalid
                     }
-                } else {
-                    return isAscending ? 1 : -1; 
                 } 
                 return field1.compareTo(field2);
             }
