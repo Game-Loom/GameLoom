@@ -13,7 +13,6 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -45,24 +44,50 @@ public class LandingPage {
         primaryStage = stage;
         libraryScene = scene;
 
-        //Sets up the main container for the scene
-        VBox layout = new VBox();
-        layout.setAlignment(Pos.CENTER);
+        //Creates a tab pane for the landing page and the help tab
+        TabPane tabs = new TabPane();
+        tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        VBox.setVgrow(tabs, Priority.ALWAYS);
 
+        //Sets up landing page
+        VBox landingPage = setupLandingPage(tabs, libraryTabs);
+
+        //Puts the landing page in a scrollpane for resizing purposes
+        ScrollPane scrollLanding = new ScrollPane(landingPage);
+        scrollLanding.setFitToWidth(true);
+        scrollLanding.setFitToHeight(true);
+
+        //Makes the landing page a new tab
+        Tab landingPageTab = new Tab("Main Page");
+        landingPageTab.setContent(scrollLanding);
+
+        tabs.getTabs().add(landingPageTab);
+
+        Scene mainScene = new Scene(tabs, 958, 700);
+        return mainScene;
+    }
+
+    /**
+     * Sets up the main formatting for the landing page tab
+     * @param tabs - The tab container for the landing page
+     * @param libraryTabs - The main tab container for the tabs in the library UI
+     * @return a VBox with the landing page formatting set up
+     */
+    private static VBox setupLandingPage(TabPane tabs, TabPane libraryTabs){
         //Sets up the landing page itself
         VBox landingPage = new VBox(15);
-        landingPage.setPadding(new Insets(20));
         landingPage.setAlignment(Pos.CENTER);
-        
-        VBox.setVgrow(landingPage, Priority.ALWAYS); //Prioritizes the landing page as the main VBox
 
         //Creation and styling for the Welcome label
         Label welcome = new Label("Welcome to GameLoom!");
         welcome.setStyle("-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: serif;");
 
         //Creation and styling for the importation instructions
-        Label importCaption = new Label("Start by importing a CSV from a Gameloom Save file or another service.\nClick on one of the icons below!");
+        Label importCaption = new Label("Start by importing a CSV from a Gameloom Save file or another service.");
         importCaption.setStyle("-fx-font-size: 16px; -fx-text-alignment: center;");
+
+        Label importCaptionClick =  new Label("Click on one of the icons below!");
+        importCaptionClick.setStyle("-fx-font-size: 16px; -fx-text-alignment: center;");
 
         //Sets up the grid of icons that users can use to import their specific CSV files
         GridPane importIcons = setupIconGrid();
@@ -79,15 +104,13 @@ public class LandingPage {
 
         //Sets up the hyperlink and instructions for accessing the help tab
         Label help = new Label("Don't have a file or don't know where to start?");
-        Hyperlink helpPage = setupHelpButton(layout, landingPage);
+        Hyperlink helpPage = setupHelpButton(tabs);
         help.setStyle("-fx-font-size: 14px;");
         helpPage.setStyle("-fx-font-size: 14px;");
-        
-        landingPage.getChildren().addAll(welcome, importCaption, importIcons, manualLabel, manualEntry, help, helpPage);
-        layout.getChildren().addAll(landingPage);
 
-        Scene mainScene = new Scene(layout, 958, 700);
-        return mainScene;
+        landingPage.getChildren().addAll(welcome, importCaption, importCaptionClick, importIcons, manualLabel, manualEntry, help, helpPage);
+
+        return landingPage;
     }
 
     /**
@@ -97,9 +120,7 @@ public class LandingPage {
     private static GridPane setupIconGrid(){
         //Sets up the grid pane
         GridPane iconGrid = new GridPane();
-        iconGrid.setMinSize(300, 300);
         iconGrid.setAlignment(Pos.CENTER);
-        iconGrid.setPadding(new Insets(15));
         iconGrid.setVgap(20);
         iconGrid.setHgap(35);
         
@@ -178,26 +199,15 @@ public class LandingPage {
      * @param landingPage
      * @return
      */
-    private static Hyperlink setupHelpButton(VBox layout, VBox landingPage){
+    private static Hyperlink setupHelpButton(TabPane tabs){
         Hyperlink help = new Hyperlink("GameLoom Help Page");
         help.setOnAction(event -> {
-            //Creates a tab pane for the landing page and the help tab
-            TabPane tabs = new TabPane();
-            tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-            VBox.setVgrow(tabs, Priority.ALWAYS);
-
             //creates the help tab
             HelpTab helpTab = new HelpTab();
             Tab helpTabInstance = helpTab.getTab();
 
-            //Mains the landing page a new tab
-            Tab landingPageTab = new Tab("Main Page");
-            landingPageTab.setContent(landingPage);
+            tabs.getTabs().addAll(helpTabInstance);
 
-            tabs.getTabs().addAll(landingPageTab, helpTabInstance);
-
-            layout.getChildren().clear();
-            layout.getChildren().addAll(tabs);
             tabs.getSelectionModel().selectNext();
         });
 
