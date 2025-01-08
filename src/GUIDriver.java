@@ -1226,12 +1226,19 @@ public class GUIDriver extends Application {
                 /** Sort Handling */
                 errorMsg.setText("");
                 globalFilterResults = tmpLibrary;
+                if(!optionSelected) {
+                    errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                    errorMsg.setText("Error: No option selected");
+                    return;  
+                }
+
                 if(tmpLibrary == null || tmpLibrary.size() == 0) { //if filter returned no results
                     gameList.getChildren().clear();
                     errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                     errorMsg.setText("Error: No results found for filtering on results");
                     return;
                 } 
+
 
                 if(!field.equals("Default")) { //sort if sort is chosen, and populate game list with "sorted results"
                     sortedLibrary = sort(tmpLibrary, field, customFieldText, isAscending, isAlphabetical);    
