@@ -557,6 +557,7 @@ public class GUIDriver extends Application {
      */
     protected static void populateGameList(List<Game> games) {
         // Add imported games to the VBox and library, avoiding duplicates
+        listOfGamesWithinTab = new ArrayList<Game>();
         for (Game game : games) {
             String gameName = game.getAttribute("title"); // Retrieves game name
             String description = game.toString(); // Retrieves game details
@@ -564,7 +565,7 @@ public class GUIDriver extends Application {
                 library.add(game); // Add game to the library
                 gameList.getChildren().add(createGameItem(gameName, description)); // Display game in the UI
             
-                listOfGamesWithinTab.add(game); //adds game to container tab 
+                listOfGamesWithinTab.add(game); //adds game to container tab
             }
         }
     }
@@ -687,7 +688,7 @@ public class GUIDriver extends Application {
         searchButton.setOnAction(event -> {
             String searchQuery = searchField.getText().toLowerCase().trim(); 
             globalSearchQuery = searchQuery;
-            filterGameList(searchQuery); // Call helper method to filter the game list based on the search query
+            searchAndModify(searchQuery); // Call helper method to filter the game list based on the search query
             NotificationManager.showNotification("Search keywords successfully submitted!", "success");
         });
         
@@ -696,7 +697,7 @@ public class GUIDriver extends Application {
             if( event.getCode() == KeyCode.ENTER ){
                 String searchQuery = searchField.getText().toLowerCase().trim(); 
                 globalSearchQuery = searchQuery;
-                filterGameList(searchQuery);
+                searchAndModify(searchQuery);
                 NotificationManager.showNotification("Search keywords successfully submitted!", "success");
             }
         });
@@ -708,7 +709,7 @@ public class GUIDriver extends Application {
     }
 
     /**
-     * Filters the game list based on a search query entered by the user. 
+     * Modifies the game list based on a search query entered by the user. 
      * The search query is split into individual keywords, and the method checks whether each game's 
      * name or description contains all the keywords. 
      * If no search query is provided, the method will display all the games. The filtering is 
@@ -716,7 +717,7 @@ public class GUIDriver extends Application {
      * @param searchText The search query entered by the user. Multiple keywords should be separated by spaces.
      * @return list of games that matches the search, or null if the list is empty
      */
-    private ArrayList<Game> filterGameList(String searchText) {
+    private ArrayList<Game> searchAndModify(String searchText) {
         gameList.getChildren().clear(); // Clear the current game list in the UI    
         ArrayList<Game> gameSearchResults = new ArrayList<Game>();
 
@@ -987,7 +988,7 @@ public class GUIDriver extends Application {
             }
 
             if(!globalSearchQuery.isEmpty()) {
-                filterGameList(globalSearchQuery);
+                searchAndModify(globalSearchQuery);
             }
 
             
@@ -1017,13 +1018,22 @@ public class GUIDriver extends Application {
 
         sortFilterButton.setOnAction(event -> {
             String field = sortDropDown.getValue();     
-            ArrayList<Game> tmpLibrary = library;
+            ArrayList<Game> filteredLibrary;
             ArrayList<Game> sortedLibrary  = null; //sortedLibrary results
             boolean isAscending = false;
             boolean isAlphabetical = false;
             String customFieldText = "";
             boolean optionSelected = false;
             globalFilterResults = null;
+
+            //Default Parameters for filter (empty strings, negative numbers, etc)
+            String platformName, platformField, keyword, customField, customNumField;
+            platformName = platformField = keyword = customField = customNumField = "";
+            double startNum = Double.NEGATIVE_INFINITY;
+            double endNum = Double.NEGATIVE_INFINITY;
+            int startDate = -1;
+            int endDate = -1;
+
 
             if(globalSearchResults != null) {
                 if(globalSearchResults.isEmpty()) {
@@ -1032,10 +1042,10 @@ public class GUIDriver extends Application {
                     globalFilterResults = null;
                     return;
                 }
-                tmpLibrary = globalSearchResults;
+                filteredLibrary = globalSearchResults;
                 //Error: Empty search results
             } else {
-                tmpLibrary = listOfGamesWithinTab;
+                filteredLibrary = listOfGamesWithinTab;
             }
 
             //Error Handling 1: Empty Library
@@ -1068,9 +1078,7 @@ public class GUIDriver extends Application {
                         isAlphabetical = tempButton.getText().equals("Alphabetical"); 
                     }
                 }
-                
-                
-                
+                                
                 if(field.equals("Custom")) { //checks if custom or not and custom field
                         customFieldText = textField.getText().trim().toLowerCase();
                         if(customFieldText == null || customFieldText.equals("") || customFieldText.length() == 0) {
@@ -1088,65 +1096,61 @@ public class GUIDriver extends Application {
 
                 /* Part 2: Necessary Filter Handling (i.e. get the range of a sorted list) */
                 //Filters before sort is called -- This should not be moved in terms of order
+
     
-                //filters by keyword in field (e.g. 'german' in 'languages')
+                //Option 1: If platform is selected
+                if(platformCheckBox.isSelected()) { 
+                    String inputPlatformName = platformTextField.getText().trim(); 
+                    inputPlatformName = inputPlatformName.toLowerCase().trim();
+                    optionSelected = true;
+                    
+                    if(inputPlatformName.isEmpty()) { //Error Handling: platform name not provided
+                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                        errorMsg.setText("Please enter a platform");
+                        return;
+                    } 
+                    else {
+                        //Error handling: platform is not one of the avaliable platforms
+                        String [] avaliablePlatforms = {"steam", "gog", "itch.io", "playstation", "xbox", "nintendo", "physical"};
+                        boolean stringIsValid = false;
+                        for(String platform : avaliablePlatforms) {
+                            if(inputPlatformName.equals(platform)) {
+                                stringIsValid = true;
+                                break;
+                            } 
+                        }
+                        if(!stringIsValid) {
+                            errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
+                            errorMsg.setText("Enter a valid platform (not caps sensitive): Steam, GOG, itch.io, Playstation, Xbox, Nintendo, Physical");
+                            return;
+                        }
+
+                        platformName = inputPlatformName;
+                        platformField = "platform";
+                    }
+                } else {
+                    platformTextField.clear();
+                }
+                
+                //filters by keyword in custom field (e.g. 'german' in 'languages')
                 if(filterKeywordCheckBox.isSelected()) {
                     String keywordInput = keywordTextField.getText().trim().toLowerCase(); 
                     String customAttributeInput = attributeTextField.getText().trim().toLowerCase();
                     customAttributeInput = Normalizer.normalizeKey(customAttributeInput);
                     optionSelected = true;
 
-                    if(keywordInput.isEmpty() || customAttributeInput.isEmpty()) { //Error Handling
+                    if(keywordInput.isEmpty() || customAttributeInput.isEmpty()) { //Error Handling: empty fields
                         errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                         errorMsg.setText("Please enter a keyword and a field");
                         return;
                     } else {
-                        ArrayList<Game> results = filter(tmpLibrary, keywordInput, customAttributeInput, null, false);
-                        if(results != null) { 
-                            tmpLibrary = results;
-                        } 
+                        keyword = keywordInput;
+                        customField = customAttributeInput;
                     }
                 } else {
                     keywordTextField.clear();
                     attributeTextField.clear();
                 }
-
-
-                //If platform is selected, sort by platform, then remove that section of with the platform grouped together
-                if(platformCheckBox.isSelected()) { 
-                    String inputPlatformName = platformTextField.getText().trim(); 
-                    inputPlatformName = inputPlatformName.toLowerCase().trim();
-                    optionSelected = true;
-                    
-                    if(inputPlatformName.isEmpty()) { //Error Handling
-                        errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
-                        errorMsg.setText("Please enter a platform");
-                        return;
-                    } 
-                    else {
-                        String [] avaliablePlatforms = {"steam", "gog", "itch.io", "playstation", "xbox", "nintendo", "physical"};
-                        boolean invalidString = true;
-                        for(String platform : avaliablePlatforms) {
-                            if(inputPlatformName.equals(platform)) {
-                                invalidString = false;
-                                break;
-                            }
-                        }
-                        if(invalidString) {
-                            errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
-                            errorMsg.setText("Enter a valid platform: Steam, GOG, itch.io, Playstation, Xbox, Nintendo, Physical");
-                            return;
-                        }
-                    }
-                    ArrayList<Game> results = filter(tmpLibrary, inputPlatformName, "platform", null, false);
-                    if(results != null) {
-                        tmpLibrary = results;
-                    }
-                    
-                } else {
-                    platformTextField.clear();
-                }
-
                 //If date is selected, sort by date, then remove that section of with the dates grouped together
                 if(dateCheckBox.isSelected()) {
                     String startDateText = startDateTextField.getText().trim(); 
@@ -1158,7 +1162,7 @@ public class GUIDriver extends Application {
 
                     if(startDateText.length() != 4 && startDateText.length() != 4) {
                         errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
-                        errorMsg.setText("Invalid length: Dates must be 4 digits");
+                        errorMsg.setText("Invalid length: Years must be 4 digits");
                         return;
                     }
 
@@ -1177,12 +1181,9 @@ public class GUIDriver extends Application {
                         return;
                     }
 
-                    double[] datesTuple = {startYear, endYear};                    
-                    ArrayList<Game> results = filter(tmpLibrary, "", "release_date", datesTuple, true);
-                    if(results != null) {
-                        tmpLibrary = results;
-                    }
-                
+                    startDate = startYear;
+                    endDate = endYear;
+
                 } else {
                     startDateTextField.clear();
                     endDateTextField.clear();
@@ -1191,59 +1192,53 @@ public class GUIDriver extends Application {
                 if(numberCheckBox.isSelected()) {
                     String startNumText = startNumberTextField.getText().trim(); 
                     String endNumText = endNumberTextField.getText().trim();
-                    double startNum = -1;
-                    double endNum = -1;
-                    String inputCustomNumField = customNumTextField.getText().trim();
+                    double firstNum = -1;
+                    double secondNum = -1;
+                    String inputCustomNumField = customNumTextField.getText().toLowerCase().trim();
                     optionSelected = true;
 
                     try {
-                        startNum = Double.parseDouble(startNumText);
-                        endNum = Double.parseDouble(endNumText);
+                        firstNum = Double.parseDouble(startNumText);
+                        secondNum = Double.parseDouble(endNumText);
                     } catch (NumberFormatException e) {
                         errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                         errorMsg.setText("Invalid format: Please an integer or decimal (e.g. 1, 2.0) ");
                         return;
                     }
                     
-                    if(startNum > endNum) {
+                    if(firstNum > secondNum) {
                         errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
                         errorMsg.setText("Invalid range: Start number must be less/equal to end number");
                         return;
                     }
-
-                    double[] numbersTuple = {startNum, endNum};
-                    ArrayList<Game> results = filter(tmpLibrary, "", inputCustomNumField, numbersTuple, false);
-                    if(results != null) {
-                        tmpLibrary = results;
-                    }
-
+                    startNum = firstNum;
+                    endNum = secondNum;
+                    customNumField = inputCustomNumField;
                 } else {
                     startNumberTextField.clear();
                     endNumberTextField.clear();
                     customNumTextField.clear();
                 }
-                
+
+                //Call the filter method
+                filteredLibrary = filter(filteredLibrary, platformName, platformField, keyword, 
+                customField, startDate, endDate, startNum, endNum, customNumField);
+                globalFilterResults = filteredLibrary; //sets global variable to the filter results
+
                 /** Sort Handling */
                 errorMsg.setText("");
-                globalFilterResults = tmpLibrary;
-                if(!optionSelected) {
-                    errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
-                    errorMsg.setText("Error: No option selected");
-                    return;  
-                }
-
-                if(tmpLibrary == null || tmpLibrary.size() == 0) { //if filter returned no results
+                if(filteredLibrary == null || filteredLibrary.size() == 0) { //if filter returned no results
                     gameList.getChildren().clear();
                     errorMsg.setStyle("-fx-text-fill: red; -fx-font-size: 10px;");
-                    errorMsg.setText("Error: No results found for filtering on results");
+                    errorMsg.setText("No results found for filter criteria");
                     return;
                 } 
 
+                if(!field.equals("Default")) { //if a sort option, sort and populate game list with "sorted results"
+                    sortedLibrary = sort(filteredLibrary, field, customFieldText, isAscending, isAlphabetical);  
 
-                if(!field.equals("Default")) { //sort if sort is chosen, and populate game list with "sorted results"
-                    sortedLibrary = sort(tmpLibrary, field, customFieldText, isAscending, isAlphabetical);    
+                    //Populate it with the results
                     gameList.getChildren().clear(); //clear game list   
-                    
                     if(sortedLibrary != null) {
                         for(Game game : sortedLibrary) { //populate game list with results
                             gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
@@ -1256,13 +1251,12 @@ public class GUIDriver extends Application {
                         NotificationManager.showNotification("Sort & Filter selections have not been applied!", "failure");
                         return;
                     }
-
                 } else {//if sort is not chosen, just populate game list with "filtered results"
                     gameList.getChildren().clear(); //clear game list
-                    for(Game game : tmpLibrary) { //populate game list with results
+                    for(Game game : filteredLibrary) { //populate game list with results
                         gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                     }
-                    globalFilterResults= tmpLibrary;
+                    globalFilterResults = filteredLibrary;
                     NotificationManager.showNotification("Filter selections have been successfully applied!", "success");
                 }
             }
@@ -1271,68 +1265,87 @@ public class GUIDriver extends Application {
         // Add the components to the VBox
         sortFilterBox.getChildren().addAll(
         labelBox, buttonBox, errorMsg, //Main features: title, button, error message
-        filterLabel, filterOptions, platformFilterBox, dateFilterBox, keywordFilterHBox, numberFilterVBox,  //filter options 
+        filterLabel, filterOptions, platformFilterBox, keywordFilterHBox, dateFilterBox, numberFilterVBox,  //filter options 
         bufferZone, sortVBox, sortRadioOptions);  //sorting options
 
         return sortFilterBox; // Return the fully assembled VBox
     }
 
    /** FILTER IMPLEMENTATION */
-
     /**
      * This method filters the game library by doing sublist operations.
      * @param library list of games we are filtering
-     * @param keyword the target keyword (i.e. "GERMAN" in languages)
-     * @param field The field type we are sorting by (i.e. german in "LANGUAGES")
-     * @param numberRange tuple with the start and end number if applicable, otherwise null
-     * @param isDate boolean of whether phrase is a date
+     * @param platformName the target platform in the platform field (i.e. "steam" in platform), empty string otherwose
+     * @param platformField The field type we are sorting by (i.e. german in "languages"), empty string otherwise
+     * @param keyword the target keyword in a custom field, empty string otherwise
+     * @param customField the custom word we are searching in empty string otherwise
+     * @param startNum the lower end of the number range, negative infinity otherwise
+     * @param endNum the higher end of the custom number range, negative infinity otherwise
+     * @param startDate the lower end of the date range, -1 otherwise
+     * @param endDate the higher end of the date range, -1 otherwise
      * @return the game library entries filtered
      */
-    //TODO: filter(ArrayList<Game> library, keyword1, field, keyword2, customField, num1, num2, date1, date2)
-    private ArrayList<Game> filter(ArrayList<Game> library, String keyword, String field, double[] numberRange, boolean isDate) {
+    private ArrayList<Game> filter(ArrayList<Game> library, String platformName, String platformField, String keyword, String customField, int startDate, int endDate, double startNum, double endNum, String customNumField) {
         ArrayList<Game> filteredResults = new ArrayList<Game>();
 
         if(library == null || library.size() == 0) {
             return null;
         }
         
-        field = field.toLowerCase().trim();
+        platformName = platformName.toLowerCase().trim();
+        keyword = keyword.toLowerCase().trim();
+        platformField = platformField.toLowerCase().trim();
+        customField = customField.toLowerCase().trim();
+        customField = Normalizer.normalizeKey(customField);
+        customNumField = Normalizer.normalizeKey(customNumField);
 
-        //Case 1: Word Handling Case
-        if(numberRange == null){ 
-            for(Game game : library) { //only accepts keyword matching custom fields
-                String myAttribute = game.getAttribute(field);
-                myAttribute = myAttribute.toLowerCase().trim();
-                if(!myAttribute.isEmpty() && !myAttribute.equals("") && myAttribute.contains(keyword)) {
-                    filteredResults.add(game);
+        for(Game game : library) {
+            boolean matchFound = true;
+            if(!platformName.isEmpty()) { //if applicable, filters out word in field (e.g. Steam in Platform)
+                String attribute = game.getAttribute(platformField).toLowerCase().trim();
+                if(!attribute.contains(platformName)) {
+                    matchFound = false;
                 } 
-            }            
-            return filteredResults;
-        }
- 
-        //Case 2: Number range case
-        for(Game game : library) { 
-            String attribute = game.getAttribute(field);
-            attribute = attribute.toLowerCase().trim();
-            try {
-                if(isDate) { //gets first four digits if date-formatted string
-                    if(attribute.length() == 10) {
+            }
+            if(matchFound && !keyword.isEmpty()) { //if applicable, checks if word in customfield
+                String attribute = game.getAttribute(customField).toLowerCase().trim();
+                if(!attribute.contains(keyword)) {
+                    matchFound = false;
+                }
+            }
+            if(matchFound && !customNumField.isEmpty() && startNum != Double.NEGATIVE_INFINITY && endNum != Double.NEGATIVE_INFINITY) { //if applicable, checks date
+                String attribute = game.getAttribute(customNumField).toLowerCase().trim();
+                try {
+                    Double myData = Double.parseDouble(attribute);
+                    if(!(myData >= startNum && myData <= endNum)) {
+                        matchFound = false;
+                    }
+                } catch (NumberFormatException e) {
+                    matchFound = false;
+                }
+            }
+            if(matchFound && startDate != -1 && endDate != -1) { //if applicable, filter date
+                String attribute = game.getAttribute("release_date").toLowerCase().trim();  
+                try {
+                    if(attribute.length() == 10) { //gets first four digits if date-formatted string
                         attribute = attribute.substring(0,4);
                     }
-                } 
-                Double myData = Double.parseDouble(attribute);
-                if(myData >= numberRange[0] && myData <= numberRange[1]) {
-                    filteredResults.add(game);
+                    Double myData = Double.parseDouble(attribute);
+                    if(!(myData >= startDate && myData <= endDate)) {
+                        matchFound = false;
+                    }
+                } catch (NumberFormatException e) {
+                    matchFound = false;
                 }
-            } catch (NumberFormatException e) {
-                // TODO: handle exception
-                // System.out.println("Error with parsing double");
+            }
+            if(matchFound) {
+                filteredResults.add(game);
             }
         }
-        return filteredResults;        
+        return filteredResults;
     }
 
-    /***** SOR IMPLEMENTATION */
+    /***** SORT IMPLEMENTATION */
     /**
      * This method sorts the games library. The sorting comparison logic can be found in the game class.
      * @param myLibrary list of games we are sorting
