@@ -78,7 +78,7 @@ public class HelpTab {
         userGuideLink.setOnAction(e -> openLink("https://example.com/user-guide"));
         
         Hyperlink faqLink = new Hyperlink("Frequently Asked Questions");
-        faqLink.setOnAction(e -> openLink("https://example.com/faq"));
+        faqLink.setOnAction(e -> openLink("https://github.com/Game-Loom/GameLoom/blob/main/FAQ.md"));
         
         Hyperlink supportLink = new Hyperlink("Contact Support");
         supportLink.setOnAction(e -> openLink("mailto:GameLoomHelp@gmail.com")); // Will open the user's system agnostic default email client with the support email populated in the "To:" field
