@@ -9,7 +9,7 @@ A: GameLoom is a personal game library manager that helps users catalog their ph
 
 **A:** GameLoom is *system-agnostic* and can run on any platform that supports Java and has a graphical display including **Linux, macOS, and Windows**. 
 - The GameLoom team have thoroughly vetted Windows (10/11) and Linux (Debian-based distributions) although we have only been able to find limited testing with macOS due to availability of the operating system.
-- Our team has additionally made very approachable video tutorials for how to run GameLoom on [Windows](https://youtu.be/uOQYS-_5dvU) and [Linux]().
+- Our team has additionally made very approachable video tutorials for how to run GameLoom on [Windows](https://youtu.be/uOQYS-_5dvU) and [Linux](https://youtu.be/tZD4-sFCjF0).
 
 
 ## Q: Does GameLoom require internet connectivity?
