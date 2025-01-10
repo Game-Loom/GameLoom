@@ -98,8 +98,7 @@ A: GameLoom is a personal game library manager that helps users catalog their ph
 ## Q: How do I update GameLoom?
 
 **A:** Since using GameLoom is a fully network free experience, it does not yet support automatic updates.
-- To update, download the latest version from the official repository and replace your current version.
-    - [Official Repository](https://github.com/Game-Loom/GameLoom)
+- To update, download the latest version from the [official repository](https://github.com/Game-Loom/GameLoom) and replace your current version.
 
 
 ## Q: How do I contact GameLoom support if I need some help?
