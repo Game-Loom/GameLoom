@@ -75,7 +75,7 @@ public class HelpTab {
     
         // Links and descriptions for general help
         Hyperlink userGuideLink = new Hyperlink("GameLoom User Guide");
-        userGuideLink.setOnAction(e -> openLink("https://example.com/user-guide"));
+        userGuideLink.setOnAction(e -> openLink("https://www.youtube.com/playlist?list=PLHR8Uilp9JUiu-7pFWpwln-JUUtYWXCSD"));
         
         Hyperlink faqLink = new Hyperlink("Frequently Asked Questions");
         faqLink.setOnAction(e -> openLink("https://github.com/Game-Loom/GameLoom/blob/main/FAQ.md"));
