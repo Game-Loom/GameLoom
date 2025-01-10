@@ -43,7 +43,7 @@ or
 
 ### **Run from .jar File**:
 * If you prefer a video tutorial, our team has made some available at:
-   [Windows Tutorial](https://youtu.be/a2tN3ApXKEo)
+   [Windows Tutorial](https://youtu.be/uOQYS-_5dvU)
    [Linux Tutorial](https://youtu.be/aA_0lpqbn7g)
 
    1. Download the Zip file that contains the .jar and dependencies directly above in the repository's file listings.

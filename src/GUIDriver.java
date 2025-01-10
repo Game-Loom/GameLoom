@@ -48,7 +48,7 @@
  * game library.
  * 
  * @author GameLoom Team
- * @version 1.6
+ * @version 1.0
  */
 
 import javafx.application.Application;
@@ -60,7 +60,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-//import javafx.scene.shape.Path; // Conflicts with auto-save java.nio.file.Path but doesn't seem to break anything when I remove it, likely a relic from something old I was doing at some point 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;

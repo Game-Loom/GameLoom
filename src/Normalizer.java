@@ -32,7 +32,7 @@
  * @see GameCSVImporter
  * 
  * @author GameLoom Team
- * @version 1.6
+ * @version 1.0
  */
 
 
