@@ -6,7 +6,7 @@
  * 
  * The tab allows the user to:
  * - Add multiple game entries.
- * - Specify default fields like game name, platform, and release date.
+ * - Specify default fields like game title, platform, and release date.
  * - Add custom fields with key-value pairs.
  * - Submit the entered game details to the library and update the displayed list of games.
  * 
