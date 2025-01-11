@@ -211,8 +211,8 @@ public class ManualEntryTab {
         gameEntries.clear(); // Clear the current gameEntries list
         gameEntries.addAll(invalidEntries); // Retain only invalid entries
         
-        validEntries.clear(); // Clear all the valid entries in the list (from previous submission)  
-        invalidEntries.clear(); // Clear all the invalid entries in the list (from previous submission)  
+        validEntries.clear(); // Clear all the valid entries in the list (from previous submission)
+        invalidEntries.clear(); // Clear all the invalid entries in the list (from previous submission)
 
         // Notify the user about the results
         if (submittedCount > 0) {
@@ -309,6 +309,13 @@ public class ManualEntryTab {
 
             // Add Custom Field button
             Button addCustomFieldButton = new Button("Add Custom Field");
+
+            // Add a tooltip to the 'Custom Field' button
+            Tooltip customFieldTooltip = new Tooltip("Click to add additional tracked fields outside the scope of the required fields.\nThere is no limit to the number of custom fields you can track.");
+            customFieldTooltip.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
+            customFieldTooltip.setShowDelay(javafx.util.Duration.millis(500)); // Delay before tooltip appears
+            customFieldTooltip.setHideDelay(javafx.util.Duration.seconds(3)); // Tooltip fades after 3 seconds
+            Tooltip.install(addCustomFieldButton, customFieldTooltip);
             addCustomFieldButton.setOnAction(e -> addCustomField()); // Adds a new custom field when clicked
 
             // Add all components (default fields, custom fields, and button) to the game entry box
