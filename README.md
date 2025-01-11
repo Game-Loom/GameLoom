@@ -4,7 +4,8 @@
 - [Wiki](https://github.com/Game-Loom/GameLoom/wiki)
 - [Help Tutorial Videos](https://www.youtube.com/@GameLoomSupport)
 
-## Supported Platforms
+## Supported Platforms & Setup Guides
+- [Windows](https://github.com/Game-Loom/GameLoom/wiki/Windows-Setup)
 
 ## Features
 - **Unified Game Library Management**: Combine physical and digital game libraries into a single repository.
