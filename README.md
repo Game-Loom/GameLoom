@@ -2,14 +2,16 @@
 
 **GameLoom** is a personal game library manager that acts as a unified catalog for tracking physical and digital game collections across multiple platforms.
 - [Wiki](https://github.com/Game-Loom/GameLoom/wiki)
+- [General FAQ](https://github.com/Game-Loom/GameLoom/wiki/FAQ-:-General)
 - [Help Tutorial Videos](https://www.youtube.com/@GameLoomSupport)
-- [General FAQ]()
 
-## Supported Platforms & Setup Guides
-- [Windows](https://github.com/Game-Loom/GameLoom/wiki/Windows-Setup) (Run from .jar setup)
-- [Linux](https://github.com/Game-Loom/GameLoom/wiki/Linux-Setup) (Run from .jar setup)
-- [MacOs](https://github.com/Game-Loom/GameLoom/wiki/MacOs-Setup) (Run from .jar setup)
-- [Developer Environment](https://github.com/Game-Loom/GameLoom/wiki/Developer-Environment-Setup) (Run from Source Repository) 
+## Setup
+### Run from .Jar
+- [Windows](https://github.com/Game-Loom/GameLoom/wiki/Windows-Setup)
+- [Linux](https://github.com/Game-Loom/GameLoom/wiki/Linux-Setup)
+- [MacOs](https://github.com/Game-Loom/GameLoom/wiki/MacOs-Setup) 
+### Run from Source Repository
+- [Developer Environment Guide](https://github.com/Game-Loom/GameLoom/wiki/Developer-Environment-Setup) 
 
 ## Features
 - **Unified Game Library Management**: Combine physical and digital game libraries into a single repository.
