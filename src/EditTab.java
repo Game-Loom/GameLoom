@@ -284,14 +284,15 @@ public class EditTab {
      * 
      * Also supports adding a custom key and value if specified by the user.
      * After updating, the method clears the input fields and refreshes the game list.
+     * A pseudo-refresh is triggered to update the ListView display immediately.
      */
     private void updateGame() {
         Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
         if (selectedGame != null) {
             // Retrieve selected key from the dropdown
             String selectedDisplayName = keySelector.getValue();
-            String selectedKey = null;
-            
+            String selectedKey = null;      
+
             // Map display name back to normalized key
             if (selectedDisplayName != null) {
                 for (Map.Entry<String, String> entry : keyDisplayMap.entrySet()) {
@@ -300,31 +301,56 @@ public class EditTab {
                         break;
                     }
                 }
-            }
+            }       
+
             // Update the value for the dropdown field if applicable
             if (selectedKey != null) {
                 String newValue = valueField.getText().trim();
                 if (!newValue.isEmpty()) {
+                    // Enclose the title in quotes if the key is 'title'
+                    if ("title".equals(selectedKey)) {
+                        if (!newValue.startsWith("\"") || !newValue.endsWith("\"")) {
+                            newValue = "\"" + newValue + "\"";
+                        }
+                    }
                     selectedGame.updateAttribute(selectedKey, newValue);
-                    NotificationManager.showNotification("Field updated successfully! Please click off of the selection to view changes.", "success");
+                    NotificationManager.showNotification("Field updated successfully!", "success");
                 }
-            }
-            
+            }       
+
             // Process custom key-value fields independently
             String customKey = customKeyField.getText().trim();
             String customValue = customValueField.getText().trim();
             if (!customKey.isEmpty() && !customValue.isEmpty()) {
+                // Enclose the custom value in quotes if the custom key is 'title'
+                if ("title".equalsIgnoreCase(customKey)) {
+                    if (!customValue.startsWith("\"") || !customValue.endsWith("\"")) {
+                        customValue = "\"" + customValue + "\"";
+                    }
+                }
                 selectedGame.updateAttribute(customKey, customValue);
                 customKeyField.clear();
                 customValueField.clear();
-                NotificationManager.showNotification("Custom field updated successfully! Please click off of the selection to view changes.", "success");
-            }
-            // Refresh the displayed game list to reflect changes
-            refreshGameList();
+                NotificationManager.showNotification("Custom field updated successfully!", "success");
+            }   
+
+            // Pseudo-refresh to update ListView immediately
+            String currentQuery = searchField.getText(); // Capture the current query
+            searchField.setText(currentQuery + " "); // Temporarily add a space
+            searchField.setText(currentQuery); // Restore the original query    
+
+            // Re-select the edited item in the ListView
+            gameListView.getSelectionModel().select(selectedGame);  
+
+            // Clear input fields for better user experience
+            valueField.clear();
+            keySelector.getSelectionModel().clearSelection();
         } else {
             NotificationManager.showNotification("No game selected for updating!", "error");
         }
     }
+
+
     
     
     

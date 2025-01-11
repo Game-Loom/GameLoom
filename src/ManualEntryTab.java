@@ -6,7 +6,7 @@
  * 
  * The tab allows the user to:
  * - Add multiple game entries.
- * - Specify default fields like game name, platform, and release date.
+ * - Specify default fields like game title, platform, and release date.
  * - Add custom fields with key-value pairs.
  * - Submit the entered game details to the library and update the displayed list of games.
  * 
@@ -41,6 +41,7 @@
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
+import javafx.stage.PopupWindow;
 import java.util.*;
 
 public class ManualEntryTab {
@@ -95,9 +96,23 @@ public class ManualEntryTab {
         Button addButton = new Button("+");
         addButton.setOnAction(e -> addGameEntry());
 
+        // Add a tooltip to the '+' button
+        Tooltip addTooltip = new Tooltip("Click to add another game entry.");
+        addTooltip.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
+        addTooltip.setShowDelay(javafx.util.Duration.millis(500)); // Delay before tooltip appears
+        addTooltip.setHideDelay(javafx.util.Duration.seconds(3)); // Tooltip fades after 3 seconds
+        Tooltip.install(addButton, addTooltip);
+
         // Create the 'Submit' button to submit the entries
         Button submitButton = new Button("Submit");
         submitButton.setOnAction(e -> submitEntries());
+
+        // Add a tooltip to the 'Submit' button
+        Tooltip submitTooltip = new Tooltip("Click to submit all valid entries to the library.");
+        submitTooltip.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
+        submitTooltip.setShowDelay(javafx.util.Duration.millis(500)); // Delay before tooltip appears
+        submitTooltip.setHideDelay(javafx.util.Duration.seconds(3)); // Tooltip fades after 3 seconds
+        Tooltip.install(submitButton, submitTooltip);
 
         // HBox to hold the buttons
         HBox buttonBox = new HBox(10, addButton, submitButton);
@@ -128,56 +143,108 @@ public class ManualEntryTab {
 
 
     /**
-     * Submits all game entries by collecting data from each entry, validating required fields,
-     * and adding valid entries to the library and the displayed game list.
-     * Displays appropriate notifications for success or validation errors.
+     * Submits all valid game entries, adds them to the library, and clears them from the manual entry tab.
+     * Invalid entries remain on the tab, and their missing fields are highlighted with a red border.
      */
     private void submitEntries() {
-        if (gameEntries.isEmpty()) {
+        // Check if all entries are blank
+        boolean allEntriesAreBlank = gameEntries.stream().allMatch(this::isBlankEntry); 
+
+        if (gameEntries.isEmpty() || allEntriesAreBlank) {
             NotificationManager.showNotification("No entries to submit.", "info");
             return;
         }   
 
-        boolean hasError = false; // Tracks if any errors are found
-        int submittedCount = 0;  // Tracks the number of successfully submitted entries 
+        List<GameEntry> validEntries = new ArrayList<>(); // Tracks valid entries to be submitted
+        List<GameEntry> invalidEntries = new ArrayList<>(); // Tracks invalid entries that need correction
+        int submittedCount = 0; // Tracks the number of successfully submitted entries      
 
+        // Phase 1: Validate each entry and separate them into valid and invalid lists
         for (GameEntry gameEntry : gameEntries) {
             Map<String, String> attributes = gameEntry.collectData();   
 
-            // Ensure all required fields are not empty
+            // Validate required fields
             String title = attributes.getOrDefault("title", "").replace("\"", "").trim();
             String platform = attributes.getOrDefault("platform", "").trim();
             String releaseDate = attributes.getOrDefault("release_date", "").trim();    
 
-            if (title.isEmpty() || platform.isEmpty() || releaseDate.isEmpty()) {
-                hasError = true;
-                NotificationManager.showNotification(
-                    "All required fields (Title, Platform, Release Date) must be filled for each entry.",
-                    "error"
-                );
-                continue; // Skip invalid entry and continue with the next one
+            boolean isValid = true; 
+
+            // Highlight missing fields and classify entries
+            if (title.isEmpty()) {
+                gameEntry.highlightField("title");
+                isValid = false;
+            }
+            if (platform.isEmpty()) {
+                gameEntry.highlightField("platform");
+                isValid = false;
+            }
+            if (releaseDate.isEmpty()) {
+                gameEntry.highlightField("release_date");
+                isValid = false;
             }   
 
-            // If valid, add the entry to the library and display
-            Game game = new Game(attributes);
-            library.add(game);
-            gameList.getChildren().add(GUIDriver.createGameItem(game.getAttribute("title"), game.toString()));
+            if (isValid) {
+                validEntries.add(gameEntry); // Add to valid entries
+            } else {
+                invalidEntries.add(gameEntry); // Keep invalid entries for further correction
+            }
+        }   
+
+        // Phase 2: Process valid entries
+        for (GameEntry validEntry : validEntries) {
+            Map<String, String> attributes = validEntry.collectData();
+            Game game = new Game(attributes);   
+
+            // Avoid adding duplicate entries to the library
+            boolean isDuplicate = library.stream()
+                .anyMatch(existingGame -> existingGame.equals(game)); // Use equals method to compare games
+            if (!isDuplicate) {
+                library.add(game);
+                gameList.getChildren().add(GUIDriver.createGameItem(game.getAttribute("title"), game.toString()));
+            }   
+
+            // Remove the valid entry from the UI
+            entriesBox.getChildren().remove(validEntry.getGameEntryBox());
             submittedCount++;
         }   
 
-        // If no valid entries were submitted, notify the user
-        if (submittedCount == 0) {
-            NotificationManager.showNotification("No valid entries were submitted.", "error");
-            return;
+        // Phase 3: Update the internal state
+        gameEntries.clear(); // Clear the current gameEntries list
+        gameEntries.addAll(invalidEntries); // Retain only invalid entries  
+
+        validEntries.clear(); // Clear all the valid entries in the list (from previous submission)
+        invalidEntries.clear(); // Clear all the invalid entries in the list (from previous submission) 
+
+        // Notify the user about the results
+        if (submittedCount > 0) {
+            NotificationManager.showNotification(submittedCount + " game(s) successfully submitted!", "success");
+        }
+        if (!invalidEntries.isEmpty()) {
+            NotificationManager.showNotification("Some entries have missing fields. Please review and correct them.", "error");
         }   
 
-        // Clear the entries and reset the form
-        entriesBox.getChildren().clear();
-        gameEntries.clear();
-        addGameEntry(); 
+        // Automatically add a new blank entry if no entries remain
+        if (gameEntries.isEmpty()) {
+            addGameEntry();
+        }
+    }   
 
-        // Show success notification
-        NotificationManager.showNotification(submittedCount + " game(s) successfully submitted!", "success");
+
+    /**
+     * Determines if a given GameEntry is blank (all required fields are empty).
+     *
+     * @param gameEntry The GameEntry to check.
+     * @return True if all required fields are empty; false otherwise.
+     */
+    private boolean isBlankEntry(GameEntry gameEntry) {
+        Map<String, String> attributes = gameEntry.collectData();
+        String title = attributes.getOrDefault("title", "").trim();
+        String platform = attributes.getOrDefault("platform", "").trim();
+        String releaseDate = attributes.getOrDefault("release_date", "").trim();    
+
+        // Check if all required fields are empty
+        return title.isEmpty() && platform.isEmpty() && releaseDate.isEmpty();
     }
 
 
@@ -259,6 +326,13 @@ public class ManualEntryTab {
 
             // Add Custom Field button
             Button addCustomFieldButton = new Button("Add Custom Field");
+
+            // Add a tooltip to the 'Custom Field' button
+            Tooltip customFieldTooltip = new Tooltip("Click to add additional tracked fields outside the scope of the required fields.\nThere is no limit to the number of custom fields you can track.");
+            customFieldTooltip.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
+            customFieldTooltip.setShowDelay(javafx.util.Duration.millis(500)); // Delay before tooltip appears
+            customFieldTooltip.setHideDelay(javafx.util.Duration.seconds(3)); // Tooltip fades after 3 seconds
+            Tooltip.install(addCustomFieldButton, customFieldTooltip);
             addCustomFieldButton.setOnAction(e -> addCustomField()); // Adds a new custom field when clicked
 
             // Add all components (default fields, custom fields, and button) to the game entry box
@@ -299,6 +373,19 @@ public class ManualEntryTab {
          */
         public VBox getGameEntryBox() {
             return gameEntryBox;
+        }
+
+
+        /**
+         * Highlights a specific field with a red border if it is invalid.
+         *
+         * @param fieldKey The key of the field to highlight (e.g., "title", "platform").
+         */
+        public void highlightField(String fieldKey) {
+            TextField field = defaultFields.get(fieldKey);
+            if (field != null) {
+                field.setStyle("-fx-border-color: red; -fx-border-width: 2;");
+            }
         }
 
 

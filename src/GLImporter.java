@@ -22,7 +22,7 @@
  * ensuring robust import processing for non-quoted values.
  * 
  * @author GameLoom Team
- * @version 1.5
+ * @version 1.0
  */
 
 

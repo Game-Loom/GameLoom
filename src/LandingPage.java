@@ -9,6 +9,9 @@
  * - Clickable icons for various platforms that allow users to import CSV files.
  * - Provides a link to manual entry tab (also allows access to the fill library UI).
  * - Provides a link to the GameLoom help tab.
+ * 
+ * @author GameLoom Team
+ * @version 1.0
  */
 import java.io.File;
 import java.io.FileInputStream;

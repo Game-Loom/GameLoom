@@ -48,7 +48,7 @@
  * game library.
  * 
  * @author GameLoom Team
- * @version 1.6
+ * @version 1.0
  */
 
 import javafx.application.Application;
@@ -60,7 +60,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-//import javafx.scene.shape.Path; // Conflicts with auto-save java.nio.file.Path but doesn't seem to break anything when I remove it, likely a relic from something old I was doing at some point 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
@@ -70,6 +69,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 // Relates to auto-save
 import java.util.Arrays;
 import java.util.Map;
@@ -83,6 +83,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.time.LocalDateTime;
@@ -405,35 +406,44 @@ public class GUIDriver extends Application {
      * @param filter - the word to filter the game library on
      * @param primaryStage - the stage everything is set on
      */
-    private void setupTabActions(Tab tab, String filter, Stage primaryStage){
-        tab.setOnSelectionChanged(event->{
-            if(tab.isSelected()){
-                listOfGamesWithinTab = new ArrayList<Game>();
+    private void setupTabActions(Tab tab, String filter, Stage primaryStage) {
+        tab.setOnSelectionChanged(event -> {
+            if (tab.isSelected()) {
+                listOfGamesWithinTab = new ArrayList<>();
                 globalTabName = filter;
-                globalFilterResults = null;
-                if(!filter.isBlank() && !library.isEmpty()){ //If the library isn't empty and sorting by a platform
-                    gameList.getChildren().clear();
-                    for(Game game:library){
-                        if(filter.equalsIgnoreCase("physical") && !game.getAttribute(filter).equals("N/A")){
-                            gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
-                            listOfGamesWithinTab.add(game);
+                globalFilterResults = null; 
+
+                // Use a Set to track already-added items to avoid duplicates
+                Set<Game> displayedGames = new HashSet<>(); 
+
+                gameList.getChildren().clear(); // Always clear gameList to repopulate it
+                if (!filter.isBlank() && !library.isEmpty()) { // If filtering by a platform
+                    for (Game game : library) {
+                        if (filter.equalsIgnoreCase("physical") && !game.getAttribute(filter).equals("N/A")) {
+                            if (displayedGames.add(game)) { // Add only if not already displayed
+                                gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
+                                listOfGamesWithinTab.add(game);
+                            }
+                        } else if (game.getPlatform().toLowerCase().contains(filter.toLowerCase())) {
+                            if (displayedGames.add(game)) { // Add only if not already displayed
+                                gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
+                                listOfGamesWithinTab.add(game);
+                            }
                         }
-                        else if(game.getPlatform().toLowerCase().contains(filter.toLowerCase())){
+                    }
+                } else {
+                    for (Game game : library) { // For the main tab, display all games
+                        if (displayedGames.add(game)) { // Add only if not already displayed
                             gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
                             listOfGamesWithinTab.add(game);
                         }
                     }
                 }
-                else{
-                    for(Game game:library){
-                        gameList.getChildren().add(createGameItem(game.getAttribute("title"), game.toString()));
-                        listOfGamesWithinTab.add(game);
-                    }
-                }
-                tab.setContent(createCommonTabLayout(primaryStage)); //Sets the tab layout
+                tab.setContent(createCommonTabLayout(primaryStage)); // Sets the tab layout
             }
         });
     }
+
 
     /**
      * Adds an the given image to the given tab
