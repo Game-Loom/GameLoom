@@ -1,8 +1,10 @@
 # GameLoom 🎮
 
 **GameLoom** is a personal game library manager that acts as a unified catalog for tracking physical and digital game collections across multiple platforms.
+- [Wiki](https://github.com/Game-Loom/GameLoom/wiki)
+- [Help Tutorial Videos](https://www.youtube.com/@GameLoomSupport)
 
----
+## Supported Platforms
 
 ## Features
 - **Unified Game Library Management**: Combine physical and digital game libraries into a single repository.
