@@ -147,14 +147,17 @@ public class ManualEntryTab {
      * Invalid entries remain on the tab, and their missing fields are highlighted with a red border.
      */
     private void submitEntries() {
-        if (gameEntries.isEmpty()) {
+        // Check if all entries are blank
+        boolean allEntriesAreBlank = gameEntries.stream().allMatch(this::isBlankEntry); 
+
+        if (gameEntries.isEmpty() || allEntriesAreBlank) {
             NotificationManager.showNotification("No entries to submit.", "info");
             return;
         }   
 
         List<GameEntry> validEntries = new ArrayList<>(); // Tracks valid entries to be submitted
         List<GameEntry> invalidEntries = new ArrayList<>(); // Tracks invalid entries that need correction
-        int submittedCount = 0; // Tracks the number of successfully submitted entries  
+        int submittedCount = 0; // Tracks the number of successfully submitted entries      
 
         // Phase 1: Validate each entry and separate them into valid and invalid lists
         for (GameEntry gameEntry : gameEntries) {
@@ -191,7 +194,7 @@ public class ManualEntryTab {
         // Phase 2: Process valid entries
         for (GameEntry validEntry : validEntries) {
             Map<String, String> attributes = validEntry.collectData();
-            Game game = new Game(attributes);       
+            Game game = new Game(attributes);   
 
             // Avoid adding duplicate entries to the library
             boolean isDuplicate = library.stream()
@@ -199,20 +202,19 @@ public class ManualEntryTab {
             if (!isDuplicate) {
                 library.add(game);
                 gameList.getChildren().add(GUIDriver.createGameItem(game.getAttribute("title"), game.toString()));
-            }       
+            }   
 
             // Remove the valid entry from the UI
             entriesBox.getChildren().remove(validEntry.getGameEntryBox());
             submittedCount++;
-        }
-
+        }   
 
         // Phase 3: Update the internal state
         gameEntries.clear(); // Clear the current gameEntries list
-        gameEntries.addAll(invalidEntries); // Retain only invalid entries
-        
+        gameEntries.addAll(invalidEntries); // Retain only invalid entries  
+
         validEntries.clear(); // Clear all the valid entries in the list (from previous submission)
-        invalidEntries.clear(); // Clear all the invalid entries in the list (from previous submission)
+        invalidEntries.clear(); // Clear all the invalid entries in the list (from previous submission) 
 
         // Notify the user about the results
         if (submittedCount > 0) {
@@ -226,9 +228,24 @@ public class ManualEntryTab {
         if (gameEntries.isEmpty()) {
             addGameEntry();
         }
+    }   
+
+
+    /**
+     * Determines if a given GameEntry is blank (all required fields are empty).
+     *
+     * @param gameEntry The GameEntry to check.
+     * @return True if all required fields are empty; false otherwise.
+     */
+    private boolean isBlankEntry(GameEntry gameEntry) {
+        Map<String, String> attributes = gameEntry.collectData();
+        String title = attributes.getOrDefault("title", "").trim();
+        String platform = attributes.getOrDefault("platform", "").trim();
+        String releaseDate = attributes.getOrDefault("release_date", "").trim();    
+
+        // Check if all required fields are empty
+        return title.isEmpty() && platform.isEmpty() && releaseDate.isEmpty();
     }
-
-
 
 
     /**
