@@ -63,7 +63,7 @@ public class Normalizer {
         "CBS All Access", "MLB.TV", "NBA App", "Spotify Kids", "Showmax", "Rakuten TV", "BBC iPlayer", 
         "Al Jazeera", "DAZN", "Sky Go", "Red Bull TV", "MTV Play", "Deezer", "EPIX Now", "Starz", 
         "FOX NOW", "Sling TV", "FunimationNow", "Acorn TV", "MUBI", "CuriosityStream", "BritBox", 
-        "FuboTV", "Shudder", "Hoopla",
+        "FuboTV", "Shudder", "Hoopla", "Media Player",
     };
 
     // Could handle DLC very similarly for things that Sony lists as "Digital Artbook", and "Original Soundtrack", I'm sure there are others but those are the ones I have
