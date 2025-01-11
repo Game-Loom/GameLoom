@@ -129,5 +129,8 @@ To make the setup and usage process easier, we’ve created tutorial videos for 
 ### License:
 GameLoom is licensed under MIT License. See the LICENSE file for more details.
 
+### Bug Reporting
+Please log bugs under [issues](https://github.com/Game-Loom/GameLoom/branches) on github.
+
 ### Contact:
 For support or inquiries, please contact us via our support email [GameLoomHelp@gmail.com].
