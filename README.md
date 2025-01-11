@@ -1,6 +1,17 @@
 # GameLoom 🎮
 
 **GameLoom** is a personal game library manager that acts as a unified catalog for tracking physical and digital game collections across multiple platforms.
+- [Wiki](https://github.com/Game-Loom/GameLoom/wiki)
+- [Userguide Tutorial Videos](https://www.youtube.com/playlist?list=PLHR8Uilp9JUiu-7pFWpwln-JUUtYWXCSD)
+- [General FAQ](https://github.com/Game-Loom/GameLoom/wiki/FAQ-:-General)
+
+## Setup
+### Run from .Jar
+- [Windows](https://github.com/Game-Loom/GameLoom/wiki/Windows-Setup)
+- [Linux](https://github.com/Game-Loom/GameLoom/wiki/Linux-Setup)
+- [MacOs](https://github.com/Game-Loom/GameLoom/wiki/MacOs-Setup) 
+### Run from Source Repository
+- [Developer Environment Guide](https://github.com/Game-Loom/GameLoom/wiki/Developer-Environment-Setup) 
 
 ---
 
@@ -67,6 +78,8 @@ or
             --
                (e.x) java --module-path /home/chris/Downloads/GameLoom/lib/mac/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
          ```
+---
+
 ## Usage:
 ### Importing Game Libraries:
   - **Steam**: Use Lorenzo Stanco's Steam Library Exporter.
@@ -81,16 +94,9 @@ or
 ### Exporting Game Libraries:
 GameLoom supports exporting your unified game library to a CSV file for external use or sharing.
 
-### Auto-Save:
-- Auto-save is enabled by default, backing up your library every 3 minutes to your home/GameLoom Exports folder.
-- A maximum of 20 auto-save files are retained in the GameLoom Exports folder located in your home directory.
-
 ## Known Limitations:
 - itch.io Exporter: Limited testing due to small dataset availability.
 - PSDLE (PlayStation): EPSDLE export functionality for PS3, PSP, and PS Vita is not currently working as of October 2024.
-
-## Contributing:
-We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an issue or pull request to the repository.
 
 ## Exporters:
 Below are the recommended tools for exporting game libraries from various platforms:
@@ -121,6 +127,9 @@ To make the setup and usage process easier, we’ve created tutorial videos for 
 
 ### License:
 GameLoom is licensed under MIT License. See the LICENSE file for more details.
+
+### Contributing & Bug Reporting
+We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an [issue](https://github.com/Game-Loom/GameLoom/branches) or pull request to the repository.
 
 ### Contact:
 For support or inquiries, please contact us via our support email [GameLoomHelp@gmail.com].
