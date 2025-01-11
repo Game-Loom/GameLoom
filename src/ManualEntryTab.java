@@ -41,6 +41,7 @@
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
+import javafx.stage.PopupWindow;
 import java.util.*;
 
 public class ManualEntryTab {
@@ -95,9 +96,23 @@ public class ManualEntryTab {
         Button addButton = new Button("+");
         addButton.setOnAction(e -> addGameEntry());
 
+        // Add a tooltip to the '+' button
+        Tooltip addTooltip = new Tooltip("Click to add another game entry.");
+        addTooltip.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
+        addTooltip.setShowDelay(javafx.util.Duration.millis(500)); // Delay before tooltip appears
+        addTooltip.setHideDelay(javafx.util.Duration.seconds(3)); // Tooltip fades after 3 seconds
+        Tooltip.install(addButton, addTooltip);
+
         // Create the 'Submit' button to submit the entries
         Button submitButton = new Button("Submit");
         submitButton.setOnAction(e -> submitEntries());
+
+        // Add a tooltip to the 'Submit' button
+        Tooltip submitTooltip = new Tooltip("Click to submit all valid entries to the library.");
+        submitTooltip.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
+        submitTooltip.setShowDelay(javafx.util.Duration.millis(500)); // Delay before tooltip appears
+        submitTooltip.setHideDelay(javafx.util.Duration.seconds(3)); // Tooltip fades after 3 seconds
+        Tooltip.install(submitButton, submitTooltip);
 
         // HBox to hold the buttons
         HBox buttonBox = new HBox(10, addButton, submitButton);
