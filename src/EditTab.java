@@ -284,13 +284,14 @@ public class EditTab {
      * 
      * Also supports adding a custom key and value if specified by the user.
      * After updating, the method clears the input fields and refreshes the game list.
+     * A pseudo-refresh is triggered to update the ListView display immediately.
      */
     private void updateGame() {
         Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
         if (selectedGame != null) {
             // Retrieve selected key from the dropdown
             String selectedDisplayName = keySelector.getValue();
-            String selectedKey = null;  
+            String selectedKey = null;      
 
             // Map display name back to normalized key
             if (selectedDisplayName != null) {
@@ -300,7 +301,7 @@ public class EditTab {
                         break;
                     }
                 }
-            }   
+            }       
 
             // Update the value for the dropdown field if applicable
             if (selectedKey != null) {
@@ -313,9 +314,9 @@ public class EditTab {
                         }
                     }
                     selectedGame.updateAttribute(selectedKey, newValue);
-                    NotificationManager.showNotification("Field updated successfully! Please click off the selection to view changes.", "success");
+                    NotificationManager.showNotification("Field updated successfully!", "success");
                 }
-            }   
+            }       
 
             // Process custom key-value fields independently
             String customKey = customKeyField.getText().trim();
@@ -330,15 +331,25 @@ public class EditTab {
                 selectedGame.updateAttribute(customKey, customValue);
                 customKeyField.clear();
                 customValueField.clear();
-                NotificationManager.showNotification("Custom field updated successfully! Please click off the selection to view changes.", "success");
+                NotificationManager.showNotification("Custom field updated successfully!", "success");
             }   
 
-            // Refresh the displayed game list to reflect changes
-            refreshGameList();
+            // Pseudo-refresh to update ListView immediately
+            String currentQuery = searchField.getText(); // Capture the current query
+            searchField.setText(currentQuery + " "); // Temporarily add a space
+            searchField.setText(currentQuery); // Restore the original query    
+
+            // Re-select the edited item in the ListView
+            gameListView.getSelectionModel().select(selectedGame);  
+
+            // Clear input fields for better user experience
+            valueField.clear();
+            keySelector.getSelectionModel().clearSelection();
         } else {
             NotificationManager.showNotification("No game selected for updating!", "error");
         }
     }
+
 
     
     
