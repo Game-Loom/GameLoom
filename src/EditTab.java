@@ -290,8 +290,8 @@ public class EditTab {
         if (selectedGame != null) {
             // Retrieve selected key from the dropdown
             String selectedDisplayName = keySelector.getValue();
-            String selectedKey = null;
-            
+            String selectedKey = null;  
+
             // Map display name back to normalized key
             if (selectedDisplayName != null) {
                 for (Map.Entry<String, String> entry : keyDisplayMap.entrySet()) {
@@ -300,31 +300,46 @@ public class EditTab {
                         break;
                     }
                 }
-            }
+            }   
+
             // Update the value for the dropdown field if applicable
             if (selectedKey != null) {
                 String newValue = valueField.getText().trim();
                 if (!newValue.isEmpty()) {
+                    // Enclose the title in quotes if the key is 'title'
+                    if ("title".equals(selectedKey)) {
+                        if (!newValue.startsWith("\"") || !newValue.endsWith("\"")) {
+                            newValue = "\"" + newValue + "\"";
+                        }
+                    }
                     selectedGame.updateAttribute(selectedKey, newValue);
-                    NotificationManager.showNotification("Field updated successfully! Please click off of the selection to view changes.", "success");
+                    NotificationManager.showNotification("Field updated successfully! Please click off the selection to view changes.", "success");
                 }
-            }
-            
+            }   
+
             // Process custom key-value fields independently
             String customKey = customKeyField.getText().trim();
             String customValue = customValueField.getText().trim();
             if (!customKey.isEmpty() && !customValue.isEmpty()) {
+                // Enclose the custom value in quotes if the custom key is 'title'
+                if ("title".equalsIgnoreCase(customKey)) {
+                    if (!customValue.startsWith("\"") || !customValue.endsWith("\"")) {
+                        customValue = "\"" + customValue + "\"";
+                    }
+                }
                 selectedGame.updateAttribute(customKey, customValue);
                 customKeyField.clear();
                 customValueField.clear();
-                NotificationManager.showNotification("Custom field updated successfully! Please click off of the selection to view changes.", "success");
-            }
+                NotificationManager.showNotification("Custom field updated successfully! Please click off the selection to view changes.", "success");
+            }   
+
             // Refresh the displayed game list to reflect changes
             refreshGameList();
         } else {
             NotificationManager.showNotification("No game selected for updating!", "error");
         }
     }
+
     
     
     
