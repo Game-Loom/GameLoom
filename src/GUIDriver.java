@@ -85,6 +85,9 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.management.Notification;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter; // End timer imports
 import java.util.Collections;
@@ -101,7 +104,7 @@ public class GUIDriver extends Application {
     protected static ArrayList<String> attributes = new ArrayList<>(); // Stores the list of game attribute names used for display and export
     private Timer autoSaveTimer; // Schedules periodic auto-save tasks for the game library
     private int lastLibraryHash; // Used to detect any changes to the library and trigger auto-saving when necessary
-    
+
     // Quick-Edit "Control" Variables
     private static final long AUTO_SAVE_INTERVAL = 180000; // 180000 = 3 minutes in milliseconds -- was modifiying to 10000 = 10 seconds for testing
     private static final int MAX_AUTO_SAVE_FILES = 20; // Limit the number of auto-save files (20 * 3 min = version control for your last hour of work if you mess something up)
@@ -451,7 +454,27 @@ public class GUIDriver extends Application {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * This method selects the specified tab
+     * @param tabName the name of the tab
+     */
+    protected void selectTab(String tabName) {
+        tabName = tabName.toLowerCase().trim();
+        String [] listOfTabNames = {"full library", "", "steam", "gog", "itch.io", "playstation", "xbox", "nintendo", "physical"};
+        boolean stringIsValid = false;
+        for(String tabElement : listOfTabNames) {
+            if(tabName.equals(tabElement)) {
+                stringIsValid = true;
+                break;
+            } 
+        }
+        
+
+        // SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+        
+    }
+
     /**
      * Sets the application icon for the primary stage.
      * This method attempts to load the specified icon file and sets it as the icon for the given stage.
@@ -564,7 +587,6 @@ public class GUIDriver extends Application {
             if (!library.contains(game)) { // Avoid adding the same game twice
                 library.add(game); // Add game to the library
                 gameList.getChildren().add(createGameItem(gameName, description)); // Display game in the UI
-            
                 listOfGamesWithinTab.add(game); //adds game to container tab
             }
         }
@@ -689,7 +711,7 @@ public class GUIDriver extends Application {
             String searchQuery = searchField.getText().toLowerCase().trim(); 
             globalSearchQuery = searchQuery;
             searchAndModify(searchQuery); // Call helper method to filter the game list based on the search query
-            NotificationManager.showNotification("Search keywords successfully submitted!", "success");
+            NotificationManager.showNotification("Search keywords successfully submitted!", "success");             
         });
         
         //Search bar also searches when enter is pressed in the search box

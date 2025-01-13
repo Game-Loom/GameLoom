@@ -33,7 +33,10 @@
 
 import javafx.application.Platform;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
+import javafx.stage.PopupWindow;
+import javafx.scene.control.Hyperlink;
 import javafx.util.Duration;
 
 public class NotificationManager {
@@ -116,4 +119,117 @@ public class NotificationManager {
             }
         }).start();
     }
+
+
+    /**
+     * Similar to the above message, this displays notification with a specified message and style/type
+     * There is also a hyperlink that redirects you to the target tab
+     * The notification is styled based on the provided type and automatically disappears after 3 seconds.
+     * @param message The desired notification text
+     * @param type The desired notification type
+     * @param hyperlinkText The text of the hyper link
+     * @param tabName The name of the tab
+     */
+    public static void showNotificationWithHyperlink(String message, String type, String hyperlinkText, String tabName) {
+        if (notificationArea == null) {
+            throw new IllegalStateException("NotificationManager is not initialized with a notification area.");
+        }
+
+        // Create a notification label
+        Label notification = new Label(message);
+
+        // Apply styles based on the notification type
+        switch (type.toLowerCase()) {
+            case "success":
+                notification.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+                break;
+            case "error":
+                notification.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                break;
+            case "info":
+            default:
+                notification.setStyle("-fx-text-fill: blue; -fx-font-weight: bold;");
+                break;
+        }
+
+        //Hyperlink
+        Hyperlink link = new Hyperlink(hyperlinkText);
+        link.setStyle("-fx-text-fill: purple; -fx-font-weight: bold;");
+
+        // Clear existing children, show the notification, and set it visible
+        Platform.runLater(() -> {
+            notificationArea.getChildren().clear();
+            notificationArea.getChildren().addAll(notification, link);
+            notificationArea.setVisible(true);
+        });
+
+        link.setOnAction(e-> {
+            System.out.println("The link was clicked!");
+        });
+
+        // Schedule the notification to disappear after 3 seconds
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000); // Wait for 3 seconds
+                Platform.runLater(() -> {
+                    notificationArea.getChildren().clear();
+                    notificationArea.setVisible(false); // Hide the area when done
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    /**
+     * 
+     */
+        /**
+     * Similar to the above message, this displays notification informing users about a duplicate entry
+     * There is also a hyperlink that redirects you to the target tab
+     * The notification is styled based on the provided type and automatically disappears after 3 seconds.
+     * @param message The desired notification text
+     * @param type The desired notification type
+     * @param hyperlinkText The text of the hyper link
+     * @param tabName The name of the tab
+     */
+    public static void showNotificationForDuplicates(String message) {
+        if (notificationArea == null) {
+            throw new IllegalStateException("NotificationManager is not initialized with a notification area.");
+        }
+
+        // Create a notification label
+        Label notification = new Label(message);
+        notification.setStyle("-fx-text-fill: blue; -fx-font-weight: bold;");
+
+        //Info Icon
+        Label infoIcon = new Label("?"); // Label for the tooltip icon with styling
+        infoIcon.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; -fx-cursor: hand;");
+        Tooltip deleteSafetyTooltip = new Tooltip("These games have different data. A title may have been failed/partially grabbed by the exporter."); // Explains the reason for duplicates
+        deleteSafetyTooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_RIGHT); // BOTTOM_RIGHT is where it's window will meet the cursor to keep it contained inside the program 
+        deleteSafetyTooltip.setShowDelay(Duration.millis(100)); // Tooltip appears after 100 milliseconds of hover
+        deleteSafetyTooltip.setHideDelay(Duration.seconds(5)); // Tooltip hides 5 seconds after the mouse moves away
+        Tooltip.install(infoIcon, deleteSafetyTooltip); // Attach the tooltip to the info icon
+
+        // Clear existing children, show the notification, and set it visible
+        Platform.runLater(() -> {
+            notificationArea.getChildren().clear();
+            notificationArea.getChildren().addAll(notification, infoIcon);
+            notificationArea.setVisible(true);
+        });
+
+        // Schedule the notification to disappear after 3 seconds
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000); // Wait for 3 seconds
+                Platform.runLater(() -> {
+                    notificationArea.getChildren().clear();
+                    notificationArea.setVisible(false); // Hide the area when done
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
 }
