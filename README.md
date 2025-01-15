@@ -75,7 +75,7 @@ To make the setup and usage process easier, we’ve created tutorial videos for 
 GameLoom is licensed under MIT License. See the LICENSE file for more details.
 
 ### Contributing & Bug Reporting
-We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an [issue](https://github.com/Game-Loom/GameLoom/branches) or pull request to the repository.
+We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an [issue](https://github.com/Game-Loom/GameLoom/issues) or pull request to the repository.
 
 ### Contact:
 For support or inquiries, please contact us via our support email [GameLoomHelp@gmail.com].
