@@ -2,7 +2,7 @@
 
 **GameLoom** is a personal game library manager that acts as a unified catalog for tracking physical and digital game collections across multiple platforms.
 - [Wiki](https://github.com/Game-Loom/GameLoom/wiki)
-- [Userguide Tutorial Videos](https://www.youtube.com/playlist?list=PLHR8Uilp9JUiu-7pFWpwln-JUUtYWXCSD)
+- [User's Guide Tutorial Videos](https://www.youtube.com/playlist?list=PLHR8Uilp9JUiu-7pFWpwln-JUUtYWXCSD)
 - [General FAQ](https://github.com/Game-Loom/GameLoom/wiki/FAQ-:-General)
 
 ## Setup
@@ -75,7 +75,7 @@ To make the setup and usage process easier, we’ve created tutorial videos for 
 GameLoom is licensed under MIT License. See the LICENSE file for more details.
 
 ### Contributing & Bug Reporting
-We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an [issue](https://github.com/Game-Loom/GameLoom/branches) or pull request to the repository.
+We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an [issue](https://github.com/Game-Loom/GameLoom/issues) or pull request to the repository.
 
 ### Contact:
 For support or inquiries, please contact us via our support email [GameLoomHelp@gmail.com].
