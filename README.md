@@ -4,15 +4,6 @@
 - [Wiki](https://github.com/Game-Loom/GameLoom/wiki)
 - [User's Guide Tutorial Videos](https://www.youtube.com/playlist?list=PLHR8Uilp9JUiu-7pFWpwln-JUUtYWXCSD)
 - [General FAQ](https://github.com/Game-Loom/GameLoom/wiki/FAQ-:-General)
-
-## Setup
-### Run from .Jar
-- [Windows](https://github.com/Game-Loom/GameLoom/wiki/Windows-Setup)
-- [Linux](https://github.com/Game-Loom/GameLoom/wiki/Linux-Setup)
-- [MacOs](https://github.com/Game-Loom/GameLoom/wiki/MacOs-Setup) 
-### Run from Source Repository
-- [Developer Environment Guide](https://github.com/Game-Loom/GameLoom/wiki/Developer-Environment-Setup) 
-
 ---
 
 ## Features
@@ -26,6 +17,58 @@
 
 ---
 
+## Requirements for Run From Source
+- Java 22 or later
+- JavaFX 22 or later
+
+## Requirements for Run from .jar File
+- Java 22 or later
+
+---
+
+## Setup
+
+### **Run From Source**
+   1. Clone the Repository:
+   ```bash
+   git clone https://github.com/your-repository/GameLoom.git
+   ```
+   2. Install JavaFX:
+      - Download JavaFX 22.0.2 SDK from [JavaFX Downloads](https://jdk.java.net/javafx22/).
+      - Set up the JavaFX module path in your IDE.
+
+   3. Run the Program:
+      - Compile and run GUIDriver.java using your preferred IDE or build tool.
+      - Ensure the JavaFX --module-path argument is configured correctly for your environment (especially if using VSCode).
+
+or
+
+### **Run from .jar File**:
+* If you prefer a video tutorial, our team has made some available at:
+   [Windows Tutorial](https://youtu.be/uOQYS-_5dvU)
+   [Linux Tutorial](https://youtu.be/tZD4-sFCjF0)
+
+   1. Download the Zip file that contains the .jar and dependencies directly above in the repository's file listings.
+   2. Extract the .zip wherever you would like, navigate a terminal window to that directory location.
+   3. System Universal Command:
+      ```bash
+        Windows Command:
+            java --module-path <insert_path_to_extracted_folder>\GameLoom\lib\windows\javafx-sdk-22.0.2\lib\ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            --
+               (e.x) java --module-path C:\Users\Chris\Downloads\GameLoom\lib\windows\javafx-sdk-22.0.2\lib\ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+
+            
+        Linux Command:
+            java --module-path <insert_path_to_extracted_folder>/GameLoom/lib/linux/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            --
+               (e.x) java --module-path /home/chris/Downloads/GameLoom/lib/linux/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            
+            
+        Mac Command:
+            java --module-path <insert_path_to_extracted_folder>/GameLoom/lib/mac/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+            --
+               (e.x) java --module-path /home/chris/Downloads/GameLoom/lib/mac/javafx-sdk-22.0.2/lib/ --add-modules javafx.controls,javafx.fxml -jar GameLoom.jar
+         ```
 ## Usage:
 ### Importing Game Libraries:
   - **Steam**: Use Lorenzo Stanco's Steam Library Exporter.
@@ -40,9 +83,16 @@
 ### Exporting Game Libraries:
 GameLoom supports exporting your unified game library to a CSV file for external use or sharing.
 
+### Auto-Save:
+- Auto-save is enabled by default, backing up your library every 3 minutes to your home/GameLoom Exports folder.
+- A maximum of 20 auto-save files are retained in the GameLoom Exports folder located in your home directory.
+
 ## Known Limitations:
 - itch.io Exporter: Limited testing due to small dataset availability.
 - PSDLE (PlayStation): EPSDLE export functionality for PS3, PSP, and PS Vita is not currently working as of October 2024.
+
+## Contributing:
+We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an issue or pull request to the repository.
 
 ## Exporters:
 Below are the recommended tools for exporting game libraries from various platforms:
@@ -64,7 +114,7 @@ Below are the recommended tools for exporting game libraries from various platfo
 - [Firefox Tampermonkey Extension](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
 - [Chrome Tampermonkey Extension](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
 
-## Tutorial Videos:
+## Exporter Tutorial Videos:
 To make the setup and usage process easier, we’ve created tutorial videos for the recommended exporters:
 - [Using Steam Exporter](https://youtu.be/OeS60dwbXBQ)
 - [Using PSDLE for PlayStation](https://youtu.be/vphXnajoUPY)
@@ -73,9 +123,6 @@ To make the setup and usage process easier, we’ve created tutorial videos for 
 
 ### License:
 GameLoom is licensed under MIT License. See the LICENSE file for more details.
-
-### Contributing & Bug Reporting
-We welcome contributions to GameLoom! If you encounter bugs, have feature requests, or want to contribute code, please submit an [issue](https://github.com/Game-Loom/GameLoom/issues) or pull request to the repository.
 
 ### Contact:
 For support or inquiries, please contact us via our support email [GameLoomHelp@gmail.com].
